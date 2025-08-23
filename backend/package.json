@@ -4,7 +4,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node src/flor.ts"
+    "start": "node dist/flor.js",
+    "dev": "ts-node src/flor.ts",
+    "build": "./build.sh",
+    "clean": "rm -rf dist && echo 'Cleaned dist folder'"
   },
   "keywords": [],
   "author": "",

@@ -1,14 +1,23 @@
 <template>
   <div :key="$route.fullPath" class="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-[#262626] p-0">
+    <div class="w-full flex items-center justify-between px-2 sm:px-3 py-2 bg-[#e63a62] text-white shadow rounded-lg mt-2 mb-2 md:mt-4 md:mb-3 transition-all duration-300 relative" style="font-size: 0.95rem;">
+      <div class="font-bold px-2 py-1 rounded" style="font-size: 0.95rem;">Детали заказа</div>
+      <button @click="logout" class="bg-[#262626] text-white font-semibold px-3 py-1 rounded-md hover:bg-[#444] transition-colors duration-200 relative" style="font-size: 0.95rem;">Выйти</button>
+    </div>
     <div v-if="showNotice" class="fixed top-0 left-0 w-full z-50 flex justify-center">
       <div class="bg-[#e63a62] text-white px-4 py-2 rounded-b-lg shadow text-center mt-0.5 animate-fade-in">
         Сначала возьмите заказ, чтобы просмотреть его детали
       </div>
     </div>
     <div class="w-full max-w-full bg-white dark:bg-[#232323] shadow mt-4 mb-4" style="border-radius: 10px; padding: 0.5rem 0.5rem;">
-      <h2 class="text-2xl font-bold text-[#e63a62] mb-2 text-center">
-        Заказ №{{ order?.id }}
-      </h2>
+      <div class="flex flex-col items-center mb-3">
+        <div v-if="order?.order_id" class="inline-flex items-center px-4 py-2 rounded-full text-lg font-bold bg-gradient-to-r from-[#e63a62] to-[#c72c4e] text-white shadow-xl mb-2 transform hover:scale-105 transition-transform duration-200">
+          {{ order.order_id }}
+        </div>
+        <h2 class="text-2xl font-bold text-[#e63a62] text-center">
+          Заказ №{{ order?.id }}
+        </h2>
+      </div>
       <div class="mb-2 text-base">
         <div><b>Имя:</b> {{ order?.name || '-' }}</div>
         <div><b>Стоимость:</b> {{ order?.price || order?.sale || '-' }}</div>
@@ -138,12 +147,21 @@
         <div class="text-base">
           <span v-if="order?.photo_status === 'uploaded_admin'" class="text-green-700 dark:text-green-400 font-semibold">Загружено админом</span>
           <span v-else-if="order?.photo_status === 'uploaded_florist'" class="text-blue-700 dark:text-blue-400 font-semibold">Загружено флористом</span>
+          <span v-else-if="order?.photo_status === 'send_to_admin'" class="text-yellow-700 dark:text-yellow-400 font-semibold">Отправлено админу для проверки</span>
           <span v-else class="text-gray-400">Ожидает загрузки</span>
         </div>
       </div>
-      <div class="flex gap-2 justify-center">
+      <div class="flex gap-2 justify-center flex-wrap">
         <button @click="releaseOrder" class="px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">Отпустить заказ</button>
         <button @click="completeOrder" class="px-4 py-2 rounded-lg bg-[#e63a62] text-white font-semibold hover:bg-[#c72c4e] transition-colors" v-if="!order?.status || order.status !== 'выполнен'">Выполнено</button>
+        <!-- Кнопка "Отправить админу" для завершенных заказов -->
+        <button 
+          v-if="order?.status === 'выполнен' && order?.photo_status !== 'send_to_admin' && user.role !== 'admin'"
+          @click="sendToAdmin" 
+          class="px-4 py-2 rounded-lg bg-yellow-600 text-white font-semibold hover:bg-yellow-700 transition-colors"
+        >
+          Отправить админу
+        </button>
       </div>
     </div>
   </div>
@@ -161,7 +179,7 @@ const router = useRouter();
 const order = ref<any>(null);
 const prevOrder = ref<any>(null);
 const showNotice = ref(false);
-const user = ref<{ id: number; name: string }>({ id: 0, name: '' });
+const user = ref<{ id: number; name: string; role?: string }>({ id: 0, name: '' });
 let ws: WebSocket | null = null;
 const toast = useToast();
 const isUnmounted = ref(false);
@@ -266,7 +284,7 @@ onMounted(async () => {
   if (token) {
     try {
       const payload = parseJwt(token);
-      user.value = { id: payload.id, name: payload.name };
+      user.value = { id: payload.id, name: payload.name, role: payload.role };
     } catch {}
   }
   await loadOrder();
@@ -322,22 +340,46 @@ const completeOrder = async () => {
   if (isUnmounted.value) return;
   const id = route.params.id;
   const token = localStorage.getItem('token');
-  await authFetch(`/api/orders/${id}/complete`, {
+  const res = await authFetch(`/api/orders/${id}/complete`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${token}` }
   });
+  if (!res.ok) {
+    try {
+      const data = await res.json();
+      toast.error(data.error || 'Не удалось завершить заказ');
+    } catch {
+      toast.error('Не удалось завершить заказ');
+    }
+  }
   await loadOrder();
   // После завершения заказа показываем выбор способа загрузки фото
   showPhotoChoice.value = true;
 };
 
-function choosePhotoUpload(type: 'self' | 'admin') {
+async function choosePhotoUpload(type: 'self' | 'admin') {
   showPhotoChoice.value = false;
   if (type === 'self') {
     canUploadPhoto.value = true;
   } else {
     canUploadPhoto.value = false;
-    toast.info('Фото будет ждать загрузки админом');
+    // Сценарий "Отправить админу"
+    const id = route.params.id;
+    const token = localStorage.getItem('token');
+    const res = await authFetch(`/api/orders/${id}/finalize`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify({ action: 'to_admin' })
+    });
+    if (res.ok) {
+      toast.success('Заказ успешно завершен и отправлен админу!');
+      router.push('/orders');
+    } else {
+      toast.error('Не удалось завершить заказ в amoCRM');
+    }
   }
 }
 
@@ -468,9 +510,33 @@ async function uploadPhoto() {
     if (res.ok) {
       const data = await res.json();
       order.value = data.order;
-      toast.success('Фото успешно загружено');
+      toast.success('Фото успешно загружено, завершаем заказ...');
+
+      // Сценарий "Отправить самому"
+      const id = route.params.id;
+      const token = localStorage.getItem('token');
+      const finalizeRes = await authFetch(`/api/orders/${id}/finalize`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ action: 'self_complete', photoUrl: data.photoUrl })
+      });
+
+      if (finalizeRes.ok) {
+        toast.success('Заказ успешно завершен!');
+        router.push('/orders');
+      } else {
+        toast.error('Фото загружено, но не удалось завершить заказ в amoCRM');
+      }
     } else {
-      toast.error('Ошибка при загрузке фото');
+      try {
+        const data = await res.json();
+        toast.error(data.error || 'Ошибка при загрузке фото');
+      } catch {
+        toast.error('Ошибка при загрузке фото');
+      }
     }
   } catch (error) {
     console.error('Ошибка при обработке изображения:', error);
@@ -579,4 +645,41 @@ function prevPhoto() {
   currentPhotoIndex.value = (currentPhotoIndex.value - 1 + order.value.photos.length) % order.value.photos.length;
   selectedPhotoUrl.value = order.value.photos[currentPhotoIndex.value].url;
 }
+
+  function logout() {
+    try {
+      localStorage.removeItem('token');
+      sessionStorage.clear();
+      if (ws) {
+        ws.close();
+        ws = null;
+      }
+    } finally {
+      router.push('/login');
+    }
+  }
+  
+  // Функция отправки заказа админу
+  async function sendToAdmin() {
+    if (!order.value?.id) return;
+    
+    const id = route.params.id;
+    const token = localStorage.getItem('token');
+    const res = await authFetch(`/api/orders/${id}/send-to-admin`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    
+    if (res.ok) {
+      toast.success('Заказ отправлен админу для проверки фото');
+      await loadOrder(); // Обновляем данные заказа
+    } else {
+      try {
+        const data = await res.json();
+        toast.error(data.error || 'Не удалось отправить заказ админу');
+      } catch {
+        toast.error('Не удалось отправить заказ админу');
+      }
+    }
+  }
 </script> 

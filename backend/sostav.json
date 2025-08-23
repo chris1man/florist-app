@@ -1,15 +1,15 @@
 [
   {
-    "id": "27402195",
-    "name": "Заказы №24903 2 букета матрикар и сбор",
+    "id": "27532941",
+    "name": "проверка 111",
     "status_id": "44828242",
-    "old_status_id": "53695750",
-    "price": "7970",
+    "old_status_id": "76172434",
+    "price": "1",
     "responsible_user_id": "7741333",
-    "last_modified": "1750762055",
+    "last_modified": "1755864852",
     "modified_user_id": "7741333",
-    "created_user_id": "0",
-    "date_create": "1750761582",
+    "created_user_id": "7741333",
+    "date_create": "1755082388",
     "pipeline_id": "4963870",
     "account_id": "29885530",
     "custom_fields": [
@@ -27,7 +27,7 @@
         "id": "1035967",
         "name": "Дата",
         "values": [
-          "25.05.2025"
+          "03.08"
         ]
       },
       {
@@ -35,7 +35,78 @@
         "name": "Время",
         "values": [
           {
-            "value": "до 20:40"
+            "value": "08:30 - 09:00"
+          }
+        ]
+      },
+      {
+        "id": "1053686",
+        "name": "Описание сделки",
+        "values": [
+          {
+            "value": "A012"
+          }
+        ]
+      },
+      {
+        "id": "1055575",
+        "name": "№ID",
+        "values": [
+          {
+            "value": "D001"
+          }
+        ]
+      },
+      {
+        "id": "1055419",
+        "name": "Фото",
+        "values": [
+          {
+            "value": "https://s3.ru1.storage.beget.cloud/1c7f38e5e349-florapp/27532941/1755863745917-979-min%20%281%29.jpeg"
+          }
+        ]
+      }
+    ],
+    "created_at": "1755082388",
+    "updated_at": "1755864852"
+  },
+  {
+    "id": "27563073",
+    "name": "Готов Заказ №27772 25 роз хермоса",
+    "status_id": "44828242",
+    "old_status_id": "53695750",
+    "price": "4250",
+    "responsible_user_id": "7741333",
+    "last_modified": "1755940144",
+    "modified_user_id": "7741333",
+    "created_user_id": "0",
+    "date_create": "1755938375",
+    "pipeline_id": "4963870",
+    "account_id": "29885530",
+    "custom_fields": [
+      {
+        "id": "1036219",
+        "name": "Способ доставки",
+        "values": [
+          {
+            "value": "Доставка курьером",
+            "enum": "656189"
+          }
+        ]
+      },
+      {
+        "id": "1035967",
+        "name": "Дата",
+        "values": [
+          "22.08"
+        ]
+      },
+      {
+        "id": "293299",
+        "name": "Время",
+        "values": [
+          {
+            "value": "22:00 - 23:00"
           }
         ]
       },
@@ -44,7 +115,7 @@
         "name": "Адрес доставки",
         "values": [
           {
-            "value": "Киевская 109/2 кв24 п2 этаж 1"
+            "value": "белинского 42, подъезд 2, этаж 2, квартира 11"
           }
         ]
       },
@@ -53,7 +124,7 @@
         "name": "Ф.И.О. получателя",
         "values": [
           {
-            "value": "Александр"
+            "value": "Никита"
           }
         ]
       },
@@ -62,7 +133,156 @@
         "name": "Телефон получателя",
         "values": [
           {
-            "value": "79991782280"
+            "value": "79138744100"
+          }
+        ]
+      },
+      {
+        "id": "293243",
+        "name": "Особые пожелания",
+        "values": [
+          {
+            "value": "код домофона 00"
+          }
+        ]
+      },
+      {
+        "id": "1033241",
+        "name": "Способ оплаты",
+        "values": [
+          {
+            "value": "Оплата через терминал при получении"
+          }
+        ]
+      },
+      {
+        "id": "1047841",
+        "name": "Итог оплаты",
+        "values": [
+          {
+            "value": "терм"
+          }
+        ]
+      },
+      {
+        "id": "293297",
+        "name": "товар 1",
+        "values": [
+          {
+            "value": "1 шт, Букет из 25 роз Aqua в оформлении"
+          }
+        ]
+      },
+      {
+        "id": "1036145",
+        "name": "ссылка 1",
+        "values": [
+          {
+            "value": "https://maki-tomsk.ru/cvety/bukety-iz-roz/buket-iz-25-roz-aqua-v-oformlenii/"
+          }
+        ]
+      },
+      {
+        "id": "1034629",
+        "name": "Номер заказа в интернет-магазине",
+        "values": [
+          {
+            "value": "27772"
+          }
+        ]
+      },
+      {
+        "id": "1035985",
+        "name": "Комментарий к доставке",
+        "values": [
+          {
+            "value": "код домофона 00"
+          }
+        ]
+      }
+    ],
+    "created_at": "1755938375",
+    "updated_at": "1755940144"
+  },
+  {
+    "id": "27563055",
+    "name": "Готов Заказ №27771 7 хриз пастела упак",
+    "status_id": "44828242",
+    "old_status_id": "53695750",
+    "price": "2250",
+    "responsible_user_id": "7741333",
+    "last_modified": "1755941793",
+    "modified_user_id": "7741333",
+    "created_user_id": "0",
+    "date_create": "1755938013",
+    "pipeline_id": "4963870",
+    "tags": [
+      {
+        "id": "390323",
+        "name": "данил"
+      }
+    ],
+    "account_id": "29885530",
+    "custom_fields": [
+      {
+        "id": "1036219",
+        "name": "Способ доставки",
+        "values": [
+          {
+            "value": "Доставка курьером",
+            "enum": "656189"
+          }
+        ]
+      },
+      {
+        "id": "1035967",
+        "name": "Дата",
+        "values": [
+          "22.08"
+        ]
+      },
+      {
+        "id": "293299",
+        "name": "Время",
+        "values": [
+          {
+            "value": "17-18"
+          }
+        ]
+      },
+      {
+        "id": "293241",
+        "name": "Адрес доставки",
+        "values": [
+          {
+            "value": "карла маркса 40, кв 18, 5 этаж"
+          }
+        ]
+      },
+      {
+        "id": "1018520",
+        "name": "Ф.И.О. получателя",
+        "values": [
+          {
+            "value": "Виктория"
+          }
+        ]
+      },
+      {
+        "id": "293293",
+        "name": "Телефон получателя",
+        "values": [
+          {
+            "value": "89528923300"
+          }
+        ]
+      },
+      {
+        "id": "293243",
+        "name": "Особые пожелания",
+        "values": [
+          {
+            "value": "для самой чудесной"
           }
         ]
       },
@@ -89,7 +309,7 @@
         "name": "товар 1",
         "values": [
           {
-            "value": "1 шт, Монобукет из 7 кустовых ромашек в оформлении"
+            "value": "1 шт, Букет из одиночной хризантемы и ваксфлауэра &quot;Лунное затмение&quot;"
           }
         ]
       },
@@ -98,25 +318,7 @@
         "name": "ссылка 1",
         "values": [
           {
-            "value": "https://maki-tomsk.ru/cvety/buket-iz-romashek-ru/monobuket-iz-7-kustovyh-romashek-v-oformlenii/"
-          }
-        ]
-      },
-      {
-        "id": "1036905",
-        "name": "товар 2",
-        "values": [
-          {
-            "value": "1 шт, Сборный букет &quot;Розовый эликсир&quot;"
-          }
-        ]
-      },
-      {
-        "id": "1036147",
-        "name": "ссылка 2",
-        "values": [
-          {
-            "value": "https://maki-tomsk.ru/bukety/sbornye-bukety/sbornyy-buket-rozovyy-eliksir/"
+            "value": "https://maki-tomsk.ru/cvety/bukety-iz-hrizantem/buket-iz-odinochnoy-hrizantemy-i-vaksflauera-lunnoe-zatmenie/"
           }
         ]
       },
@@ -125,28 +327,12 @@
         "name": "Номер заказа в интернет-магазине",
         "values": [
           {
-            "value": "24903"
-          }
-        ]
-      },
-      {
-        "id": "1035985",
-        "name": "Комментарий к доставке",
-        "values": [
-          {
-            "value": "2 букета"
+            "value": "27771"
           }
         ]
       }
     ],
-    "created_at": "1750761582",
-    "updated_at": "1750762055",
-    "taken_by": {
-      "id": 1,
-      "name": "Анна"
-    },
-    "photos": [],
-    "photo_status": "",
-    "status": "взял"
+    "created_at": "1755938013",
+    "updated_at": "1755941793"
   }
 ]

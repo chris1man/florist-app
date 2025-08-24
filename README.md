@@ -8,7 +8,7 @@
 ```bash
 cd /root/florist-app/backend
 pm2 start ecosystem.config.js
-```
+```зь2 
 
 ### Управление PM2
 ```bash

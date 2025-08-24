@@ -29,9 +29,12 @@ if [ -f "src/flor.ts" ]; then
     sed -i 's/(ws: WebSocket)/(ws)/g' dist/flor.js
     sed -i 's/(req: Request, res: Response)/(req, res)/g' dist/flor.js
     sed -i 's/(req: Request, res: Response): Promise<void>/(req, res)/g' dist/flor.js
+    sed -i 's/(date: Date)/(date)/g' dist/flor.js
+    sed -i 's/(date?: Date)/(date)/g' dist/flor.js
     sed -i 's/: Request//g' dist/flor.js
     sed -i 's/: Response//g' dist/flor.js
     sed -i 's/: NextFunction//g' dist/flor.js
+    sed -i 's/: Date//g' dist/flor.js
     
     # 3. Убираем типы переменных и возвращаемых значений
     sed -i 's/: string | undefined//g' dist/flor.js

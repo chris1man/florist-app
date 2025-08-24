@@ -46,3 +46,8 @@ Thumbs.db
 .qoder/rules/Lang.md
 backend/.env
 backend/.env
+
+.qoder/rules/lang.md
+.qoder/rules/ORIGINALVER.md
+.gitignore
+.qoder/rules/problems.md

@@ -43,6 +43,16 @@ db.serialize(() => {
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP
   )`);
 
+  // Новая таблица для хранения всех присвоенных ID заказов
+  db.run(`CREATE TABLE IF NOT EXISTS order_ids (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    order_id TEXT NOT NULL UNIQUE,
+    amocrm_lead_id TEXT NOT NULL,
+    deal_name TEXT,
+    delivery_address TEXT,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+  )`);
+
   // Добавляем тестовых флористов, если их нет
   const florists = [
     { login: 'florist1', password: 'pass1', name: 'Анна', role: 'florist' },
@@ -96,6 +106,97 @@ function logToFile(filePath: string, data: any) {
   fs.appendFileSync(filePath, logEntry, 'utf8');
 }
 
+// --- Функции для работы с таблицей order_ids ---
+function saveOrderId(orderId: string, amocrmLeadId: string, dealName: string, deliveryAddress: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    // Используем Томское время для записи в базу
+    const now = new Date();
+    const tomskTimeString = now.toLocaleString('sv-SE', { 
+      timeZone: 'Asia/Tomsk',
+      year: 'numeric',
+      month: '2-digit', 
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    }).replace(' ', 'T');
+    
+    db.run(
+      'INSERT OR IGNORE INTO order_ids (order_id, amocrm_lead_id, deal_name, delivery_address, created_at) VALUES (?, ?, ?, ?, ?)',
+      [orderId, amocrmLeadId, dealName, deliveryAddress, tomskTimeString],
+      function(err) {
+        if (err) {
+          logToFile(processedWebhooksLog, { 
+            action: 'save_order_id_error', 
+            order_id: orderId, 
+            amocrm_lead_id: amocrmLeadId,
+            error: err.message 
+          });
+          resolve(false);
+        } else {
+          logToFile(processedWebhooksLog, { 
+            action: 'save_order_id_success', 
+            order_id: orderId, 
+            amocrm_lead_id: amocrmLeadId,
+            deal_name: dealName,
+            tomsk_time: tomskTimeString
+          });
+          resolve(true);
+        }
+      }
+    );
+  });
+}
+
+function checkOrderIdExists(amocrmLeadId: string): Promise<string | null> {
+  return new Promise((resolve) => {
+    db.get(
+      'SELECT order_id FROM order_ids WHERE amocrm_lead_id = ?',
+      [amocrmLeadId],
+      (err, row: any) => {
+        if (err) {
+          logToFile(processedWebhooksLog, { 
+            action: 'check_order_id_error', 
+            amocrm_lead_id: amocrmLeadId,
+            error: err.message 
+          });
+          resolve(null);
+        } else {
+          resolve(row ? row.order_id : null);
+        }
+      }
+    );
+  });
+}
+
+function getTodayOrderIds(dayLetter: string): Promise<number[]> {
+  return new Promise((resolve) => {
+    db.all(
+      'SELECT order_id FROM order_ids WHERE order_id LIKE ? ORDER BY order_id',
+      [`${dayLetter}%`],
+      (err, rows: any[]) => {
+        if (err) {
+          logToFile(processedWebhooksLog, { 
+            action: 'get_today_order_ids_error', 
+            day_letter: dayLetter,
+            error: err.message 
+          });
+          resolve([]);
+        } else {
+          const ids = rows
+            .map(row => {
+              const numberPart = row.order_id.substring(1);
+              return parseInt(numberPart, 10) || 0;
+            })
+            .filter(num => num > 0)
+            .sort((a, b) => a - b);
+          resolve(ids);
+        }
+      }
+    );
+  });
+}
+
 function formatDateField(val: any) {
   // Если это timestamp (10 цифр) — преобразуем, иначе возвращаем как есть
   if (typeof val === 'string' && /^\d{10}$/.test(val)) {
@@ -126,6 +227,77 @@ function normalizeOrderDates(order: any) {
     return f;
   });
   return order;
+}
+
+// --- Генерация уникальных ID заказов ---
+function getTomskDate(): Date {
+  // Создаем объект Date с правильным Томским временем
+  const now = new Date();
+  // Получаем Томское время в виде строки
+  const tomskTimeString = now.toLocaleString('en-CA', { 
+    timeZone: 'Asia/Tomsk',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  });
+  
+  // Создаем Date объект из строки в формате YYYY-MM-DD HH:MM:SS
+  const [datePart, timePart] = tomskTimeString.split(', ');
+  const tomskTime = new Date(`${datePart}T${timePart}`);
+  return tomskTime;
+}
+
+function getDayLetter(date?: Date): string {
+  // Если дата не передана, используем текущее время Томска
+  const targetDate = date || getTomskDate();
+  const dayOfWeek = targetDate.getDay();
+  // 0=воскресенье, 1=понедельник, 2=вторник, 3=среда, 4=четверг, 5=пятница, 6=суббота
+  const letters = ['G', 'A', 'B', 'C', 'D', 'E', 'F']; // G=воскресенье, A=понедельник, B=вторник, и т.д.
+  return letters[dayOfWeek];
+}
+
+async function generateOrderId(date?: Date): Promise<string> {
+  // Используем Томское время для определения дня
+  const tomskDate = date || getTomskDate();
+  const dayLetter = getDayLetter(tomskDate);
+  
+  // Получаем все ID за сегодняшний день из SQLite
+  const todayIds = await getTodayOrderIds(dayLetter);
+  
+  // Находим следующий доступный номер
+  let nextNumber = 1;
+  for (const num of todayIds) {
+    if (num === nextNumber) {
+      nextNumber++;
+    } else {
+      break;
+    }
+  }
+  
+  // Форматируем номер с ведущими нулями
+  const formattedNumber = nextNumber.toString().padStart(3, '0');
+  
+  // Логируем для отладки
+  logToFile(processedWebhooksLog, {
+    action: 'generate_order_id',
+    tomsk_date: tomskDate.toISOString(),
+    day_of_week: tomskDate.getDay(),
+    day_letter: dayLetter,
+    generated_id: `${dayLetter}${formattedNumber}`,
+    existing_ids_today: todayIds
+  });
+  
+  return `${dayLetter}${formattedNumber}`;
+}
+
+function hasOrderId(order: any): boolean {
+  if (!order.custom_fields) return false;
+  const idField = order.custom_fields.find((f: any) => f.name === '№ID');
+  return !!(idField?.values?.[0]?.value);
 }
 
 function readSostav(): any[] {
@@ -228,7 +400,7 @@ app.get('/api/me', auth, (req, res) => {
 });
 
 // --- Обработка вебхуков amoCRM ---
-app.post('/api/amocrm/webhook', (req, res) => {
+app.post('/api/amocrm/webhook', async (req, res) => {
   const contentType = req.headers['content-type'] || '';
   const body = req.body || {};
   logToFile(allWebhooksLog, { method: req.method, contentType, body });
@@ -245,6 +417,89 @@ app.post('/api/amocrm/webhook', (req, res) => {
     if (lead.status_id === '44828242') {
       let sostav = readSostav();
       const idx = sostav.findIndex((item: any) => item.id === lead.id);
+      
+      // Проверяем, есть ли уже ID у заказа в базе
+      const existingOrderId = await checkOrderIdExists(lead.id);
+      
+      if (!existingOrderId && !hasOrderId(lead)) {
+        // Генерируем новый ID с учетом Томского времени
+        const newOrderId = await generateOrderId();
+        
+        // Извлекаем данные для базы
+        let deliveryAddress = '';
+        if (lead.custom_fields) {
+          const addressField = lead.custom_fields.find((f: any) => f.name === 'Адрес доставки');
+          deliveryAddress = addressField?.values?.[0]?.value || '';
+        }
+        
+        // Сохраняем в базу
+        const saved = await saveOrderId(newOrderId, lead.id, lead.name || '', deliveryAddress);
+        
+        if (saved) {
+          // Добавляем ID в custom_fields
+          if (!lead.custom_fields) lead.custom_fields = [];
+          const idFieldIdx = lead.custom_fields.findIndex((f: any) => f.name === '№ID');
+          
+          if (idFieldIdx >= 0) {
+            // Обновляем существующее поле
+            lead.custom_fields[idFieldIdx].values = [{ value: newOrderId }];
+          } else {
+            // Добавляем новое поле
+            lead.custom_fields.push({
+              id: '1055575',
+              name: '№ID',
+              values: [{ value: newOrderId }]
+            });
+          }
+          
+          // Отправляем ID в amoCRM
+          try {
+            const updateResult = await updateAmoLeadOrderId(lead.id, newOrderId);
+            if (updateResult.success) {
+              logToFile(processedWebhooksLog, { 
+                action: 'assign_order_id', 
+                lead_id: lead.id, 
+                order_id: newOrderId 
+              });
+            } else {
+              logToFile(processedWebhooksLog, { 
+                action: 'assign_order_id_failed', 
+                lead_id: lead.id, 
+                order_id: newOrderId, 
+                error: updateResult.error 
+              });
+            }
+          } catch (error) {
+            logToFile(processedWebhooksLog, { 
+              action: 'assign_order_id_error', 
+              lead_id: lead.id, 
+              order_id: newOrderId, 
+              error: error 
+            });
+          }
+        }
+      } else if (existingOrderId) {
+        // Если ID уже есть в базе, обновляем lead
+        if (!lead.custom_fields) lead.custom_fields = [];
+        const idFieldIdx = lead.custom_fields.findIndex((f: any) => f.name === '№ID');
+        
+        if (idFieldIdx >= 0) {
+          lead.custom_fields[idFieldIdx].values = [{ value: existingOrderId }];
+        } else {
+          lead.custom_fields.push({
+            id: '1055575',
+            name: '№ID',
+            values: [{ value: existingOrderId }]
+          });
+        }
+        
+        logToFile(processedWebhooksLog, { 
+          action: 'reuse_existing_order_id', 
+          lead_id: lead.id, 
+          order_id: existingOrderId 
+        });
+      }
+      
       if (idx >= 0) {
         sostav[idx] = lead;
       } else {
@@ -270,6 +525,88 @@ app.post('/api/amocrm/webhook', (req, res) => {
       let sostav = readSostav();
       const idx = sostav.findIndex((item: any) => item.id === lead.id);
       if (idx >= 0) {
+        // Проверяем, есть ли уже ID у заказа в базе
+        const existingOrderId = await checkOrderIdExists(lead.id);
+        
+        if (!existingOrderId && !hasOrderId(lead)) {
+          // Генерируем новый ID с учетом Томского времени
+          const newOrderId = await generateOrderId();
+          
+          // Извлекаем данные для базы
+          let deliveryAddress = '';
+          if (lead.custom_fields) {
+            const addressField = lead.custom_fields.find((f: any) => f.name === 'Адрес доставки');
+            deliveryAddress = addressField?.values?.[0]?.value || '';
+          }
+          
+          // Сохраняем в базу
+          const saved = await saveOrderId(newOrderId, lead.id, lead.name || '', deliveryAddress);
+          
+          if (saved) {
+            // Добавляем ID в custom_fields
+            if (!lead.custom_fields) lead.custom_fields = [];
+            const idFieldIdx = lead.custom_fields.findIndex((f: any) => f.name === '№ID');
+            
+            if (idFieldIdx >= 0) {
+              // Обновляем существующее поле
+              lead.custom_fields[idFieldIdx].values = [{ value: newOrderId }];
+            } else {
+              // Добавляем новое поле
+              lead.custom_fields.push({
+                id: '1055575',
+                name: '№ID',
+                values: [{ value: newOrderId }]
+              });
+            }
+            
+            // Отправляем ID в amoCRM
+            try {
+              const updateResult = await updateAmoLeadOrderId(lead.id, newOrderId);
+              if (updateResult.success) {
+                logToFile(processedWebhooksLog, { 
+                  action: 'assign_order_id_update', 
+                  lead_id: lead.id, 
+                  order_id: newOrderId 
+                });
+              } else {
+                logToFile(processedWebhooksLog, { 
+                  action: 'assign_order_id_update_failed', 
+                  lead_id: lead.id, 
+                  order_id: newOrderId, 
+                  error: updateResult.error 
+                });
+              }
+            } catch (error) {
+              logToFile(processedWebhooksLog, { 
+                action: 'assign_order_id_update_error', 
+                lead_id: lead.id, 
+                order_id: newOrderId, 
+                error: error 
+              });
+            }
+          }
+        } else if (existingOrderId) {
+          // Если ID уже есть в базе, обновляем lead
+          if (!lead.custom_fields) lead.custom_fields = [];
+          const idFieldIdx = lead.custom_fields.findIndex((f: any) => f.name === '№ID');
+          
+          if (idFieldIdx >= 0) {
+            lead.custom_fields[idFieldIdx].values = [{ value: existingOrderId }];
+          } else {
+            lead.custom_fields.push({
+              id: '1055575',
+              name: '№ID',
+              values: [{ value: existingOrderId }]
+            });
+          }
+          
+          logToFile(processedWebhooksLog, { 
+            action: 'reuse_existing_order_id_update', 
+            lead_id: lead.id, 
+            order_id: existingOrderId 
+          });
+        }
+        
         sostav[idx] = lead;
         writeSostav(sostav);
         logToFile(processedWebhooksLog, { action: 'update', lead });
@@ -652,6 +989,37 @@ async function updateAmoLeadPhoto(leadId: string, photoUrl: string, changeStatus
   } catch (error: any) {
     logToFile(uploadErrorsLog, {
       context: 'update_amo_lead_photo',
+      leadId,
+      error: error.response?.data || error.message
+    });
+    return { success: false, error: error.response?.data || error.message };
+  }
+}
+
+// --- Обновление поля №ID в amoCRM ---
+async function updateAmoLeadOrderId(leadId: string, orderId: string) {
+  const url = `${process.env.AMO_BASE_URL}/api/v4/leads/${leadId}`;
+  const headers = {
+    'Authorization': `Bearer ${process.env.AMO_ACCESS_TOKEN}`,
+    'Content-Type': 'application/json'
+  };
+  
+  const payload = {
+    custom_fields_values: [
+      {
+        field_id: 1055575, // ID поля для №ID
+        values: [{ value: orderId }]
+      }
+    ]
+  };
+
+  try {
+    await axios.patch(url, payload, { headers });
+    logToFile(processedWebhooksLog, { action: 'update_amo_lead_order_id', leadId, orderId });
+    return { success: true };
+  } catch (error: any) {
+    logToFile(uploadErrorsLog, {
+      context: 'update_amo_lead_order_id',
       leadId,
       error: error.response?.data || error.message
     });

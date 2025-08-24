@@ -32,3 +32,4 @@ echo "- Webhooks: $(find logs/webhooks/ -name "*.log" 2>/dev/null | wc -l)"
 echo "- App: $(find logs/app/ -name "*.log" 2>/dev/null | wc -l)"
 
 echo "=== Очистка завершена ==="
+

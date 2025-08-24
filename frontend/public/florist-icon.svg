@@ -1,0 +1,46 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="256" cy="256" r="240" fill="#10b981" stroke="#059669" stroke-width="8"/>
+  
+  <!-- Flower Petals -->
+  <g transform="translate(256,180)">
+    <!-- Center of flower -->
+    <circle cx="0" cy="0" r="25" fill="#fbbf24"/>
+    
+    <!-- Petals -->
+    <ellipse cx="0" cy="-45" rx="20" ry="35" fill="#f472b6" transform="rotate(0)"/>
+    <ellipse cx="0" cy="-45" rx="20" ry="35" fill="#ec4899" transform="rotate(45)"/>
+    <ellipse cx="0" cy="-45" rx="20" ry="35" fill="#f472b6" transform="rotate(90)"/>
+    <ellipse cx="0" cy="-45" rx="20" ry="35" fill="#ec4899" transform="rotate(135)"/>
+    <ellipse cx="0" cy="-45" rx="20" ry="35" fill="#f472b6" transform="rotate(180)"/>
+    <ellipse cx="0" cy="-45" rx="20" ry="35" fill="#ec4899" transform="rotate(225)"/>
+    <ellipse cx="0" cy="-45" rx="20" ry="35" fill="#f472b6" transform="rotate(270)"/>
+    <ellipse cx="0" cy="-45" rx="20" ry="35" fill="#ec4899" transform="rotate(315)"/>
+  </g>
+  
+  <!-- Stem -->
+  <rect x="248" y="205" width="16" height="120" fill="#16a34a" rx="8"/>
+  
+  <!-- Leaves -->
+  <ellipse cx="230" cy="240" rx="25" ry="15" fill="#22c55e" transform="rotate(-30 230 240)"/>
+  <ellipse cx="280" cy="270" rx="25" ry="15" fill="#22c55e" transform="rotate(30 280 270)"/>
+  
+  <!-- Secondary smaller flower -->
+  <g transform="translate(320,280)">
+    <circle cx="0" cy="0" r="15" fill="#fbbf24"/>
+    <ellipse cx="0" cy="-25" rx="12" ry="20" fill="#a855f7" transform="rotate(0)"/>
+    <ellipse cx="0" cy="-25" rx="12" ry="20" fill="#9333ea" transform="rotate(60)"/>
+    <ellipse cx="0" cy="-25" rx="12" ry="20" fill="#a855f7" transform="rotate(120)"/>
+    <ellipse cx="0" cy="-25" rx="12" ry="20" fill="#9333ea" transform="rotate(180)"/>
+    <ellipse cx="0" cy="-25" rx="12" ry="20" fill="#a855f7" transform="rotate(240)"/>
+    <ellipse cx="0" cy="-25" rx="12" ry="20" fill="#9333ea" transform="rotate(300)"/>
+  </g>
+  
+  <!-- Small decorative elements -->
+  <circle cx="180" cy="320" r="8" fill="#fbbf24"/>
+  <circle cx="200" cy="350" r="6" fill="#f472b6"/>
+  <circle cx="350" cy="200" r="7" fill="#a855f7"/>
+  
+  <!-- Text overlay (optional) -->
+  <text x="256" y="420" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="32" font-weight="bold">Флорист</text>
+</svg>

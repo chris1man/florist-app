@@ -102,7 +102,7 @@
             <img :src="previewImage" alt="Предпросмотр" class="w-64 h-64 object-contain rounded shadow border border-gray-200 dark:border-gray-700" :style="{ transform: `rotate(${rotationAngle}deg)` }" />
             <div class="flex gap-2 mt-2">
               <button @click="rotateImage(-90)" class="px-3 py-1 rounded bg-blue-100 text-blue-700 text-sm font-semibold hover:bg-blue-200 transition-colors">⟲</button>
-              <button @click="uploadPhoto" class="px-3 py-1 rounded bg-green-600 text-white text-sm font-semibold hover:bg-green-700 transition-colors">Загрузить</button>
+              <button @click="uploadPhoto" class="px-3 py-1 rounded bg-[#E63A62] text-white text-sm font-semibold hover:bg-[#c72c4e] transition-colors">Загрузить</button>
               <button @click="rotateImage(90)" class="px-3 py-1 rounded bg-blue-100 text-blue-700 text-sm font-semibold hover:bg-blue-200 transition-colors">⟳</button>
               <button @click="cancelPreview" class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-sm font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">Отменить</button>
             </div>
@@ -145,7 +145,7 @@
       <div class="mb-4">
         <div class="font-semibold text-gray-700 dark:text-gray-200 mb-1">Статус фото:</div>
         <div class="text-base">
-          <span v-if="order?.photo_status === 'uploaded_admin'" class="text-green-700 dark:text-green-400 font-semibold">Загружено админом</span>
+          <span v-if="order?.photo_status === 'uploaded_admin'" class="text-[#E63A62] dark:text-[#E63A62] font-semibold">Загружено админом</span>
           <span v-else-if="order?.photo_status === 'uploaded_florist'" class="text-blue-700 dark:text-blue-400 font-semibold">Загружено флористом</span>
           <span v-else-if="order?.photo_status === 'send_to_admin'" class="text-yellow-700 dark:text-yellow-400 font-semibold">Отправлено админу для проверки</span>
           <span v-else class="text-gray-400">Ожидает загрузки</span>

@@ -1,0 +1,38 @@
+<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="96" cy="96" r="88" fill="#E63A62"/>
+  
+  <!-- Flower -->
+  <g transform="translate(96,70)">
+    <!-- Center -->
+    <circle cx="0" cy="0" r="12" fill="#fbbf24"/>
+    
+    <!-- Petals -->
+    <ellipse cx="0" cy="-22" rx="10" ry="18" fill="#f8fafc" transform="rotate(0)"/>
+    <ellipse cx="0" cy="-22" rx="10" ry="18" fill="#f1f5f9" transform="rotate(45)"/>
+    <ellipse cx="0" cy="-22" rx="10" ry="18" fill="#f8fafc" transform="rotate(90)"/>
+    <ellipse cx="0" cy="-22" rx="10" ry="18" fill="#f1f5f9" transform="rotate(135)"/>
+    <ellipse cx="0" cy="-22" rx="10" ry="18" fill="#f8fafc" transform="rotate(180)"/>
+    <ellipse cx="0" cy="-22" rx="10" ry="18" fill="#f1f5f9" transform="rotate(225)"/>
+    <ellipse cx="0" cy="-22" rx="10" ry="18" fill="#f8fafc" transform="rotate(270)"/>
+    <ellipse cx="0" cy="-22" rx="10" ry="18" fill="#f1f5f9" transform="rotate(315)"/>
+  </g>
+  
+  <!-- Stem -->
+  <rect x="90" y="82" width="12" height="60" fill="#16a34a" rx="6"/>
+  
+  <!-- Leaves -->
+  <ellipse cx="78" cy="100" rx="15" ry="8" fill="#22c55e" transform="rotate(-30 78 100)"/>
+  <ellipse cx="114" cy="115" rx="15" ry="8" fill="#22c55e" transform="rotate(30 114 115)"/>
+  
+  <!-- Secondary flower -->
+  <g transform="translate(130,115)">
+    <circle cx="0" cy="0" r="8" fill="#fbbf24"/>
+    <ellipse cx="0" cy="-12" rx="6" ry="10" fill="#fde047" transform="rotate(0)"/>
+    <ellipse cx="0" cy="-12" rx="6" ry="10" fill="#facc15" transform="rotate(60)"/>
+    <ellipse cx="0" cy="-12" rx="6" ry="10" fill="#fde047" transform="rotate(120)"/>
+    <ellipse cx="0" cy="-12" rx="6" ry="10" fill="#facc15" transform="rotate(180)"/>
+    <ellipse cx="0" cy="-12" rx="6" ry="10" fill="#fde047" transform="rotate(240)"/>
+    <ellipse cx="0" cy="-12" rx="6" ry="10" fill="#facc15" transform="rotate(300)"/>
+  </g>
+</svg>

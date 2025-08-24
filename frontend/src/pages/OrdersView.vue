@@ -2,7 +2,7 @@
   <div :key="$route.fullPath" class="min-h-screen bg-white dark:bg-[#262626] p-0 w-full transition-colors duration-500">
     <header class="w-full flex items-center justify-between px-2 sm:px-3 py-2 bg-[#e63a62] text-white shadow rounded-lg mt-2 mb-4 md:mt-4 md:mb-6 transition-all duration-300 relative" style="font-size: 0.95rem;">
       <div class="font-bold flex items-center gap-2 px-2 py-1 rounded" style="font-size: 0.95rem;">
-        <span :class="['inline-block w-2 h-2 rounded-full', wsConnected ? 'bg-green-400 animate-pulse' : 'bg-gray-400']"></span>
+        <span :class="['inline-block w-2 h-2 rounded-full', wsConnected ? 'bg-[#E63A62] animate-pulse' : 'bg-gray-400']"></span>
         <span v-if="user.role === 'admin'">
           {{ user.name ? `Админ: ${user.name}` : 'Админ' }}
         </span>
@@ -101,7 +101,7 @@
                 {{ order.address }}
               </td>
               <td class="p-3 relative">
-                <span v-if="order.status === 'Свободен'" class="text-green-600 font-bold">Свободен</span>
+                <span v-if="order.status === 'Свободен'" class="text-[#E63A62] font-bold">Свободен</span>
                 <span v-else-if="order.status.startsWith('Взял')" class="text-[#e63a62] font-bold">{{ order.status }}</span>
                 <span v-else-if="order.status === 'Выполнен'" class="text-gray-500 font-bold">Выполнен</span>
               </td>
@@ -160,7 +160,7 @@
               </span>
             </div>
             <div class="flex items-center gap-2 mt-2">
-              <span v-if="order.status === 'Свободен'" class="text-green-600 font-bold px-2 py-1 rounded">Свободен</span>
+              <span v-if="order.status === 'Свободен'" class="text-[#E63A62] font-bold px-2 py-1 rounded">Свободен</span>
               <span v-else-if="order.status.startsWith('Взял')" class="text-[#e63a62] font-bold px-2 py-1 rounded">{{ order.status }}</span>
               <span v-else-if="order.status === 'Выполнен'" class="text-gray-500 font-bold px-2 py-1 rounded">Выполнен</span>
               <button

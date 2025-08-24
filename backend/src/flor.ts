@@ -570,14 +570,14 @@ function readAdminPhoto() {
   }
 }
 
-function writeAdminPhoto(photoRequests) {
+function writeAdminPhoto(photoRequests: any[]) {
   fs.writeFileSync(adminPhotoPath, JSON.stringify(photoRequests, null, 2), 'utf8');
 }
 
-function addToAdminPhoto(order) {
+function addToAdminPhoto(order: any) {
   const photoRequests = readAdminPhoto();
   // Проверяем, что заказ еще не добавлен
-  const exists = photoRequests.find((item) => item.id === order.id);
+  const exists = photoRequests.find((item: any) => item.id === order.id);
   if (!exists) {
     photoRequests.push(order);
     writeAdminPhoto(photoRequests);
@@ -588,10 +588,10 @@ function addToAdminPhoto(order) {
   }
 }
 
-function removeFromAdminPhoto(orderId) {
+function removeFromAdminPhoto(orderId: any) {
   let photoRequests = readAdminPhoto();
   const initialLength = photoRequests.length;
-  photoRequests = photoRequests.filter((item) => String(item.id) !== String(orderId));
+  photoRequests = photoRequests.filter((item: any) => String(item.id) !== String(orderId));
   
   if (photoRequests.length !== initialLength) {
     writeAdminPhoto(photoRequests);

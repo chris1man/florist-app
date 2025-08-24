@@ -1,0 +1,16 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <circle cx="16" cy="16" r="15" fill="#E63A62"/>
+  
+  <!-- Simple flower -->
+  <g transform="translate(16,12)">
+    <circle cx="0" cy="0" r="3" fill="#fbbf24"/>
+    <ellipse cx="0" cy="-5" rx="2" ry="4" fill="#f8fafc" transform="rotate(0)"/>
+    <ellipse cx="0" cy="-5" rx="2" ry="4" fill="#f1f5f9" transform="rotate(90)"/>
+    <ellipse cx="0" cy="-5" rx="2" ry="4" fill="#f8fafc" transform="rotate(180)"/>
+    <ellipse cx="0" cy="-5" rx="2" ry="4" fill="#f1f5f9" transform="rotate(270)"/>
+  </g>
+  
+  <!-- Stem -->
+  <rect x="14" y="15" width="4" height="12" fill="#16a34a" rx="2"/>
+</svg>

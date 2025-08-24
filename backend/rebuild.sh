@@ -37,7 +37,7 @@ if [ -f "src/flor.ts" ]; then
     sed -i 's/: NextFunction//g' dist/flor.js
     sed -i 's/: Date//g' dist/flor.js
     
-    # 3. Убираем типы переменных и возвращаемых значений
+    # 3. Убираем основные типы
     sed -i 's/: string | undefined//g' dist/flor.js
     sed -i 's/: any\[\]//g' dist/flor.js
     sed -i 's/: any//g' dist/flor.js

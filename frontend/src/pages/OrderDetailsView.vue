@@ -366,19 +366,23 @@ async function choosePhotoUpload(type: 'self' | 'admin') {
     // Сценарий "Отправить админу"
     const id = route.params.id;
     const token = localStorage.getItem('token');
-    const res = await authFetch(`/api/orders/${id}/finalize`, {
+    const res = await authFetch(`/api/orders/${id}/send-to-admin`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({ action: 'to_admin' })
+      }
     });
     if (res.ok) {
-      toast.success('Заказ успешно завершен и отправлен админу!');
+      toast.success('Заказ отправлен админу для добавления фото!');
       router.push('/orders');
     } else {
-      toast.error('Не удалось завершить заказ в amoCRM');
+      try {
+        const data = await res.json();
+        toast.error(data.error || 'Не удалось отправить заказ админу');
+      } catch {
+        toast.error('Не удалось отправить заказ админу');
+      }
     }
   }
 }

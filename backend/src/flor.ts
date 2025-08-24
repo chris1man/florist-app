@@ -93,6 +93,28 @@ const allWebhooksLog = path.resolve(__dirname, '../../logs/webhooks/all_webhooks
 const processedWebhooksLog = path.resolve(__dirname, '../../logs/webhooks/processed_webhooks.log');
 const uploadErrorsLog = path.resolve(__dirname, '../../logs/app/upload_errors.log');
 
+// --- Перестраховочные файлы для ID ---
+const orderIdsBackupPath = path.resolve(__dirname, '../order_ids_backup.json');
+const orderIdsLockPath = path.resolve(__dirname, '../order_ids.lock');
+const idAssignmentLogPath = path.resolve(__dirname, '../../logs/app/id_assignments.log');
+
+// --- Создание необходимых директорий для логов ---
+function ensureLogDirectories() {
+  const dirs = [
+    path.dirname(idAssignmentLogPath),
+    path.dirname(orderIdsBackupPath)
+  ];
+  
+  dirs.forEach(dir => {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+  });
+}
+
+// Создаем директории при запуске
+ensureLogDirectories();
+
 // --- Вспомогательные функции ---
 function logToFile(filePath: string, data: any) {
   let serialized: string | undefined;
@@ -106,45 +128,487 @@ function logToFile(filePath: string, data: any) {
   fs.appendFileSync(filePath, logEntry, 'utf8');
 }
 
-// --- Функции для работы с таблицей order_ids ---
-function saveOrderId(orderId: string, amocrmLeadId: string, dealName: string, deliveryAddress: string): Promise<boolean> {
-  return new Promise((resolve) => {
-    // Используем Томское время для записи в базу
+// --- Перестраховочные механизмы для ID ---
+
+// Блокировка на время присвоения ID
+function acquireIdLock(): boolean {
+  try {
+    if (fs.existsSync(orderIdsLockPath)) {
+      const lockData = JSON.parse(fs.readFileSync(orderIdsLockPath, 'utf8'));
+      const lockAge = Date.now() - lockData.timestamp;
+      // Если блокировка старше 30 секунд, считаем её зависшей
+      if (lockAge > 30000) {
+        fs.unlinkSync(orderIdsLockPath);
+      } else {
+        return false; // Блокировка активна
+      }
+    }
+    
+    const lockData = {
+      timestamp: Date.now(),
+      process: process.pid,
+      action: 'id_assignment'
+    };
+    
+    fs.writeFileSync(orderIdsLockPath, JSON.stringify(lockData));
+    return true;
+  } catch (error) {
+    logToFile(processedWebhooksLog, { 
+      action: 'acquire_lock_error', 
+      error: error instanceof Error ? error.message : 'Unknown error' 
+    });
+    return false;
+  }
+}
+
+function releaseIdLock(): void {
+  try {
+    if (fs.existsSync(orderIdsLockPath)) {
+      fs.unlinkSync(orderIdsLockPath);
+    }
+  } catch (error) {
+    logToFile(processedWebhooksLog, { 
+      action: 'release_lock_error', 
+      error: error instanceof Error ? error.message : 'Unknown error' 
+    });
+  }
+}
+
+// Файловый бэкап ID
+function backupOrderId(orderId: string, amocrmLeadId: string, dealName: string): void {
+  try {
+    let backup = [];
+    if (fs.existsSync(orderIdsBackupPath)) {
+      backup = JSON.parse(fs.readFileSync(orderIdsBackupPath, 'utf8'));
+    }
+    
     const now = new Date();
-    const tomskTimeString = now.toLocaleString('sv-SE', { 
+    const tomskTimeString = now.toLocaleString('en-CA', { 
       timeZone: 'Asia/Tomsk',
       year: 'numeric',
-      month: '2-digit', 
+      month: '2-digit',
       day: '2-digit',
       hour: '2-digit',
       minute: '2-digit',
-      second: '2-digit'
-    }).replace(' ', 'T');
+      second: '2-digit',
+      hour12: false
+    });
+    const [datePart, timePart] = tomskTimeString.split(', ');
+    const timestamp = `${datePart}T${timePart}`;
     
-    db.run(
-      'INSERT OR IGNORE INTO order_ids (order_id, amocrm_lead_id, deal_name, delivery_address, created_at) VALUES (?, ?, ?, ?, ?)',
-      [orderId, amocrmLeadId, dealName, deliveryAddress, tomskTimeString],
-      function(err) {
+    backup.push({
+      order_id: orderId,
+      amocrm_lead_id: amocrmLeadId,
+      deal_name: dealName,
+      created_at: timestamp,
+      backup_timestamp: timestamp
+    });
+    
+    fs.writeFileSync(orderIdsBackupPath, JSON.stringify(backup, null, 2));
+  } catch (error) {
+    logToFile(processedWebhooksLog, { 
+      action: 'backup_order_id_error', 
+      order_id: orderId,
+      error: error instanceof Error ? error.message : 'Unknown error' 
+    });
+  }
+}
+
+// Детальное логирование присвоения ID
+function logIdAssignment(orderId: string, amocrmLeadId: string, dealName: string, existingIds: number[], dayLetter: string): void {
+  const now = new Date();
+  const tomskTimeString = now.toLocaleString('en-CA', { 
+    timeZone: 'Asia/Tomsk',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  });
+  const [datePart, timePart] = tomskTimeString.split(', ');
+  const timestamp = `${datePart}T${timePart}`;
+  
+  const logEntry = {
+    timestamp,
+    action: 'id_assignment',
+    assigned_id: orderId,
+    amocrm_lead_id: amocrmLeadId,
+    deal_name: dealName,
+    day_letter: dayLetter,
+    existing_ids_count: existingIds.length,
+    existing_ids: existingIds,
+    tomsk_time: timestamp,
+    process_pid: process.pid
+  };
+  
+  logToFile(idAssignmentLogPath, logEntry);
+}
+
+// Проверка конфликтов перед присвоением
+function verifyIdUniqueness(orderId: string, dayLetter: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    // Проверяем в базе данных
+    db.get(
+      'SELECT COUNT(*) as count FROM order_ids WHERE order_id = ?',
+      [orderId],
+      (err, row: any) => {
         if (err) {
           logToFile(processedWebhooksLog, { 
-            action: 'save_order_id_error', 
-            order_id: orderId, 
-            amocrm_lead_id: amocrmLeadId,
+            action: 'verify_uniqueness_db_error', 
+            order_id: orderId,
             error: err.message 
           });
           resolve(false);
-        } else {
+          return;
+        }
+        
+        if (row.count > 0) {
           logToFile(processedWebhooksLog, { 
-            action: 'save_order_id_success', 
-            order_id: orderId, 
-            amocrm_lead_id: amocrmLeadId,
-            deal_name: dealName,
-            tomsk_time: tomskTimeString
+            action: 'id_conflict_detected_db', 
+            order_id: orderId,
+            existing_count: row.count 
           });
+          resolve(false);
+          return;
+        }
+        
+        // Проверяем в бэкапе
+        try {
+          if (fs.existsSync(orderIdsBackupPath)) {
+            const backup = JSON.parse(fs.readFileSync(orderIdsBackupPath, 'utf8'));
+            const conflictInBackup = backup.some((item: any) => item.order_id === orderId);
+            
+            if (conflictInBackup) {
+              logToFile(processedWebhooksLog, { 
+                action: 'id_conflict_detected_backup', 
+                order_id: orderId 
+              });
+              resolve(false);
+              return;
+            }
+          }
+          
           resolve(true);
+        } catch (error) {
+          logToFile(processedWebhooksLog, { 
+            action: 'verify_uniqueness_backup_error', 
+            order_id: orderId,
+            error: error instanceof Error ? error.message : 'Unknown error' 
+          });
+          resolve(false);
         }
       }
     );
+  });
+}
+
+// Восстановление из бэкапа (для экстренных случаев)
+function restoreFromBackup(): Promise<number> {
+  return new Promise((resolve) => {
+    try {
+      if (!fs.existsSync(orderIdsBackupPath)) {
+        resolve(0);
+        return;
+      }
+      
+      const backup = JSON.parse(fs.readFileSync(orderIdsBackupPath, 'utf8'));
+      let restoredCount = 0;
+      
+      backup.forEach((item: any) => {
+        db.run(
+          'INSERT OR IGNORE INTO order_ids (order_id, amocrm_lead_id, deal_name, delivery_address, created_at) VALUES (?, ?, ?, ?, ?)',
+          [item.order_id, item.amocrm_lead_id, item.deal_name, '', item.created_at],
+          function(err) {
+            if (!err && this.changes > 0) {
+              restoredCount++;
+            }
+          }
+        );
+      });
+      
+      setTimeout(() => {
+        logToFile(processedWebhooksLog, { 
+          action: 'restore_from_backup_completed', 
+          restored_count: restoredCount,
+          total_backup_items: backup.length 
+        });
+        resolve(restoredCount);
+      }, 1000);
+      
+    } catch (error) {
+      logToFile(processedWebhooksLog, { 
+        action: 'restore_from_backup_error', 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      });
+      resolve(0);
+    }
+  });
+}
+// === ПЕРЕСТРАХОВОЧНЫЕ МЕХАНИЗМЫ ===
+
+// Файловая блокировка для предотвращения конфликтов
+function acquireIdLock(timeout = 5000): boolean {
+  const lockFile = path.join(__dirname, '..', 'id_assignment.lock');
+  const startTime = Date.now();
+  
+  while (Date.now() - startTime < timeout) {
+    try {
+      // Пытаемся создать lock файл
+      fs.writeFileSync(lockFile, process.pid.toString(), { flag: 'wx' });
+      return true;
+    } catch (error) {
+      // Файл уже существует, ждем немного
+      const sleepTime = Math.random() * 100 + 50; // 50-150ms
+      const endTime = Date.now() + sleepTime;
+      while (Date.now() < endTime) {
+        // Активное ожидание
+      }
+    }
+  }
+  
+  console.error('Не удалось получить блокировку для присваивания ID');
+  return false;
+}
+
+// Освобождение блокировки
+function releaseIdLock(): void {
+  const lockFile = path.join(__dirname, '..', 'id_assignment.lock');
+  try {
+    fs.unlinkSync(lockFile);
+  } catch (error) {
+    // Игнорируем ошибки при удалении lock файла
+  }
+}
+
+// Резервное копирование в отдельный файл
+function backupOrderId(orderId: string, amocrmLeadId: string, dealName: string): void {
+  const backupFile = path.join(__dirname, '..', 'order_ids_backup.json');
+  
+  try {
+    let backupData = [];
+    
+    // Читаем существующие данные
+    if (fs.existsSync(backupFile)) {
+      const content = fs.readFileSync(backupFile, 'utf-8');
+      if (content.trim()) {
+        backupData = JSON.parse(content);
+      }
+    }
+    
+    // Добавляем новую запись
+    backupData.push({
+      order_id: orderId,
+      amocrm_lead_id: amocrmLeadId,
+      deal_name: dealName,
+      backup_timestamp: new Date().toISOString(),
+      tomsk_timestamp: getTomskDate().toISOString(),
+      process_pid: process.pid
+    });
+    
+    // Сохраняем
+    fs.writeFileSync(backupFile, JSON.stringify(backupData, null, 2));
+    
+    console.log(`✅ Резервная копия order_id ${orderId} сохранена`);
+  } catch (error) {
+    console.error('❌ Ошибка при создании резервной копии:', error);
+  }
+}
+
+// Проверка уникальности ID в базе и резервной копии
+function verifyIdUniqueness(orderId: string, dayLetter: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    try {
+      // Проверяем в базе данных
+      db.get(
+        'SELECT COUNT(*) as count FROM order_ids WHERE order_id = ?',
+        [orderId],
+        (err, row: any) => {
+          if (err) {
+            console.error('❌ Ошибка при проверке уникальности в БД:', err);
+            resolve(false);
+            return;
+          }
+          
+          if (row.count > 0) {
+            console.error(`❌ ID ${orderId} уже существует в базе данных!`);
+            resolve(false);
+            return;
+          }
+          
+          // Проверяем в резервной копии
+          const backupFile = path.join(__dirname, '..', 'order_ids_backup.json');
+          if (fs.existsSync(backupFile)) {
+            try {
+              const content = fs.readFileSync(backupFile, 'utf-8');
+              if (content.trim()) {
+                const backupData = JSON.parse(content);
+                const duplicateInBackup = backupData.find((item: any) => item.order_id === orderId);
+                
+                if (duplicateInBackup) {
+                  console.error(`❌ ID ${orderId} уже существует в резервной копии!`);
+                  resolve(false);
+                  return;
+                }
+              }
+            } catch (backupError) {
+              console.error('❌ Ошибка при чтении резервной копии:', backupError);
+            }
+          }
+          
+          console.log(`✅ ID ${orderId} уникален`);
+          resolve(true);
+        }
+      );
+    } catch (error) {
+      console.error('❌ Ошибка при проверке уникальности ID:', error);
+      resolve(false);
+    }
+  });
+}
+
+// Подробное логирование операций присваивания ID
+function logIdAssignment(orderId: string, amocrmLeadId: string, dealName: string, existingIds: number[], dayLetter: string): void {
+  const logDir = path.join(__dirname, '..', 'logs');
+  
+  // Создаем папку для логов если её нет
+  if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir, { recursive: true });
+  }
+  
+  const logFile = path.join(logDir, `id_assignments_${getTomskDate().toISOString().split('T')[0]}.log`);
+  
+  const logEntry = {
+    timestamp: getTomskDate().toISOString(),
+    operation: 'ID_ASSIGNMENT',
+    success: true,
+    data: {
+      order_id: orderId,
+      amocrm_lead_id: amocrmLeadId,
+      deal_name: dealName,
+      day_letter: dayLetter,
+      existing_ids_today: existingIds,
+      next_available_number: parseInt(orderId.substring(1)),
+      total_orders_today: existingIds.length + 1
+    },
+    process_pid: process.pid,
+    security_checks: {
+      file_lock_acquired: true,
+      uniqueness_verified: true,
+      backup_created: true,
+      database_saved: true
+    }
+  };
+  
+  try {
+    const logLine = JSON.stringify(logEntry) + '\n';
+    fs.appendFileSync(logFile, logLine);
+    console.log(`📝 Детальный лог записан: ${orderId}`);
+  } catch (error) {
+    console.error('❌ Ошибка при записи в лог:', error);
+  }
+}
+
+function saveOrderId(orderId: string, amocrmLeadId: string, dealName: string, deliveryAddress: string): Promise<boolean> {
+  return new Promise(async (resolve) => {
+    // 1. Получаем блокировку
+    if (!acquireIdLock()) {
+      logToFile(processedWebhooksLog, { 
+        action: 'save_order_id_lock_failed', 
+        order_id: orderId, 
+        amocrm_lead_id: amocrmLeadId
+      });
+      resolve(false);
+      return;
+    }
+    
+    try {
+      // 2. Проверяем уникальность
+      const dayLetter = orderId.charAt(0);
+      const isUnique = await verifyIdUniqueness(orderId, dayLetter);
+      
+      if (!isUnique) {
+        releaseIdLock();
+        logToFile(processedWebhooksLog, { 
+          action: 'save_order_id_not_unique', 
+          order_id: orderId, 
+          amocrm_lead_id: amocrmLeadId
+        });
+        resolve(false);
+        return;
+      }
+      
+      // 3. Сохраняем в бэкап
+      backupOrderId(orderId, amocrmLeadId, dealName);
+      
+      // 4. Сохраняем в базу данных
+      const now = new Date();
+      const tomskTimeString = now.toLocaleString('en-CA', { 
+        timeZone: 'Asia/Tomsk',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
+      const [datePart, timePart] = tomskTimeString.split(', ');
+      const timestamp = `${datePart}T${timePart}`;
+      
+      db.run(
+        'INSERT OR IGNORE INTO order_ids (order_id, amocrm_lead_id, deal_name, delivery_address, created_at) VALUES (?, ?, ?, ?, ?)',
+        [orderId, amocrmLeadId, dealName, deliveryAddress, timestamp],
+        function(err) {
+          releaseIdLock();
+          
+          if (err) {
+            logToFile(processedWebhooksLog, { 
+              action: 'save_order_id_db_error', 
+              order_id: orderId, 
+              amocrm_lead_id: amocrmLeadId,
+              error: err.message 
+            });
+            resolve(false);
+          } else if (this.changes === 0) {
+            // Запись уже существует (конфликт)
+            logToFile(processedWebhooksLog, { 
+              action: 'save_order_id_conflict', 
+              order_id: orderId, 
+              amocrm_lead_id: amocrmLeadId
+            });
+            resolve(false);
+          } else {
+            // 5. Детальное логирование успешного присвоения
+            getTodayOrderIds(dayLetter).then(existingIds => {
+              logIdAssignment(orderId, amocrmLeadId, dealName, existingIds, dayLetter);
+            });
+            
+            logToFile(processedWebhooksLog, { 
+              action: 'save_order_id_success', 
+              order_id: orderId, 
+              amocrm_lead_id: amocrmLeadId,
+              deal_name: dealName,
+              tomsk_time: timestamp,
+              backup_created: true,
+              uniqueness_verified: true
+            });
+            resolve(true);
+          }
+        }
+      );
+      
+    } catch (error) {
+      releaseIdLock();
+      logToFile(processedWebhooksLog, { 
+        action: 'save_order_id_exception', 
+        order_id: orderId, 
+        amocrm_lead_id: amocrmLeadId,
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      });
+      resolve(false);
+    }
   });
 }
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🔧 Building Florist App (PWA disabled, Service Worker removed)..."
+echo "🔧 Building Florist App WITHOUT PWA (Service Worker disabled)..."
 
 # Navigate to frontend
 cd /root/florist-app/frontend
@@ -9,7 +9,7 @@ echo "🧹 Cleaning cache and dist..."
 rm -rf dist
 rm -rf node_modules/.vite
 
-echo "📦 Building frontend..."
+echo "📦 Building frontend (no PWA plugin)..."
 npm run build
 
 if [ $? -ne 0 ]; then
@@ -20,10 +20,6 @@ fi
 echo "📁 Copying files to backend..."
 rm -rf ../backend/public/assets
 cp -r dist/* ../backend/public/
-
-echo "🎨 Applying color fixes..."
-cd /root/florist-app
-./fix-colors.sh
 
 echo "🔄 Restarting server..."
 cd /root/florist-app/backend

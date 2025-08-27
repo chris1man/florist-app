@@ -9,7 +9,8 @@ module.exports = {
     max_memory_restart: '500M',
     env: {
       NODE_ENV: 'production',
-      PORT: 3000
+      PORT: 3000,
+      DISABLE_SW: 'true' // Отключаем Service Worker
     },
     pre_restart_hook: {
       script: 'rebuild.sh',
@@ -26,7 +27,6 @@ module.exports = {
     log_type: 'json',
     merge_logs: true,
     // Ротация логов
-    log_date_format: 'YYYY-MM-DD HH:mm:ss Z',
     max_size: '10M',
     retain: 5
   }]

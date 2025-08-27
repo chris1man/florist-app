@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { provide } from 'vue'
-import PWAInstallPrompt from './components/PWAInstallPrompt.vue'
+import { provide, onMounted } from 'vue'
+// import PWAInstallPrompt from './components/PWAInstallPrompt.vue' // PWA компонент отключен
 
 // Provide refresh function for child components
 const refreshApp = () => {
@@ -8,6 +8,10 @@ const refreshApp = () => {
 }
 
 provide('refreshApp', refreshApp)
+
+onMounted(() => {
+  // Компонент загружен
+});
 </script>
 
 <template>

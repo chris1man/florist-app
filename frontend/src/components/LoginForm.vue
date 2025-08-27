@@ -20,8 +20,9 @@
       
       <div class="space-y-4">
         <div>
-          <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Логин</label>
+          <label for="login-input" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Логин</label>
           <input 
+            id="login-input"
             v-model="login" 
             type="text" 
             required 
@@ -32,8 +33,9 @@
           />
         </div>
         <div>
-          <label class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Пароль</label>
+          <label for="password-input" class="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Пароль</label>
           <input 
+            id="password-input"
             v-model="password" 
             type="password" 
             required 

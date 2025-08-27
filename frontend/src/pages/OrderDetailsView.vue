@@ -5,11 +5,12 @@
       <div class="font-bold px-2 py-1 rounded" style="font-size: 0.95rem;">Детали заказа</div>
       <button @click="logout" class="bg-[#262626] text-white font-semibold px-3 py-1 rounded-md hover:bg-[#444] transition-colors duration-200 relative" style="font-size: 0.95rem;">Выйти</button>
     </div>
-    <div v-if="showNotice" class="fixed top-0 left-0 w-full z-50 flex justify-center">
+    <!-- Уведомление убрано по запросу пользователя -->
+    <!-- <div v-if="showNotice" class="fixed top-0 left-0 w-full z-50 flex justify-center">
       <div class="bg-[#e63a62] text-white px-4 py-2 rounded-b-lg shadow text-center mt-0.5 animate-fade-in">
         Сначала возьмите заказ, чтобы просмотреть его детали
       </div>
-    </div>
+    </div> -->
     <div class="w-full max-w-full bg-white dark:bg-[#232323] shadow mt-4 mb-4" style="border-radius: 10px; padding: 0.5rem 0.5rem;">
       <div class="flex flex-col items-center mb-3">
         <div v-if="getOrderId()" class="inline-flex items-center px-4 py-2 rounded-full text-lg font-bold bg-gradient-to-r from-[#e63a62] to-[#c72c4e] text-white shadow-xl mb-2 transform hover:scale-105 transition-transform duration-200">
@@ -300,7 +301,7 @@ const route = useRoute();
 const router = useRouter();
 const order = ref<any>(null);
 const prevOrder = ref<any>(null);
-const showNotice = ref(false);
+// const showNotice = ref(false); // Переменная больше не нужна
 const user = ref<{ id: number; name: string; role?: string }>({ id: 0, name: '' });
 let ws: WebSocket | null = null;
 const toast = useToast();
@@ -535,7 +536,7 @@ async function loadOrder() {
     const justTaken = sessionStorage.getItem('justTaken');
     if (!order.value.taken_by || order.value.taken_by.id !== user.value.id) {
       if (!fromAction && !justTaken && !isUnmounted.value) {
-        toast.error('Сначала возьмите заказ, чтобы просмотреть его детали', { timeout: 4000, hideProgressBar: false });
+        // Уведомление убрано по запросу пользователя
       }
       sessionStorage.removeItem('justTaken');
       router.replace({ path: '/orders' });
@@ -546,7 +547,7 @@ async function loadOrder() {
     const fromAction = route.query.fromAction;
     const justTaken = sessionStorage.getItem('justTaken');
     if (!fromAction && !justTaken && !isUnmounted.value) {
-      toast.error('Сначала возьмите заказ, чтобы просмотреть его детали', { timeout: 4000, hideProgressBar: false });
+      // Уведомление убрано по запросу пользователя
     }
     sessionStorage.removeItem('justTaken');
     router.replace({ path: '/orders' });

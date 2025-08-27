@@ -41,9 +41,13 @@ find assets/ -name "*.js" -exec sed -i 's/#d1fae5/#E63A62/g' {} \;
 find assets/ -name "*.js" -exec sed -i 's/#ecfdf5/#E63A62/g' {} \;
 
 echo "🔧 Updating service worker cache version..."
-# Update service worker cache version
+# Update service worker cache version by adding timestamp
 TIMESTAMP=$(date +%s)
-sed -i "s/florist-app-v[0-9]*/florist-app-v${TIMESTAMP}/g" sw.js
+# Add a comment with timestamp to force SW update
+sed -i "1i/* Cache update: ${TIMESTAMP} */" sw.js
+# Clean up any existing console.log statements and add new one properly
+sed -i 's/;console.log("SW updated: [0-9]*");//g' sw.js
+sed -i 's/self.skipWaiting();/self.skipWaiting();console.log("SW updated: '${TIMESTAMP}'");/' sw.js
 
 echo "✅ Color fix completed!"
 echo "🌺 All colors should now be #E63A62"

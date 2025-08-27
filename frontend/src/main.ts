@@ -1,3 +1,4 @@
+// App version updated: ${Date.now()} - Force cache busting
 import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
@@ -20,21 +21,27 @@ const router = createRouter({
   routes,
 });
 
-createApp(App)
-  .use(router)
-  .use(Toast, {
-    position: POSITION.TOP_CENTER,
-    timeout: 4000,
-    closeOnClick: true,
-    hideProgressBar: false,
-    closeButton: true,
-    draggable: true,
-    draggablePercent: 0.6,
-    showCloseButtonOnHover: false,
-    pauseOnFocusLoss: true,
-    pauseOnHover: true,
-    transition: 'Vue-Toastification__fade',
-    maxToasts: 5,
-    newestOnTop: true
-  })
-  .mount('#app')
+const app = createApp(App);
+
+// Подключаем роутер
+app.use(router);
+
+// Подключаем Toast уведомления
+app.use(Toast, {
+  position: POSITION.TOP_CENTER,
+  timeout: 4000,
+  closeOnClick: true,
+  hideProgressBar: false,
+  closeButton: true,
+  draggable: true,
+  draggablePercent: 0.6,
+  showCloseButtonOnHover: false,
+  pauseOnFocusLoss: true,
+  pauseOnHover: true,
+  transition: 'Vue-Toastification__fade',
+  maxToasts: 5,
+  newestOnTop: true
+});
+
+// Монтируем приложение
+app.mount('#app');

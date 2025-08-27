@@ -17,7 +17,7 @@ onMounted(() => {
 <template>
   <div id="app" class="status-bar-spacing">
     <router-view />
-    <PWAInstallPrompt />
+    <!-- PWAInstallPrompt компонент отключен -->
   </div>
 </template>
 

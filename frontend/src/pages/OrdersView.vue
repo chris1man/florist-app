@@ -259,7 +259,8 @@ async function checkActiveOrder() {
     const fromAction = url.searchParams.get('fromAction');
     if (data.orderId) {
       if (!fromAction) {
-        toast.error('Сначала завершите или отпустите текущий заказ', { timeout: 4000, hideProgressBar: false });
+        // Уведомление убрано по запросу пользователя
+        // toast.error('Сначала завершите или отпустите текущий заказ', { timeout: 4000, hideProgressBar: false });
       }
       router.replace({ path: `/orders/${data.orderId}` });
     }

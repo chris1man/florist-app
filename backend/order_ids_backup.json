@@ -14718,5 +14718,21 @@
     "backup_timestamp": "2025-10-02T11:30:59.477Z",
     "tomsk_timestamp": "2025-10-02T15:30:59.000Z",
     "process_pid": 761
+  },
+  {
+    "order_id": "D272",
+    "amocrm_lead_id": "27683173",
+    "deal_name": "Заказ №29724 5 бел горт в оф",
+    "backup_timestamp": "2025-10-02T12:01:18.543Z",
+    "tomsk_timestamp": "2025-10-02T16:01:18.000Z",
+    "process_pid": 146007
+  },
+  {
+    "order_id": "D273",
+    "amocrm_lead_id": "25688061",
+    "deal_name": "проверка",
+    "backup_timestamp": "2025-10-02T12:03:14.851Z",
+    "tomsk_timestamp": "2025-10-02T16:03:14.000Z",
+    "process_pid": 146007
   }
 ]

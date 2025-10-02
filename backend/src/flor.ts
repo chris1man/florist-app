@@ -11,6 +11,7 @@ import http from 'http';
 import multer from 'multer';
 import AWS from 'aws-sdk';
 import axios from 'axios';
+import { WebhookQueue, webhookQueue } from './webhookQueue';
 
 // Загрузка переменных окружения
 dotenv.config();
@@ -641,6 +642,15 @@ app.get('/api/ping', (req, res) => {
   res.json({ message: 'pong' });
 });
 
+// --- Эндпоинт для мониторинга очереди вебхуков ---
+app.get('/api/webhook-queue/stats', (req, res) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    queue: webhookQueue.getStats()
+  });
+});
+
 // --- Авторизация ---
 app.post('/api/login', (req: Request, res: Response) => {
   const { login, password } = req.body;
@@ -688,11 +698,10 @@ app.get('/api/me', auth, (req, res) => {
   res.json({ user: req.user });
 });
 
-// --- Обработка вебхуков amoCRM ---
-app.post('/api/amocrm/webhook', async (req, res) => {
-  const contentType = req.headers['content-type'] || '';
-  const body = req.body || {};
-  logToFile(allWebhooksLog, { method: req.method, contentType, body });
+// --- Функция обработки вебхуков (для очереди) ---
+async function processWebhookData(body: any): Promise<void> {
+  const contentType = 'application/json';
+  logToFile(allWebhooksLog, { method: 'POST', contentType, body });
   let processed = false;
 
   // amoCRM может присылать { status/update } или { leads: { status/update } }
@@ -706,29 +715,29 @@ app.post('/api/amocrm/webhook', async (req, res) => {
     if (lead.status_id === '44828242') {
       let sostav = readSostav();
       const idx = sostav.findIndex((item: any) => item.id === lead.id);
-      
+
       // Проверяем, есть ли уже ID у заказа в базе
       const existingOrderId = await checkOrderIdExists(lead.id);
-      
+
       if (!existingOrderId && !hasOrderId(lead)) {
         // Генерируем новый ID с учетом Томского времени
         const newOrderId = await generateOrderId();
-        
+
         // Извлекаем данные для базы
         let deliveryAddress = '';
         if (lead.custom_fields) {
           const addressField = lead.custom_fields.find((f: any) => f.name === 'Адрес доставки');
           deliveryAddress = addressField?.values?.[0]?.value || '';
         }
-        
+
         // Сохраняем в базу
         const saved = await saveOrderId(newOrderId, lead.id, lead.name || '', deliveryAddress);
-        
+
         if (saved) {
           // Добавляем ID в custom_fields
           if (!lead.custom_fields) lead.custom_fields = [];
           const idFieldIdx = lead.custom_fields.findIndex((f: any) => f.name === '№ID');
-          
+
           if (idFieldIdx >= 0) {
             // Обновляем существующее поле
             lead.custom_fields[idFieldIdx].values = [{ value: newOrderId }];
@@ -740,30 +749,30 @@ app.post('/api/amocrm/webhook', async (req, res) => {
               values: [{ value: newOrderId }]
             });
           }
-          
+
           // Отправляем ID в amoCRM
           try {
             const updateResult = await updateAmoLeadOrderId(lead.id, newOrderId);
             if (updateResult.success) {
-              logToFile(processedWebhooksLog, { 
-                action: 'assign_order_id', 
-                lead_id: lead.id, 
-                order_id: newOrderId 
+              logToFile(processedWebhooksLog, {
+                action: 'assign_order_id',
+                lead_id: lead.id,
+                order_id: newOrderId
               });
             } else {
-              logToFile(processedWebhooksLog, { 
-                action: 'assign_order_id_failed', 
-                lead_id: lead.id, 
-                order_id: newOrderId, 
-                error: updateResult.error 
+              logToFile(processedWebhooksLog, {
+                action: 'assign_order_id_failed',
+                lead_id: lead.id,
+                order_id: newOrderId,
+                error: updateResult.error
               });
             }
           } catch (error) {
-            logToFile(processedWebhooksLog, { 
-              action: 'assign_order_id_error', 
-              lead_id: lead.id, 
-              order_id: newOrderId, 
-              error: error 
+            logToFile(processedWebhooksLog, {
+              action: 'assign_order_id_error',
+              lead_id: lead.id,
+              order_id: newOrderId,
+              error: error
             });
           }
         }
@@ -771,7 +780,7 @@ app.post('/api/amocrm/webhook', async (req, res) => {
         // Если ID уже есть в базе, обновляем lead
         if (!lead.custom_fields) lead.custom_fields = [];
         const idFieldIdx = lead.custom_fields.findIndex((f: any) => f.name === '№ID');
-        
+
         if (idFieldIdx >= 0) {
           lead.custom_fields[idFieldIdx].values = [{ value: existingOrderId }];
         } else {
@@ -781,14 +790,14 @@ app.post('/api/amocrm/webhook', async (req, res) => {
             values: [{ value: existingOrderId }]
           });
         }
-        
-        logToFile(processedWebhooksLog, { 
-          action: 'reuse_existing_order_id', 
-          lead_id: lead.id, 
-          order_id: existingOrderId 
+
+        logToFile(processedWebhooksLog, {
+          action: 'reuse_existing_order_id',
+          lead_id: lead.id,
+          order_id: existingOrderId
         });
       }
-      
+
       if (idx >= 0) {
         sostav[idx] = lead;
       } else {
@@ -801,14 +810,14 @@ app.post('/api/amocrm/webhook', async (req, res) => {
     if (lead.old_status_id === '44828242') {
       let sostav = readSostav();
       const orderToRemove = sostav.find((item: any) => item.id === lead.id);
-      
+
       // Удаляем заказ из основного списка
       sostav = sostav.filter((item: any) => item.id !== lead.id);
       writeSostav(sostav);
-      
+
       // НЕ удаляем заказ из admin-photo.json если он там есть со статусом send_to_admin
       // Заказы удаляются из admin-photo.json только когда админ загружает фото
-      
+
       logToFile(processedWebhooksLog, { action: 'remove', lead_id: lead.id });
       processed = true;
     }
@@ -823,26 +832,26 @@ app.post('/api/amocrm/webhook', async (req, res) => {
       if (idx >= 0) {
         // Проверяем, есть ли уже ID у заказа в базе
         const existingOrderId = await checkOrderIdExists(lead.id);
-        
+
         if (!existingOrderId && !hasOrderId(lead)) {
           // Генерируем новый ID с учетом Томского времени
           const newOrderId = await generateOrderId();
-          
+
           // Извлекаем данные для базы
           let deliveryAddress = '';
           if (lead.custom_fields) {
             const addressField = lead.custom_fields.find((f: any) => f.name === 'Адрес доставки');
             deliveryAddress = addressField?.values?.[0]?.value || '';
           }
-          
+
           // Сохраняем в базу
           const saved = await saveOrderId(newOrderId, lead.id, lead.name || '', deliveryAddress);
-          
+
           if (saved) {
             // Добавляем ID в custom_fields
             if (!lead.custom_fields) lead.custom_fields = [];
             const idFieldIdx = lead.custom_fields.findIndex((f: any) => f.name === '№ID');
-            
+
             if (idFieldIdx >= 0) {
               // Обновляем существующее поле
               lead.custom_fields[idFieldIdx].values = [{ value: newOrderId }];
@@ -854,30 +863,30 @@ app.post('/api/amocrm/webhook', async (req, res) => {
                 values: [{ value: newOrderId }]
               });
             }
-            
+
             // Отправляем ID в amoCRM
             try {
               const updateResult = await updateAmoLeadOrderId(lead.id, newOrderId);
               if (updateResult.success) {
-                logToFile(processedWebhooksLog, { 
-                  action: 'assign_order_id_update', 
-                  lead_id: lead.id, 
-                  order_id: newOrderId 
+                logToFile(processedWebhooksLog, {
+                  action: 'assign_order_id_update',
+                  lead_id: lead.id,
+                  order_id: newOrderId
                 });
               } else {
-                logToFile(processedWebhooksLog, { 
-                  action: 'assign_order_id_update_failed', 
-                  lead_id: lead.id, 
-                  order_id: newOrderId, 
-                  error: updateResult.error 
+                logToFile(processedWebhooksLog, {
+                  action: 'assign_order_id_update_failed',
+                  lead_id: lead.id,
+                  order_id: newOrderId,
+                  error: updateResult.error
                 });
               }
             } catch (error) {
-              logToFile(processedWebhooksLog, { 
-                action: 'assign_order_id_update_error', 
-                lead_id: lead.id, 
-                order_id: newOrderId, 
-                error: error 
+              logToFile(processedWebhooksLog, {
+                action: 'assign_order_id_update_error',
+                lead_id: lead.id,
+                order_id: newOrderId,
+                error: error
               });
             }
           }
@@ -885,7 +894,7 @@ app.post('/api/amocrm/webhook', async (req, res) => {
           // Если ID уже есть в базе, обновляем lead
           if (!lead.custom_fields) lead.custom_fields = [];
           const idFieldIdx = lead.custom_fields.findIndex((f: any) => f.name === '№ID');
-          
+
           if (idFieldIdx >= 0) {
             lead.custom_fields[idFieldIdx].values = [{ value: existingOrderId }];
           } else {
@@ -895,14 +904,14 @@ app.post('/api/amocrm/webhook', async (req, res) => {
               values: [{ value: existingOrderId }]
             });
           }
-          
-          logToFile(processedWebhooksLog, { 
-            action: 'reuse_existing_order_id_update', 
-            lead_id: lead.id, 
-            order_id: existingOrderId 
+
+          logToFile(processedWebhooksLog, {
+            action: 'reuse_existing_order_id_update',
+            lead_id: lead.id,
+            order_id: existingOrderId
           });
         }
-        
+
         sostav[idx] = lead;
         writeSostav(sostav);
         logToFile(processedWebhooksLog, { action: 'update', lead });
@@ -916,7 +925,34 @@ app.post('/api/amocrm/webhook', async (req, res) => {
   } else {
     logToFile(processedWebhooksLog, { action: 'noop', reason: 'unrecognized_payload' });
   }
-  res.status(200).send('ok');
+}
+
+// --- Обработка вебхуков amoCRM ---
+app.post('/api/amocrm/webhook', async (req, res) => {
+  try {
+    // Добавляем вебхук в очередь асинхронно
+    const webhookId = await webhookQueue.add(req.body);
+
+    // Немедленный ответ amoCRM (не ждем обработки)
+    res.status(200).json({
+      status: 'queued',
+      webhook_id: webhookId,
+      queue_size: webhookQueue.getStats().queueSize,
+      message: 'Вебхук добавлен в очередь обработки'
+    });
+
+  } catch (error: any) {
+    logToFile(processedWebhooksLog, {
+      action: 'webhook_queue_add_error',
+      error: error.message,
+      body: req.body
+    });
+
+    res.status(500).json({
+      error: 'Не удалось добавить вебхук в очередь',
+      details: error.message
+    });
+  }
 });
 
 // --- Получить список заказов для фронта ---
@@ -1442,9 +1478,13 @@ app.post('/api/orders/:id/finalize', auth, async (req: Request, res: Response): 
 });
 
 
+// --- Инициализация глобальной функции обработки вебхуков ---
+(global as any).webhookProcessor = processWebhookData;
+
 // --- Запуск сервера ---
 server.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+  console.log(`🚀 Server listening on port ${PORT}`);
+  console.log(`📨 Webhook queue initialized. Queue size: ${webhookQueue.getStats().queueSize}`);
 });
 
 // SPA fallback для фронта (Express 5) — теперь в самом конце!

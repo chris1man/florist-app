@@ -140,112 +140,13 @@
     "updated_at": "1759405251"
   },
   {
-    "id": "27683043",
-    "name": "Готов 5 чик в оф",
-    "status_id": "44828242",
-    "old_status_id": "54415022",
-    "price": "1900",
-    "responsible_user_id": "7741333",
-    "last_modified": "1759404934",
-    "modified_user_id": "7741333",
-    "created_user_id": "0",
-    "date_create": "1759402807",
-    "pipeline_id": "4963870",
-    "tags": [
-      {
-        "id": "324459",
-        "name": "оплачено"
-      },
-      {
-        "id": "390337",
-        "name": "катя"
-      }
-    ],
-    "account_id": "29885530",
-    "custom_fields": [
-      {
-        "id": "1036219",
-        "name": "Способ доставки",
-        "values": [
-          {
-            "value": "Доставка курьером",
-            "enum": "656189"
-          }
-        ]
-      },
-      {
-        "id": "1035967",
-        "name": "Дата",
-        "values": [
-          "01.10"
-        ]
-      },
-      {
-        "id": "293299",
-        "name": "Время",
-        "values": [
-          {
-            "value": "20-22"
-          }
-        ]
-      },
-      {
-        "id": "293241",
-        "name": "Адрес доставки",
-        "values": [
-          {
-            "value": "ул Пугачева, 1, кв. 17"
-          }
-        ]
-      },
-      {
-        "id": "293293",
-        "name": "Телефон получателя",
-        "values": [
-          {
-            "value": "89539165496"
-          }
-        ]
-      },
-      {
-        "id": "1047841",
-        "name": "Итог оплаты",
-        "values": [
-          {
-            "value": "Оплачено И/Э"
-          }
-        ]
-      },
-      {
-        "id": "1055575",
-        "name": "№ID",
-        "values": [
-          {
-            "value": "D266"
-          }
-        ]
-      },
-      {
-        "id": "1055079",
-        "name": "Эквайринг ссылка",
-        "values": [
-          {
-            "value": "https://payment.alfabank.ru/payment/merchants/ecom2/payment_ru.html?mdOrder=0995adfe-2d12-77f2-a761-c8cd02344577 (Order ID: 0995adfe-2d12-77f2-a761-c8cd02344577)"
-          }
-        ]
-      }
-    ],
-    "created_at": "1759402807",
-    "updated_at": "1759404934"
-  },
-  {
     "id": "27683161",
     "name": "Заказ №29723 сборн",
     "status_id": "44828242",
     "old_status_id": "53695750",
-    "price": "6309",
+    "price": "7010",
     "responsible_user_id": "7741333",
-    "last_modified": "1759404807",
+    "last_modified": "1759404496",
     "modified_user_id": "7741333",
     "created_user_id": "0",
     "date_create": "1759404105",
@@ -321,15 +222,6 @@
         ]
       },
       {
-        "id": "1055575",
-        "name": "№ID",
-        "values": [
-          {
-            "value": "D268"
-          }
-        ]
-      },
-      {
         "id": "293297",
         "name": "товар 1",
         "values": [
@@ -373,10 +265,19 @@
             "value": "29723"
           }
         ]
+      },
+      {
+        "id": "1055575",
+        "name": "№ID",
+        "values": [
+          {
+            "value": "D268"
+          }
+        ]
       }
     ],
     "created_at": "1759404105",
-    "updated_at": "1759404807"
+    "updated_at": "1759404496"
   },
   {
     "id": "27683133",

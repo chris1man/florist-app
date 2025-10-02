@@ -31,12 +31,13 @@ if [ -f "src/flor.ts" ]; then
     sed -i 's/(req: Request, res: Response): Promise<void>/(req, res)/g' dist/flor.js
     sed -i 's/(date: Date)/(date)/g' dist/flor.js
     sed -i 's/(date?: Date)/(date)/g' dist/flor.js
+    sed -i 's/existingIds: number\[\]/existingIds/g' dist/flor.js
     sed -i 's/: Request//g' dist/flor.js
     sed -i 's/: Response//g' dist/flor.js
     sed -i 's/: NextFunction//g' dist/flor.js
     sed -i 's/: Date//g' dist/flor.js
     
-    # 3. Убираем типы переменных и возвращаемых значений
+    # 3. Убираем основные типы
     sed -i 's/: string | undefined//g' dist/flor.js
     sed -i 's/: any\[\]//g' dist/flor.js
     sed -i 's/: any//g' dist/flor.js
@@ -75,6 +76,7 @@ if [ -f "src/flor.ts" ]; then
     
     # 10. Исправляем оставшиеся проблемы
     sed -i 's/err \&\& err\.message/err \&\& err.message/g' dist/flor.js
+    sed -i 's/timestamp\.now()/timestamp: Date.now()/g' dist/flor.js
     
     echo "Пересборка завершена успешно"
 else

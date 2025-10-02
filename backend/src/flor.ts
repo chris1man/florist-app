@@ -23,7 +23,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Отдача production-фронта
-const frontendDist = path.resolve(__dirname, '../../frontend/dist');
+const frontendDist = path.resolve(__dirname, '../public');
 app.use(express.static(frontendDist));
 
 // --- SQLite setup ---
@@ -89,9 +89,32 @@ declare module 'express-serve-static-core' {
 
 // --- Пути к файлам ---
 const sostavPath = path.resolve(__dirname, '../sostav.json');
+const adminPhotoPath = path.resolve(__dirname, '../admin-photo.json');
 const allWebhooksLog = path.resolve(__dirname, '../../logs/webhooks/all_webhooks.log');
 const processedWebhooksLog = path.resolve(__dirname, '../../logs/webhooks/processed_webhooks.log');
 const uploadErrorsLog = path.resolve(__dirname, '../../logs/app/upload_errors.log');
+
+// --- Перестраховочные файлы для ID ---
+const orderIdsBackupPath = path.resolve(__dirname, '../order_ids_backup.json');
+const orderIdsLockPath = path.resolve(__dirname, '../order_ids.lock');
+const idAssignmentLogPath = path.resolve(__dirname, '../../logs/app/id_assignments.log');
+
+// --- Создание необходимых директорий для логов ---
+function ensureLogDirectories() {
+  const dirs = [
+    path.dirname(idAssignmentLogPath),
+    path.dirname(orderIdsBackupPath)
+  ];
+  
+  dirs.forEach(dir => {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+  });
+}
+
+// Создаем директории при запуске
+ensureLogDirectories();
 
 // --- Вспомогательные функции ---
 function logToFile(filePath: string, data: any) {
@@ -106,45 +129,270 @@ function logToFile(filePath: string, data: any) {
   fs.appendFileSync(filePath, logEntry, 'utf8');
 }
 
-// --- Функции для работы с таблицей order_ids ---
-function saveOrderId(orderId: string, amocrmLeadId: string, dealName: string, deliveryAddress: string): Promise<boolean> {
-  return new Promise((resolve) => {
-    // Используем Томское время для записи в базу
-    const now = new Date();
-    const tomskTimeString = now.toLocaleString('sv-SE', { 
-      timeZone: 'Asia/Tomsk',
-      year: 'numeric',
-      month: '2-digit', 
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    }).replace(' ', 'T');
+
+// === ПЕРЕСТРАХОВОЧНЫЕ МЕХАНИЗМЫ ===
+
+// Файловая блокировка для предотвращения конфликтов
+function acquireIdLock(timeout = 5000): boolean {
+  const lockFile = path.join(__dirname, '..', 'id_assignment.lock');
+  const startTime = Date.now();
+  
+  while (Date.now() - startTime < timeout) {
+    try {
+      // Пытаемся создать lock файл
+      fs.writeFileSync(lockFile, process.pid.toString(), { flag: 'wx' });
+      return true;
+    } catch (error) {
+      // Файл уже существует, ждем немного
+      const sleepTime = Math.random() * 100 + 50; // 50-150ms
+      const endTime = Date.now() + sleepTime;
+      while (Date.now() < endTime) {
+        // Активное ожидание
+      }
+    }
+  }
+  
+  console.error('Не удалось получить блокировку для присваивания ID');
+  return false;
+}
+
+// Освобождение блокировки
+function releaseIdLock(): void {
+  const lockFile = path.join(__dirname, '..', 'id_assignment.lock');
+  try {
+    fs.unlinkSync(lockFile);
+  } catch (error) {
+    // Игнорируем ошибки при удалении lock файла
+  }
+}
+
+// Резервное копирование в отдельный файл
+function backupOrderId(orderId: string, amocrmLeadId: string, dealName: string): void {
+  const backupFile = path.join(__dirname, '..', 'order_ids_backup.json');
+  
+  try {
+    let backupData = [];
     
-    db.run(
-      'INSERT OR IGNORE INTO order_ids (order_id, amocrm_lead_id, deal_name, delivery_address, created_at) VALUES (?, ?, ?, ?, ?)',
-      [orderId, amocrmLeadId, dealName, deliveryAddress, tomskTimeString],
-      function(err) {
-        if (err) {
-          logToFile(processedWebhooksLog, { 
-            action: 'save_order_id_error', 
-            order_id: orderId, 
-            amocrm_lead_id: amocrmLeadId,
-            error: err.message 
-          });
-          resolve(false);
-        } else {
-          logToFile(processedWebhooksLog, { 
-            action: 'save_order_id_success', 
-            order_id: orderId, 
-            amocrm_lead_id: amocrmLeadId,
-            deal_name: dealName,
-            tomsk_time: tomskTimeString
-          });
+    // Читаем существующие данные
+    if (fs.existsSync(backupFile)) {
+      const content = fs.readFileSync(backupFile, 'utf-8');
+      if (content.trim()) {
+        backupData = JSON.parse(content);
+      }
+    }
+    
+    // Добавляем новую запись
+    backupData.push({
+      order_id: orderId,
+      amocrm_lead_id: amocrmLeadId,
+      deal_name: dealName,
+      backup_timestamp: new Date().toISOString(),
+      tomsk_timestamp: getTomskDate().toISOString(),
+      process_pid: process.pid
+    });
+    
+    // Сохраняем
+    fs.writeFileSync(backupFile, JSON.stringify(backupData, null, 2));
+    
+    console.log(`✅ Резервная копия order_id ${orderId} сохранена`);
+  } catch (error) {
+    console.error('❌ Ошибка при создании резервной копии:', error);
+  }
+}
+
+// Проверка уникальности ID в базе и резервной копии
+function verifyIdUniqueness(orderId: string, dayLetter: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    try {
+      // Проверяем в базе данных
+      db.get(
+        'SELECT COUNT(*) as count FROM order_ids WHERE order_id = ?',
+        [orderId],
+        (err, row: any) => {
+          if (err) {
+            console.error('❌ Ошибка при проверке уникальности в БД:', err);
+            resolve(false);
+            return;
+          }
+          
+          if (row.count > 0) {
+            console.error(`❌ ID ${orderId} уже существует в базе данных!`);
+            resolve(false);
+            return;
+          }
+          
+          // Проверяем в резервной копии
+          const backupFile = path.join(__dirname, '..', 'order_ids_backup.json');
+          if (fs.existsSync(backupFile)) {
+            try {
+              const content = fs.readFileSync(backupFile, 'utf-8');
+              if (content.trim()) {
+                const backupData = JSON.parse(content);
+                const duplicateInBackup = backupData.find((item: any) => item.order_id === orderId);
+                
+                if (duplicateInBackup) {
+                  console.error(`❌ ID ${orderId} уже существует в резервной копии!`);
+                  resolve(false);
+                  return;
+                }
+              }
+            } catch (backupError) {
+              console.error('❌ Ошибка при чтении резервной копии:', backupError);
+            }
+          }
+          
+          console.log(`✅ ID ${orderId} уникален`);
           resolve(true);
         }
+      );
+    } catch (error) {
+      console.error('❌ Ошибка при проверке уникальности ID:', error);
+      resolve(false);
+    }
+  });
+}
+
+// Подробное логирование операций присваивания ID
+function logIdAssignment(orderId: string, amocrmLeadId: string, dealName: string, existingIds: number[], dayLetter: string): void {
+  const logDir = path.join(__dirname, '..', 'logs');
+  
+  // Создаем папку для логов если её нет
+  if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir, { recursive: true });
+  }
+  
+  const logFile = path.join(logDir, `id_assignments_${getTomskDate().toISOString().split('T')[0]}.log`);
+  
+  const logEntry = {
+    timestamp: getTomskDate().toISOString(),
+    operation: 'ID_ASSIGNMENT',
+    success: true,
+    data: {
+      order_id: orderId,
+      amocrm_lead_id: amocrmLeadId,
+      deal_name: dealName,
+      day_letter: dayLetter,
+      existing_ids_today: existingIds,
+      next_available_number: parseInt(orderId.substring(1)),
+      total_orders_today: existingIds.length + 1
+    },
+    process_pid: process.pid,
+    security_checks: {
+      file_lock_acquired: true,
+      uniqueness_verified: true,
+      backup_created: true,
+      database_saved: true
+    }
+  };
+  
+  try {
+    const logLine = JSON.stringify(logEntry) + '\n';
+    fs.appendFileSync(logFile, logLine);
+    console.log(`📝 Детальный лог записан: ${orderId}`);
+  } catch (error) {
+    console.error('❌ Ошибка при записи в лог:', error);
+  }
+}
+
+function saveOrderId(orderId: string, amocrmLeadId: string, dealName: string, deliveryAddress: string): Promise<boolean> {
+  return new Promise(async (resolve) => {
+    // 1. Получаем блокировку
+    if (!acquireIdLock()) {
+      logToFile(processedWebhooksLog, { 
+        action: 'save_order_id_lock_failed', 
+        order_id: orderId, 
+        amocrm_lead_id: amocrmLeadId
+      });
+      resolve(false);
+      return;
+    }
+    
+    try {
+      // 2. Проверяем уникальность
+      const dayLetter = orderId.charAt(0);
+      const isUnique = await verifyIdUniqueness(orderId, dayLetter);
+      
+      if (!isUnique) {
+        releaseIdLock();
+        logToFile(processedWebhooksLog, { 
+          action: 'save_order_id_not_unique', 
+          order_id: orderId, 
+          amocrm_lead_id: amocrmLeadId
+        });
+        resolve(false);
+        return;
       }
-    );
+      
+      // 3. Сохраняем в бэкап
+      backupOrderId(orderId, amocrmLeadId, dealName);
+      
+      // 4. Сохраняем в базу данных
+      const now = new Date();
+      const tomskTimeString = now.toLocaleString('en-CA', { 
+        timeZone: 'Asia/Tomsk',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
+      const [datePart, timePart] = tomskTimeString.split(', ');
+      const timestamp = `${datePart}T${timePart}`;
+      
+      db.run(
+        'INSERT OR IGNORE INTO order_ids (order_id, amocrm_lead_id, deal_name, delivery_address, created_at) VALUES (?, ?, ?, ?, ?)',
+        [orderId, amocrmLeadId, dealName, deliveryAddress, timestamp],
+        function(err) {
+          releaseIdLock();
+          
+          if (err) {
+            logToFile(processedWebhooksLog, { 
+              action: 'save_order_id_db_error', 
+              order_id: orderId, 
+              amocrm_lead_id: amocrmLeadId,
+              error: err.message 
+            });
+            resolve(false);
+          } else if (this.changes === 0) {
+            // Запись уже существует (конфликт)
+            logToFile(processedWebhooksLog, { 
+              action: 'save_order_id_conflict', 
+              order_id: orderId, 
+              amocrm_lead_id: amocrmLeadId
+            });
+            resolve(false);
+          } else {
+            // 5. Детальное логирование успешного присвоения
+            getTodayOrderIds(dayLetter).then(existingIds => {
+              logIdAssignment(orderId, amocrmLeadId, dealName, existingIds, dayLetter);
+            });
+            
+            logToFile(processedWebhooksLog, { 
+              action: 'save_order_id_success', 
+              order_id: orderId, 
+              amocrm_lead_id: amocrmLeadId,
+              deal_name: dealName,
+              tomsk_time: timestamp,
+              backup_created: true,
+              uniqueness_verified: true
+            });
+            resolve(true);
+          }
+        }
+      );
+      
+    } catch (error) {
+      releaseIdLock();
+      logToFile(processedWebhooksLog, { 
+        action: 'save_order_id_exception', 
+        order_id: orderId, 
+        amocrm_lead_id: amocrmLeadId,
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      });
+      resolve(false);
+    }
   });
 }
 
@@ -311,6 +559,47 @@ function readSostav(): any[] {
 
 function writeSostav(sostav: any[]) {
   fs.writeFileSync(sostavPath, JSON.stringify(sostav, null, 2), 'utf8');
+}
+
+function readAdminPhoto() {
+  if (!fs.existsSync(adminPhotoPath)) return [];
+  try {
+    return JSON.parse(fs.readFileSync(adminPhotoPath, 'utf8'));
+  } catch {
+    return [];
+  }
+}
+
+function writeAdminPhoto(photoRequests: any[]) {
+  fs.writeFileSync(adminPhotoPath, JSON.stringify(photoRequests, null, 2), 'utf8');
+}
+
+function addToAdminPhoto(order: any) {
+  const photoRequests = readAdminPhoto();
+  // Проверяем, что заказ еще не добавлен
+  const exists = photoRequests.find((item: any) => item.id === order.id);
+  if (!exists) {
+    photoRequests.push(order);
+    writeAdminPhoto(photoRequests);
+    logToFile(processedWebhooksLog, { 
+      action: 'add_to_admin_photo', 
+      order_id: order.id 
+    });
+  }
+}
+
+function removeFromAdminPhoto(orderId: any) {
+  let photoRequests = readAdminPhoto();
+  const initialLength = photoRequests.length;
+  photoRequests = photoRequests.filter((item: any) => String(item.id) !== String(orderId));
+  
+  if (photoRequests.length !== initialLength) {
+    writeAdminPhoto(photoRequests);
+    logToFile(processedWebhooksLog, { 
+      action: 'remove_from_admin_photo', 
+      order_id: orderId 
+    });
+  }
 }
 
 // --- HTTP + WebSocket сервер ---
@@ -511,8 +800,15 @@ app.post('/api/amocrm/webhook', async (req, res) => {
     }
     if (lead.old_status_id === '44828242') {
       let sostav = readSostav();
+      const orderToRemove = sostav.find((item: any) => item.id === lead.id);
+      
+      // Удаляем заказ из основного списка
       sostav = sostav.filter((item: any) => item.id !== lead.id);
       writeSostav(sostav);
+      
+      // НЕ удаляем заказ из admin-photo.json если он там есть со статусом send_to_admin
+      // Заказы удаляются из admin-photo.json только когда админ загружает фото
+      
       logToFile(processedWebhooksLog, { action: 'remove', lead_id: lead.id });
       processed = true;
     }
@@ -632,7 +928,8 @@ app.get('/api/orders', auth, (req, res) => {
   
   // Фильтрация для админа
   if (req.user.role === 'admin' && filterType === 'photo_requests') {
-    filteredSostav = sostav.filter((order: any) => order.photo_status === 'send_to_admin');
+    // Для заявок на фото читаем из admin-photo.json
+    filteredSostav = readAdminPhoto();
   } else if (req.user.role === 'admin' && filterType === 'regular') {
     filteredSostav = sostav.filter((order: any) => order.photo_status !== 'send_to_admin');
   } else if (req.user.role === 'florist') {
@@ -780,8 +1077,17 @@ const upload = multer({ storage: multer.memoryStorage() });
 // Эндпоинт для загрузки фото
 app.post('/api/orders/:id/photo', auth, upload.single('photo'), async (req: Request, res: Response): Promise<void> => {
   const orderId = req.params.id;
-  const sostav = readSostav();
-  const idx = sostav.findIndex((o: any) => String(o.id) === String(orderId));
+  let sostav = readSostav();
+  let idx = sostav.findIndex((o: any) => String(o.id) === String(orderId));
+  let isFromAdminPhoto = false;
+  
+  // Если заказ не найден в sostav.json, ищем в admin-photo.json
+  if (idx === -1) {
+    sostav = readAdminPhoto();
+    idx = sostav.findIndex((o: any) => String(o.id) === String(orderId));
+    isFromAdminPhoto = true;
+  }
+  
   if (idx === -1) {
     res.status(404).json({ error: 'Заказ не найден' });
     return;
@@ -814,7 +1120,15 @@ app.post('/api/orders/:id/photo', auth, upload.single('photo'), async (req: Requ
       const wasPhotoRequest = sostav[idx].photo_status === 'send_to_admin';
       sostav[idx].photo_status = 'uploaded_admin';
       
-      // Для админа ВСЕГДА только обновляем фото, никогда не меняем статус
+      // Если это была заявка на фото из admin-photo.json, обновляем только admin-photo.json
+      if (isFromAdminPhoto && wasPhotoRequest) {
+        writeAdminPhoto(sostav);
+        // После загрузки фото удаляем заказ из admin-photo.json
+        removeFromAdminPhoto(orderId);
+      } else {
+        // Если заказ из обычного списка, обновляем sostav.json
+        writeSostav(sostav);
+      }
       try {
         const result = await updateAmoLeadPhoto(orderId, uploadResult.Location, false); // Всегда false!
         
@@ -827,7 +1141,8 @@ app.post('/api/orders/:id/photo', auth, upload.single('photo'), async (req: Requ
             user: req.user,
             photoUrl: uploadResult.Location,
             wasPhotoRequest,
-            statusChangeSkipped: true
+            statusChangeSkipped: true,
+            removedFromAdminPhoto: wasPhotoRequest
           });
         } else {
           console.error(`Ошибка обновления фото заказа ${orderId} в amoCRM (админ):`, result.error);
@@ -837,8 +1152,8 @@ app.post('/api/orders/:id/photo', auth, upload.single('photo'), async (req: Requ
       }
     } else {
       sostav[idx].photo_status = 'uploaded_florist';
+      writeSostav(sostav);
     }
-    writeSostav(sostav);
     broadcastOrdersUpdate();
     
     // Если заказ завершен и фото загружено флористом - автоматически переводим в amoCRM
@@ -874,6 +1189,7 @@ app.post('/api/orders/:id/photo', auth, upload.single('photo'), async (req: Requ
       }
     }
     
+    broadcastOrdersUpdate();
     res.json({ success: true, photoUrl: uploadResult.Location, order: sostav[idx] });
   } catch (err) {
     try {
@@ -891,8 +1207,17 @@ app.delete('/api/orders/:id/photo', auth, async (req: Request, res: Response): P
     res.status(400).json({ error: 'Не передан url фото' });
     return;
   }
-  const sostav = readSostav();
-  const idx = sostav.findIndex((o: any) => String(o.id) === String(orderId));
+  let sostav = readSostav();
+  let idx = sostav.findIndex((o: any) => String(o.id) === String(orderId));
+  let isFromAdminPhoto = false;
+  
+  // Если заказ не найден в sostav.json, ищем в admin-photo.json
+  if (idx === -1) {
+    sostav = readAdminPhoto();
+    idx = sostav.findIndex((o: any) => String(o.id) === String(orderId));
+    isFromAdminPhoto = true;
+  }
+  
   if (idx === -1) {
     res.status(404).json({ error: 'Заказ не найден' });
     return;
@@ -920,7 +1245,13 @@ app.delete('/api/orders/:id/photo', auth, async (req: Request, res: Response): P
   if (!order.photos.length) {
     order.photo_status = '';
   }
-  writeSostav(sostav);
+  
+  // Сохраняем изменения в соответствующий файл
+  if (isFromAdminPhoto) {
+    writeAdminPhoto(sostav);
+  } else {
+    writeSostav(sostav);
+  }
   broadcastOrdersUpdate();
   res.json({ success: true, order });
 });
@@ -1047,7 +1378,13 @@ app.post('/api/orders/:id/send-to-admin', auth, async (req: Request, res: Respon
   // Устанавливаем статус "отправить фото админу"
   sostav[idx].photo_status = 'send_to_admin';
   
-  // СРАЗУ переводим в amoCRM (новая логика)
+  // СНАЧАЛА сохраняем заказ в admin-photo.json ДО перевода в amoCRM
+  addToAdminPhoto(sostav[idx]);
+  
+  // ЗАТЕМ сохраняем изменения в sostav.json
+  writeSostav(sostav);
+  
+  // ПОТОМ переводим в amoCRM (после этого webhook может удалить из sostav.json)
   try {
     const statusId = 76172434; // ID статуса "Выполнен" в amoCRM
     const result = await updateAmoLead(orderId, statusId);
@@ -1064,8 +1401,6 @@ app.post('/api/orders/:id/send-to-admin', auth, async (req: Request, res: Respon
   } catch (err) {
     console.error(`Ошибка при переводе заказа ${orderId} в amoCRM при отправке админу:`, err);
   }
-  
-  writeSostav(sostav);
   logToFile(processedWebhooksLog, { 
     action: 'send_to_admin', 
     order_id: orderId, 

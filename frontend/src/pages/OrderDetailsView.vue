@@ -1,48 +1,162 @@
 <template>
-  <div :key="$route.fullPath" class="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-[#262626] p-0">
+  <!-- Force cache update -->
+  <div :key="$route.fullPath" class="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-[#262626] p-0" :data-version="forceUpdate">
     <div class="w-full flex items-center justify-between px-2 sm:px-3 py-2 bg-[#e63a62] text-white shadow rounded-lg mt-2 mb-2 md:mt-4 md:mb-3 transition-all duration-300 relative" style="font-size: 0.95rem;">
       <div class="font-bold px-2 py-1 rounded" style="font-size: 0.95rem;">Детали заказа</div>
       <button @click="logout" class="bg-[#262626] text-white font-semibold px-3 py-1 rounded-md hover:bg-[#444] transition-colors duration-200 relative" style="font-size: 0.95rem;">Выйти</button>
     </div>
-    <div v-if="showNotice" class="fixed top-0 left-0 w-full z-50 flex justify-center">
+    <!-- Уведомление убрано по запросу пользователя -->
+    <!-- <div v-if="showNotice" class="fixed top-0 left-0 w-full z-50 flex justify-center">
       <div class="bg-[#e63a62] text-white px-4 py-2 rounded-b-lg shadow text-center mt-0.5 animate-fade-in">
         Сначала возьмите заказ, чтобы просмотреть его детали
       </div>
-    </div>
+    </div> -->
     <div class="w-full max-w-full bg-white dark:bg-[#232323] shadow mt-4 mb-4" style="border-radius: 10px; padding: 0.5rem 0.5rem;">
       <div class="flex flex-col items-center mb-3">
-        <div v-if="order?.order_id" class="inline-flex items-center px-4 py-2 rounded-full text-lg font-bold bg-gradient-to-r from-[#e63a62] to-[#c72c4e] text-white shadow-xl mb-2 transform hover:scale-105 transition-transform duration-200">
-          {{ order.order_id }}
+        <div v-if="getOrderId()" class="inline-flex items-center px-4 py-2 rounded-full text-lg font-bold bg-gradient-to-r from-[#e63a62] to-[#c72c4e] text-white shadow-xl mb-2 transform hover:scale-105 transition-transform duration-200">
+          {{ getOrderId() }}
         </div>
-        <h2 class="text-2xl font-bold text-[#e63a62] text-center">
-          Заказ №{{ order?.id }}
+        <h2 class="text-2xl font-bold text-center">
+          <a
+            :href="`https://makilk.amocrm.ru/leads/detail/${order?.id}`"
+            target="_blank"
+            class="text-[#e63a62] hover:text-[#c72c4e] transition-colors duration-200 hover:underline"
+          >
+            Заказ №{{ order?.id }}
+          </a>
         </h2>
       </div>
-      <div class="mb-2 text-base">
-        <div><b>Имя:</b> {{ order?.name || '-' }}</div>
-        <div><b>Стоимость:</b> {{ order?.price || order?.sale || '-' }}</div>
+      <!-- Основная информация о заказе -->
+      <div class="mb-4 bg-gray-50 dark:bg-[#2a2a2a] rounded-lg p-4">
+        <h3 class="text-lg font-bold text-[#e63a62] mb-3">Основная информация</h3>
+        <div class="grid gap-2 text-base">
+          <div><b>Название:</b> {{ order?.name || '-' }}</div>
+          <div><b>ID сделки:</b> {{ order?.id || '-' }}</div>
+          <div><b>Стоимость:</b> {{ formatPrice(order?.price) || order?.sale || '-' }}</div>
+          <div><b>ID статуса:</b> {{ order?.status_id || '-' }}</div>
+          <div><b>Старый ID статуса:</b> {{ order?.old_status_id || '-' }}</div>
+          <div><b>ID ответственного:</b> {{ order?.responsible_user_id || '-' }}</div>
+          <div><b>ID воронки:</b> {{ order?.pipeline_id || '-' }}</div>
+          <div><b>ID аккаунта:</b> {{ order?.account_id || '-' }}</div>
+        </div>
       </div>
-      <div class="mb-4">
-        <div class="font-semibold text-gray-700 dark:text-gray-200 mb-1">Детали заказа:</div>
+
+      <!-- Временные метки -->
+      <div class="mb-4 bg-gray-50 dark:bg-[#2a2a2a] rounded-lg p-4">
+        <h3 class="text-lg font-bold text-[#e63a62] mb-3">Временные метки</h3>
+        <div class="grid gap-2 text-base">
+          <div><b>Дата создания:</b> {{ formatTimestamp(order?.date_create) || formatTimestamp(order?.created_at) }}</div>
+          <div><b>Последнее изменение:</b> {{ formatTimestamp(order?.last_modified) || formatTimestamp(order?.updated_at) }}</div>
+          <div><b>ID создавшего:</b> {{ order?.created_user_id || '-' }}</div>
+          <div><b>ID изменившего:</b> {{ order?.modified_user_id || '-' }}</div>
+        </div>
+      </div>
+
+      <!-- Детали заказа -->
+      <div class="mb-4 bg-gray-50 dark:bg-[#2a2a2a] rounded-lg p-4">
+        <h3 class="text-lg font-bold text-[#e63a62] mb-3">Детали заказа</h3>
         <div v-if="order?.custom_fields && order.custom_fields.length">
-          <div v-for="field in order.custom_fields" :key="field.id" class="mb-1 text-base">
-            <span class="font-semibold">{{ field.name }}: </span>
-            <span>
-              <template v-if="Array.isArray(field.values)">
-                <template v-for="(v, i) in field.values" :key="i">
-                  {{ typeof v === 'object' && v !== null && 'value' in v ? v.value : v }}<span v-if="i < field.values.length - 1">, </span>
-                </template>
-              </template>
-              <template v-else-if="typeof field.values === 'object' && field.values !== null && 'value' in field.values">
-                {{ field.values.value }}
-              </template>
-              <template v-else>
-                {{ field.values || '-' }}
-              </template>
-            </span>
+          <!-- Группировка полей по категориям -->
+          <div v-if="getFieldsByCategory('delivery').length" class="mb-4">
+            <h4 class="font-bold text-gray-700 dark:text-gray-200 mb-2">🚚 Доставка</h4>
+            <div v-for="field in getFieldsByCategory('delivery')" :key="field.id" class="mb-2 pl-4 border-l-2 border-blue-300">
+              <span class="font-semibold text-blue-700 dark:text-blue-400">{{ field.name }}:</span>
+              <span class="ml-2" v-html="formatFieldValueWithLinks(field.values)"></span>
+            </div>
+          </div>
+
+          <div v-if="getFieldsByCategory('recipient').length" class="mb-4">
+            <h4 class="font-bold text-gray-700 dark:text-gray-200 mb-2">👤 Получатель</h4>
+            <div v-for="field in getFieldsByCategory('recipient')" :key="field.id" class="mb-2 pl-4 border-l-2 border-green-300">
+              <span class="font-semibold text-green-700 dark:text-green-400">{{ field.name }}:</span>
+              <span class="ml-2" v-html="formatFieldValueWithLinks(field.values)"></span>
+            </div>
+          </div>
+
+          <div v-if="getFieldsByCategory('payment').length" class="mb-4">
+            <h4 class="font-bold text-gray-700 dark:text-gray-200 mb-2">💳 Оплата</h4>
+            <div v-for="field in getFieldsByCategory('payment')" :key="field.id" class="mb-2 pl-4 border-l-2 border-purple-300">
+              <span class="font-semibold text-purple-700 dark:text-purple-400">{{ field.name }}:</span>
+              <span class="ml-2" v-html="formatFieldValueWithLinks(field.values)"></span>
+            </div>
+          </div>
+
+          <div v-if="getFieldsByCategory('products').length" class="mb-4">
+            <h4 class="font-bold text-gray-700 dark:text-gray-200 mb-2">🌸 Товары</h4>
+            <div v-for="field in getFieldsByCategory('products')" :key="field.id" class="mb-2 pl-4 border-l-2 border-pink-300">
+              <span class="font-semibold text-pink-700 dark:text-pink-400">{{ field.name }}:</span>
+              <span class="ml-2" v-html="formatFieldValueWithLinks(field.values)"></span>
+            </div>
+          </div>
+
+          <div v-if="getFieldsByCategory('identifiers').length" class="mb-4">
+            <h4 class="font-bold text-gray-700 dark:text-gray-200 mb-2">🔖 Идентификаторы</h4>
+            <div v-for="field in getFieldsByCategory('identifiers')" :key="field.id" class="mb-2 pl-4 border-l-2 border-yellow-300">
+              <span class="font-semibold text-yellow-700 dark:text-yellow-400">{{ field.name }}:</span>
+              <span class="ml-2" v-html="formatFieldValueWithLinks(field.values)"></span>
+            </div>
+          </div>
+
+          <div v-if="getFieldsByCategory('other').length" class="mb-4">
+            <h4 class="font-bold text-gray-700 dark:text-gray-200 mb-2">💬 Прочее</h4>
+            <div v-for="field in getFieldsByCategory('other')" :key="field.id" class="mb-2 pl-4 border-l-2 border-gray-300">
+              <span class="font-semibold text-gray-700 dark:text-gray-400">{{ field.name }}:</span>
+              <span class="ml-2" v-html="formatFieldValueWithLinks(field.values)"></span>
+            </div>
           </div>
         </div>
         <div v-else class="text-base text-gray-400">Нет дополнительных полей</div>
+      </div>
+
+      <!-- Системная информация -->
+      <div class="mb-4 bg-gray-50 dark:bg-[#2a2a2a] rounded-lg p-4">
+        <h3 class="text-lg font-bold text-[#e63a62] mb-3">Системная информация</h3>
+        <div class="grid gap-2 text-sm text-gray-600 dark:text-gray-400">
+          <div><b>Статус заказа:</b> {{ order?.status || 'Не указан' }}</div>
+          <div v-if="order?.taken_by">
+            <b>Взят флористом:</b> {{ order.taken_by.name }} (ID: {{ order.taken_by.id }})
+          </div>
+          <div v-else><b>Статус:</b> Свободен</div>
+          <div><b>Статус фото:</b> {{ getPhotoStatusText(order?.photo_status) }}</div>
+          <div v-if="order?.photos && order.photos.length"><b>Количество фото:</b> {{ order.photos.length }}</div>
+        </div>
+        
+        <!-- Кнопка для просмотра сырых данных -->
+        <div class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
+          <div class="flex gap-2 flex-wrap">
+            <button 
+              @click="showRawData = !showRawData" 
+              class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+            >
+              {{ showRawData ? 'Скрыть сырые данные' : 'Показать сырые данные' }}
+            </button>
+            <button 
+              @click="showAllFields = !showAllFields" 
+              class="px-3 py-1 rounded bg-blue-200 dark:bg-blue-700 text-blue-700 dark:text-blue-300 text-xs font-semibold hover:bg-blue-300 dark:hover:bg-blue-600 transition-colors"
+            >
+              {{ showAllFields ? 'Скрыть все поля' : 'Показать все поля' }}
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Все поля в алфавитном порядке -->
+      <div v-if="showAllFields" class="mb-4 bg-gray-50 dark:bg-[#2a2a2a] rounded-lg p-4">
+        <h3 class="text-lg font-bold text-[#e63a62] mb-3">Все поля заказа (алфавитный порядок)</h3>
+        <div v-if="getAllFieldsSorted().length" class="grid gap-2">
+          <div v-for="field in getAllFieldsSorted()" :key="field.id" class="border-l-4 border-gray-300 pl-3 py-1">
+            <div class="font-semibold text-gray-800 dark:text-gray-200 text-sm">{{ field.name }}</div>
+            <div class="text-gray-600 dark:text-gray-400 text-sm">ID: {{ field.id }}</div>
+            <div class="text-gray-900 dark:text-gray-100" v-html="formatFieldValueWithLinks(field.values)"></div>
+          </div>
+        </div>
+        <div v-else class="text-gray-400">Нет полей</div>
+      </div>
+      
+      <!-- Сырые данные заказа -->
+      <div v-if="showRawData" class="mb-4 bg-gray-50 dark:bg-[#2a2a2a] rounded-lg p-4">
+        <h3 class="text-lg font-bold text-[#e63a62] mb-3">Сырые данные заказа</h3>
+        <pre class="bg-black text-green-400 p-4 rounded text-xs overflow-x-auto whitespace-pre-wrap">{{ JSON.stringify(order, null, 2) }}</pre>
       </div>
       <!-- Блок с фото -->
       <div class="mb-4">
@@ -94,7 +208,14 @@
           </div>
           
           <!-- Скрытый input для галереи -->
-          <input ref="fileInput" type="file" accept="image/*" class="hidden" @change="onFileChange" />
+          <input 
+            id="file-input"
+            ref="fileInput" 
+            type="file" 
+            accept="image/*" 
+            class="hidden" 
+            @change="onFileChange" 
+          />
           <div v-if="uploading" class="text-xs text-gray-500 mt-2">Загрузка...</div>
           
           <!-- Предпросмотр фото перед загрузкой -->
@@ -102,7 +223,7 @@
             <img :src="previewImage" alt="Предпросмотр" class="w-64 h-64 object-contain rounded shadow border border-gray-200 dark:border-gray-700" :style="{ transform: `rotate(${rotationAngle}deg)` }" />
             <div class="flex gap-2 mt-2">
               <button @click="rotateImage(-90)" class="px-3 py-1 rounded bg-blue-100 text-blue-700 text-sm font-semibold hover:bg-blue-200 transition-colors">⟲</button>
-              <button @click="uploadPhoto" class="px-3 py-1 rounded bg-green-600 text-white text-sm font-semibold hover:bg-green-700 transition-colors">Загрузить</button>
+              <button @click="uploadPhoto" class="px-3 py-1 rounded bg-[#E63A62] text-white text-sm font-semibold hover:bg-[#c72c4e] transition-colors">Загрузить</button>
               <button @click="rotateImage(90)" class="px-3 py-1 rounded bg-blue-100 text-blue-700 text-sm font-semibold hover:bg-blue-200 transition-colors">⟳</button>
               <button @click="cancelPreview" class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-100 text-sm font-semibold hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">Отменить</button>
             </div>
@@ -145,7 +266,7 @@
       <div class="mb-4">
         <div class="font-semibold text-gray-700 dark:text-gray-200 mb-1">Статус фото:</div>
         <div class="text-base">
-          <span v-if="order?.photo_status === 'uploaded_admin'" class="text-green-700 dark:text-green-400 font-semibold">Загружено админом</span>
+          <span v-if="order?.photo_status === 'uploaded_admin'" class="text-[#E63A62] dark:text-[#E63A62] font-semibold">Загружено админом</span>
           <span v-else-if="order?.photo_status === 'uploaded_florist'" class="text-blue-700 dark:text-blue-400 font-semibold">Загружено флористом</span>
           <span v-else-if="order?.photo_status === 'send_to_admin'" class="text-yellow-700 dark:text-yellow-400 font-semibold">Отправлено админу для проверки</span>
           <span v-else class="text-gray-400">Ожидает загрузки</span>
@@ -168,17 +289,19 @@
 </template>
 
 <script setup lang="ts">
+// Cache buster: force rebuild timestamp 1756112518
 import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 import { authFetch } from '../utils/authFetch';
 import { ref as vueRef } from 'vue';
 
+
 const route = useRoute();
 const router = useRouter();
 const order = ref<any>(null);
 const prevOrder = ref<any>(null);
-const showNotice = ref(false);
+// const showNotice = ref(false); // Переменная больше не нужна
 const user = ref<{ id: number; name: string; role?: string }>({ id: 0, name: '' });
 let ws: WebSocket | null = null;
 const toast = useToast();
@@ -195,6 +318,9 @@ const currentPhotoIndex = ref(0);
 const showCamera = ref(false);
 const cameraStream = ref<MediaStream | null>(null);
 const cameraVideo = ref<HTMLVideoElement | null>(null);
+const showRawData = ref(false);
+const showAllFields = ref(false);
+const forceUpdate = ref(Date.now()); // Force cache update with current timestamp
 
 function parseJwt(token: string) {
   try {
@@ -212,6 +338,24 @@ function parseJwt(token: string) {
   }
 }
 
+// Функция получения Order ID из custom_fields
+function getOrderId(): string {
+  if (order.value?.order_id) {
+    return order.value.order_id;
+  }
+  
+  // Ищем в custom_fields
+  const orderIdField = order.value?.custom_fields?.find((field: any) => 
+    field.name && (field.name.includes('№ID') || field.name.includes('ID') || field.name.toLowerCase().includes('order_id'))
+  );
+  
+  if (orderIdField) {
+    return formatFieldValue(orderIdField.values);
+  }
+  
+  return '';
+}
+
 function getField(order: any, name: string) {
   if (!order?.custom_fields) return '';
   const f = order.custom_fields.find((f: any) => f.name && f.name.toLowerCase().includes(name));
@@ -222,6 +366,142 @@ function getField(order: any, name: string) {
     return f.values.value;
   } else {
     return f.values || '';
+  }
+}
+
+// Функция форматирования значений полей
+  function formatFieldValue(values: any): string {
+    let result = '';
+    
+    if (Array.isArray(values)) {
+      result = values.map((v: any) => {
+        if (typeof v === 'object' && v !== null && 'value' in v) {
+          return v.value;
+        }
+        return v;
+      }).join(', ');
+    } else if (typeof values === 'object' && values !== null && 'value' in values) {
+      result = values.value;
+    } else {
+      result = values || '-';
+    }
+    
+    return result;
+  }
+
+// Функция для преобразования текста с URL в HTML с кликабельными ссылками
+function formatFieldValueWithLinks(values: any): string {
+  const text = formatFieldValue(values);
+  
+  // Регулярное выражение для поиска URL
+  const urlRegex = /(https?:\/\/[^\s,]+)/gi;
+  
+  const result = text.replace(urlRegex, (url) => {
+    return `<a href="${url}" target="_blank" class="text-blue-600 hover:text-blue-800 underline font-medium break-all">${url}</a>`;
+  });
+  
+  return result;
+}
+
+// Функция форматирования цены
+function formatPrice(price: string | number): string {
+  if (!price) return '-';
+  const numPrice = typeof price === 'string' ? parseFloat(price) : price;
+  if (isNaN(numPrice)) return price.toString();
+  return new Intl.NumberFormat('ru-RU', {
+    style: 'currency',
+    currency: 'RUB',
+    minimumFractionDigits: 0
+  }).format(numPrice);
+}
+
+// Функция форматирования временных меток
+function formatTimestamp(timestamp: string | number): string {
+  if (!timestamp) return '-';
+  const date = new Date(typeof timestamp === 'string' ? parseInt(timestamp) * 1000 : timestamp * 1000);
+  if (isNaN(date.getTime())) return timestamp.toString();
+  return date.toLocaleString('ru-RU', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  });
+}
+
+// Функция категоризации полей
+function getFieldsByCategory(category: 'delivery' | 'recipient' | 'payment' | 'products' | 'identifiers' | 'other') {
+  if (!order.value?.custom_fields) {
+    return [];
+  }
+  
+  const categoryMap = {
+    delivery: ['доставк', 'дата', 'время', 'адрес'],
+    recipient: ['получател', 'ф.и.о', 'телефон'],
+    payment: ['оплат', 'способ оплаты'],
+    products: ['товар', 'ссылка'],
+    identifiers: ['id', '№id', 'номер заказа'],
+    other: ['пожелани', 'коммент', 'примечани', 'особ']
+  };
+  
+  const keywords = categoryMap[category];
+  
+  const filtered = order.value.custom_fields.filter((field: any) => {
+    const fieldName = field.name?.toLowerCase() || '';
+    
+    // Для категории "other" возвращаем поля, которые попали именно в эту категорию
+    if (category === 'other') {
+      return keywords.some(keyword => fieldName.includes(keyword));
+    }
+    
+    // Для остальных категорий проверяем соответствие
+    return keywords.some(keyword => fieldName.includes(keyword));
+  }).filter((field: any) => {
+    // Исключаем дубликаты между категориями
+    const fieldName = field.name?.toLowerCase() || '';
+    
+    if (category === 'other') {
+      // Для "other" исключаем поля, которые уже попали в другие категории
+      const allOtherKeywords = [
+        ...categoryMap.delivery,
+        ...categoryMap.recipient,
+        ...categoryMap.payment,
+        ...categoryMap.products,
+        ...categoryMap.identifiers
+      ];
+      
+      return !allOtherKeywords.some(keyword => fieldName.includes(keyword));
+    }
+    
+    return true;
+  });
+  
+  return filtered;
+}
+
+// Функция получения всех полей в алфавитном порядке
+function getAllFieldsSorted() {
+  if (!order.value?.custom_fields) return [];
+  
+  return [...order.value.custom_fields].sort((a, b) => {
+    const nameA = a.name?.toLowerCase() || '';
+    const nameB = b.name?.toLowerCase() || '';
+    return nameA.localeCompare(nameB, 'ru');
+  });
+}
+
+// Функция получения текста статуса фото
+function getPhotoStatusText(status: string): string {
+  switch (status) {
+    case 'uploaded_admin':
+      return 'Загружено админом';
+    case 'uploaded_florist':
+      return 'Загружено флористом';
+    case 'send_to_admin':
+      return 'Отправлено админу для проверки';
+    default:
+      return 'Ожидает загрузки';
   }
 }
 
@@ -237,14 +517,17 @@ function showOrderChangeToasts(newOrder: any, oldOrder: any) {
 
 async function loadOrder() {
   if (isUnmounted.value) return;
+  
   const id = route.params.id;
   const token = localStorage.getItem('token');
+  
   const res = await authFetch(`/api/orders/${id}`, {
     headers: { Authorization: `Bearer ${token}` }
   });
   if (isUnmounted.value) return;
   if (res.ok) {
     const data = await res.json();
+    
     // сравниваем изменения
     showOrderChangeToasts(data.order, prevOrder.value);
     prevOrder.value = JSON.parse(JSON.stringify(data.order));
@@ -253,7 +536,7 @@ async function loadOrder() {
     const justTaken = sessionStorage.getItem('justTaken');
     if (!order.value.taken_by || order.value.taken_by.id !== user.value.id) {
       if (!fromAction && !justTaken && !isUnmounted.value) {
-        toast.error('Сначала возьмите заказ, чтобы просмотреть его детали', { timeout: 4000, hideProgressBar: false });
+        // Уведомление убрано по запросу пользователя
       }
       sessionStorage.removeItem('justTaken');
       router.replace({ path: '/orders' });
@@ -264,7 +547,7 @@ async function loadOrder() {
     const fromAction = route.query.fromAction;
     const justTaken = sessionStorage.getItem('justTaken');
     if (!fromAction && !justTaken && !isUnmounted.value) {
-      toast.error('Сначала возьмите заказ, чтобы просмотреть его детали', { timeout: 4000, hideProgressBar: false });
+      // Уведомление убрано по запросу пользователя
     }
     sessionStorage.removeItem('justTaken');
     router.replace({ path: '/orders' });
@@ -366,19 +649,23 @@ async function choosePhotoUpload(type: 'self' | 'admin') {
     // Сценарий "Отправить админу"
     const id = route.params.id;
     const token = localStorage.getItem('token');
-    const res = await authFetch(`/api/orders/${id}/finalize`, {
+    const res = await authFetch(`/api/orders/${id}/send-to-admin`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({ action: 'to_admin' })
+      }
     });
     if (res.ok) {
-      toast.success('Заказ успешно завершен и отправлен админу!');
+      toast.success('Заказ отправлен админу для добавления фото!');
       router.push('/orders');
     } else {
-      toast.error('Не удалось завершить заказ в amoCRM');
+      try {
+        const data = await res.json();
+        toast.error(data.error || 'Не удалось отправить заказ админу');
+      } catch {
+        toast.error('Не удалось отправить заказ админу');
+      }
     }
   }
 }

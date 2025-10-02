@@ -51,3 +51,8 @@ backend/.env
 .qoder/rules/ORIGINALVER.md
 .gitignore
 .qoder/rules/problems.md
+
+backend/sostav.json
+backend/admin-photo.json
+
+

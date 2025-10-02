@@ -1,9 +1,24 @@
 <script setup lang="ts">
-// пусто
+import { provide, onMounted } from 'vue'
+// import PWAInstallPrompt from './components/PWAInstallPrompt.vue' // PWA компонент отключен
+
+// Provide refresh function for child components
+const refreshApp = () => {
+  window.location.reload()
+}
+
+provide('refreshApp', refreshApp)
+
+onMounted(() => {
+  // Компонент загружен
+});
 </script>
 
 <template>
-  <router-view/>
+  <div id="app" class="status-bar-spacing">
+    <router-view />
+    <!-- PWAInstallPrompt компонент отключен -->
+  </div>
 </template>
 
 <style scoped>

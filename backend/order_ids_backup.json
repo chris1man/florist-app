@@ -14760,19 +14760,19 @@
     "process_pid": 146007
   },
   {
-    "order_id": "E222",
-    "amocrm_lead_id": "27686609",
-    "deal_name": "Готов Заказ №29786 пудровое искушение",
-    "backup_timestamp": "2025-10-03T10:50:11.930Z",
-    "tomsk_timestamp": "2025-10-03T14:50:11.000Z",
-    "process_pid": 169797
+    "order_id": "E221",
+    "amocrm_lead_id": "27686653",
+    "deal_name": "Заказ №29787 сборн",
+    "backup_timestamp": "2025-10-03T10:25:14.104Z",
+    "tomsk_timestamp": "2025-10-03T14:25:14.000Z",
+    "process_pid": 165128
   },
   {
-    "order_id": "E223",
-    "amocrm_lead_id": "27686761",
-    "deal_name": "Заказ №29789 7 канделайт с эвкал",
-    "backup_timestamp": "2025-10-03T10:57:40.102Z",
-    "tomsk_timestamp": "2025-10-03T14:57:40.000Z",
-    "process_pid": 169797
+    "order_id": "E228",
+    "amocrm_lead_id": "27686895",
+    "deal_name": "Заказ №29793 7 высоких канделайт роз 70 см",
+    "backup_timestamp": "2025-10-03T11:50:11.728Z",
+    "tomsk_timestamp": "2025-10-03T15:50:11.000Z",
+    "process_pid": 173754
   }
 ]

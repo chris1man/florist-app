@@ -1,87 +1,68 @@
 #!/bin/bash
 
-echo "=== Улучшенная автоматическая пересборка ==="
+# Улучшенный скрипт автоматической пересборки backend
+# Автоматически компилирует TypeScript в JavaScript с помощью tsc,
+# очищает dist, компилирует все .ts файлы в src/ и перезапускает PM2 процесс 'florist-backend'.
+# Это заменяет ручной хак с sed на официальную компиляцию TypeScript,
+# которая правильно обрабатывает импорты (require вместо import), типы и зависимости (например, webhookQueue).
+# Требования: tsconfig.json в backend/, npx (из npm), PM2 установлен глобально.
+# Использование: ./rebuild.sh — применяет изменения в коде backend моментально.
+
+echo "=== Автоматическая пересборка backend с tsc и PM2 ==="
 echo "Время: $(date)"
+echo "Применяет изменения в коде: компиляция TS → JS + перезапуск сервера"
 
-cd /root/florist-app/backend
+cd /root/florist-app/backend || { echo "ОШИБКА: Не удалось перейти в backend"; exit 1; }
 
-# Очищаем старую сборку
-echo "Очищаю старую сборку..."
+# Шаг 1: Очищаем старую сборку (dist/)
+echo "Очищаю старую сборку (dist/)..."
 rm -rf dist
-
-# Пересобираем проект
-echo "Пересобираю проект..."
-if [ -f "src/flor.ts" ]; then
-    mkdir -p dist
-    
-    # Копируем TypeScript файл как JavaScript
-    cp src/flor.ts dist/flor.js
-    
-    echo "Преобразую TypeScript в JavaScript..."
-    
-    # 1. Заменяем import на require
-    sed -i "s/import \([a-zA-Z0-9_]*\) from '\([^']*\)';/const \1 = require('\2');/g" dist/flor.js
-    sed -i "s/import { \([^}]*\) } from '\([^']*\)';/const { \1 } = require('\2');/g" dist/flor.js
-    
-    # 2. Убираем типовые аннотации в параметрах функций (более точно)
-    sed -i 's/(client: WebSocket)/(client)/g' dist/flor.js
-    sed -i 's/(ws: ExtWebSocket)/(ws)/g' dist/flor.js
-    sed -i 's/(ws: WebSocket)/(ws)/g' dist/flor.js
-    sed -i 's/(req: Request, res: Response)/(req, res)/g' dist/flor.js
-    sed -i 's/(req: Request, res: Response): Promise<void>/(req, res)/g' dist/flor.js
-    sed -i 's/(date: Date)/(date)/g' dist/flor.js
-    sed -i 's/(date?: Date)/(date)/g' dist/flor.js
-    sed -i 's/existingIds: number\[\]/existingIds/g' dist/flor.js
-    sed -i 's/: Request//g' dist/flor.js
-    sed -i 's/: Response//g' dist/flor.js
-    sed -i 's/: NextFunction//g' dist/flor.js
-    sed -i 's/: Date//g' dist/flor.js
-    
-    # 3. Убираем основные типы
-    sed -i 's/: string | undefined//g' dist/flor.js
-    sed -i 's/: any\[\]//g' dist/flor.js
-    sed -i 's/: any//g' dist/flor.js
-    sed -i 's/: string//g' dist/flor.js
-    sed -i 's/: number//g' dist/flor.js
-    sed -i 's/: boolean//g' dist/flor.js
-    sed -i 's/: Promise<[^>]*>//g' dist/flor.js
-    sed -i 's/: void//g' dist/flor.js
-    
-    # 4. Убираем дженерики
-    sed -i 's/<User>//g' dist/flor.js
-    sed -i 's/<ExtWebSocket>//g' dist/flor.js
-    sed -i 's/<WebSocket>//g' dist/flor.js
-    sed -i 's/<[^>]*>//g' dist/flor.js
-    
-    # 5. Убираем интерфейсы и декларации
-    sed -i '/^interface /,/^}/d' dist/flor.js
-    sed -i '/^declare module /,/^}/d' dist/flor.js
-    
-    # 6. Убираем TypeScript специфичные конструкции
-    sed -i 's/ as any//g' dist/flor.js
-    sed -i 's/ as WebSocket//g' dist/flor.js
-    sed -i 's/ as ExtWebSocket//g' dist/flor.js
-    
-    # 7. Убираем non-null assertions (!)
-    sed -i 's/S3_BUCKET!/S3_BUCKET/g' dist/flor.js
-    
-    # 8. Убираем optional chaining (?) более аккуратно
-    sed -i 's/req\.user?\.id/req.user \&\& req.user.id/g' dist/flor.js
-    sed -i 's/err?\.message/err \&\& err.message/g' dist/flor.js
-    sed -i 's/err?\.stack/err \&\& err.stack/g' dist/flor.js
-    
-    # 9. Убираем optional параметры
-    sed -i 's/photoUrl?:/photoUrl:/g' dist/flor.js
-    sed -i 's/photoUrl?)/photoUrl)/g' dist/flor.js
-    
-    # 10. Исправляем оставшиеся проблемы
-    sed -i 's/err \&\& err\.message/err \&\& err.message/g' dist/flor.js
-    sed -i 's/timestamp\.now()/timestamp: Date.now()/g' dist/flor.js
-    
-    echo "Пересборка завершена успешно"
-else
-    echo "ОШИБКА: Файл src/flor.ts не найден!"
+if [ $? -ne 0 ]; then
+    echo "ОШИБКА: Не удалось очистить dist/"
     exit 1
 fi
 
-echo "=== Пересборка завершена ==="
+# Шаг 2: Проверяем наличие tsconfig.json (настройки компиляции TS)
+if [ ! -f "tsconfig.json" ]; then
+    echo "ОШИБКА: tsconfig.json не найден! Создайте его для компиляции TypeScript."
+    exit 1
+fi
+echo "tsconfig.json найден — используем для компиляции."
+
+# Шаг 3: Компилируем TypeScript в JavaScript с помощью npx tsc
+# Это создаст dist/flor.js и dist/webhookQueue.js (и другие) с правильными require,
+# удалит типы (: string, interface) и обработает импорты.
+echo "Компилирую TypeScript (src/*.ts) в JavaScript (dist/)..."
+npx tsc
+if [ $? -ne 0 ]; then
+    echo "ОШИБКА: Компиляция tsc провалилась! Проверьте ошибки в tsconfig.json или коде."
+    exit 1
+fi
+
+# Проверяем, создался ли основной файл
+if [ ! -f "dist/flor.js" ]; then
+    echo "ОШИБКА: dist/flor.js не создан после tsc! Проверьте tsconfig.json (outDir: 'dist')."
+    exit 1
+fi
+echo "Компиляция завершена успешно: dist/flor.js и зависимости (webhookQueue.js) готовы."
+
+# Шаг 4: Перезапускаем PM2 процесс 'florist-backend'
+# Это применит изменения: PM2 запустит node dist/flor.js с обновленным кодом.
+echo "Перезапускаю PM2 процесс 'florist-backend'..."
+pm2 restart florist-backend
+if [ $? -ne 0 ]; then
+    echo "ОШИБКА: Не удалось перезапустить PM2! Проверьте, запущен ли процесс (pm2 list)."
+    exit 1
+fi
+
+# Шаг 5: Проверяем статус PM2
+echo "Проверяю статус PM2..."
+pm2 list | grep florist-backend
+if [ $? -eq 0 ]; then
+    echo "✅ PM2 перезапущен успешно — сервер обновлен с изменениями."
+else
+    echo "ПРЕДУПРЕЖДЕНИЕ: PM2 статус не найден. Запустите вручную: pm2 start dist/flor.js --name florist-backend"
+fi
+
+echo "=== Пересборка и перезапуск завершены ==="
+echo "Сервер готов к работе с новыми изменениями. Проверьте логи: pm2 logs florist-backend"

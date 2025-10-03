@@ -447,10 +447,15 @@ function getTodayOrderIds(dayLetter: string): Promise<number[]> {
 }
 
 function formatDateField(val: any) {
-  // Если это timestamp (10 цифр) — преобразуем, иначе возвращаем как есть
+  // Если это timestamp (10 цифр) — преобразуем в DD.MM с учетом Томского пояса (+7), иначе возвращаем как есть
   if (typeof val === 'string' && /^\d{10}$/.test(val)) {
-    const d = new Date(parseInt(val) * 1000);
-    return `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth()+1).toString().padStart(2, '0')}`;
+    const utcDate = new Date(parseInt(val) * 1000);
+    const tomskDateString = utcDate.toLocaleDateString('ru-RU', {
+      timeZone: 'Asia/Tomsk',
+      day: '2-digit',
+      month: '2-digit'
+    });
+    return tomskDateString;
   }
   return val;
 }

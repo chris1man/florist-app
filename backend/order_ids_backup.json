@@ -14734,5 +14734,45 @@
     "backup_timestamp": "2025-10-02T12:03:14.851Z",
     "tomsk_timestamp": "2025-10-02T16:03:14.000Z",
     "process_pid": 146007
+  },
+  {
+    "order_id": "D274",
+    "amocrm_lead_id": "27683433",
+    "deal_name": "Заказ №29727  15 бел альстр",
+    "backup_timestamp": "2025-10-02T12:19:30.421Z",
+    "tomsk_timestamp": "2025-10-02T16:19:30.000Z",
+    "process_pid": 146007
+  },
+  {
+    "order_id": "D275",
+    "amocrm_lead_id": "27683573",
+    "deal_name": "131313",
+    "backup_timestamp": "2025-10-02T12:36:53.597Z",
+    "tomsk_timestamp": "2025-10-02T16:36:53.000Z",
+    "process_pid": 146007
+  },
+  {
+    "order_id": "D276",
+    "amocrm_lead_id": "27683505",
+    "deal_name": "15 роз в оф фулл монти тишью + тумнка",
+    "backup_timestamp": "2025-10-02T12:50:14.399Z",
+    "tomsk_timestamp": "2025-10-02T16:50:14.000Z",
+    "process_pid": 146007
+  },
+  {
+    "order_id": "E222",
+    "amocrm_lead_id": "27686609",
+    "deal_name": "Готов Заказ №29786 пудровое искушение",
+    "backup_timestamp": "2025-10-03T10:50:11.930Z",
+    "tomsk_timestamp": "2025-10-03T14:50:11.000Z",
+    "process_pid": 169797
+  },
+  {
+    "order_id": "E223",
+    "amocrm_lead_id": "27686761",
+    "deal_name": "Заказ №29789 7 канделайт с эвкал",
+    "backup_timestamp": "2025-10-03T10:57:40.102Z",
+    "tomsk_timestamp": "2025-10-03T14:57:40.000Z",
+    "process_pid": 169797
   }
 ]

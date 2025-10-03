@@ -14774,5 +14774,13 @@
     "backup_timestamp": "2025-10-03T11:50:11.728Z",
     "tomsk_timestamp": "2025-10-03T15:50:11.000Z",
     "process_pid": 173754
+  },
+  {
+    "order_id": "A255",
+    "amocrm_lead_id": "27686975",
+    "deal_name": "13131313",
+    "backup_timestamp": "2025-10-03T11:55:10.492Z",
+    "tomsk_timestamp": "2025-10-03T15:55:10.000Z",
+    "process_pid": 174311
   }
 ]

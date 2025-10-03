@@ -483,6 +483,43 @@ function normalizeOrderDates(order: any) {
   return order;
 }
 
+// Вспомогательная функция: Парсит строку даты доставки "DD.MM" в Date объект с учетом Томского пояса
+// Предполагает текущий год; если строка не DD.MM — fallback на текущую дату Томска
+function parseDeliveryDate(dateStr: string): Date {
+  if (typeof dateStr !== 'string' || !dateStr.includes('.')) {
+    // Fallback, если не строка или неверный формат
+    return getTomskDate();
+  }
+
+  const parts = dateStr.split('.');
+  if (parts.length !== 2) {
+    return getTomskDate();
+  }
+
+  const day = parseInt(parts[0], 10);
+  const month = parseInt(parts[1], 10);
+  const year = new Date().getFullYear(); // Текущий год (можно доработать для прошлого/следующего)
+
+  if (isNaN(day) || isNaN(month) || day < 1 || day > 31 || month < 1 || month > 12) {
+    return getTomskDate();
+  }
+
+  // Создаем Date в локальном поясе, затем корректируем на Томск (00:00)
+  const localDate = new Date(year, month - 1, day); // month 0-based
+  const tomskTimeString = localDate.toLocaleString('en-CA', {
+    timeZone: 'Asia/Tomsk',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  });
+  const [datePart, timePart] = tomskTimeString.split(', ');
+  return new Date(`${datePart}T${timePart}`);
+}
+
 // --- Генерация уникальных ID заказов ---
 function getTomskDate(): Date {
   // Создаем объект Date с правильным Томским временем
@@ -515,14 +552,15 @@ function getDayLetter(date?: Date): string {
 }
 
 async function generateOrderId(date?: Date): Promise<string> {
-  // Используем Томское время для определения дня
+  // Используем переданную дату доставки (или текущую Томскую) для определения дня недели
   const tomskDate = date || getTomskDate();
   const dayLetter = getDayLetter(tomskDate);
   
-  // Получаем все ID за сегодняшний день из SQLite
+  // Получаем все существующие ID для этого дня недели (по букве) из БД
+  // Это работает для любого дня, включая будущие, т.к. поиск по LIKE dayLetter%
   const todayIds = await getTodayOrderIds(dayLetter);
   
-  // Находим следующий доступный номер
+  // Находим следующий доступный номер (последовательный, без пробелов)
   let nextNumber = 1;
   for (const num of todayIds) {
     if (num === nextNumber) {
@@ -532,17 +570,20 @@ async function generateOrderId(date?: Date): Promise<string> {
     }
   }
   
-  // Форматируем номер с ведущими нулями
+  // Форматируем номер с ведущими нулями (001, 002, ...)
   const formattedNumber = nextNumber.toString().padStart(3, '0');
   
-  // Логируем для отладки
+  // Логируем для отладки (с указанием, если дата доставки в будущем)
+  const isFutureDate = date && date > getTomskDate();
   logToFile(processedWebhooksLog, {
     action: 'generate_order_id',
-    tomsk_date: tomskDate.toISOString(),
+    delivery_date: tomskDate.toISOString(), // Дата доставки
+    is_future: isFutureDate,
     day_of_week: tomskDate.getDay(),
     day_letter: dayLetter,
     generated_id: `${dayLetter}${formattedNumber}`,
-    existing_ids_today: todayIds
+    existing_ids_for_day: todayIds,
+    next_number: nextNumber
   });
   
   return `${dayLetter}${formattedNumber}`;
@@ -725,8 +766,22 @@ async function processWebhookData(body: any): Promise<void> {
       const existingOrderId = await checkOrderIdExists(lead.id);
 
       if (!existingOrderId && !hasOrderId(lead)) {
-        // Генерируем новый ID с учетом Томского времени
-        const newOrderId = await generateOrderId();
+        // Извлекаем дату доставки из custom_fields (поле "Дата")
+        let deliveryDate: Date | undefined;
+        if (lead.custom_fields) {
+          const dateField = lead.custom_fields.find((f: any) => f.name === 'Дата');
+          if (dateField && dateField.values && dateField.values[0]) {
+            const dateStr = dateField.values[0].value || dateField.values[0];
+            deliveryDate = parseDeliveryDate(dateStr);
+          }
+        }
+        // Fallback на текущую дату Томска, если дата доставки не найдена
+        if (!deliveryDate) {
+          deliveryDate = getTomskDate();
+        }
+
+        // Генерируем новый ID на основе даты доставки (день недели)
+        const newOrderId = await generateOrderId(deliveryDate);
 
         // Извлекаем данные для базы
         let deliveryAddress = '';
@@ -762,7 +817,8 @@ async function processWebhookData(body: any): Promise<void> {
               logToFile(processedWebhooksLog, {
                 action: 'assign_order_id',
                 lead_id: lead.id,
-                order_id: newOrderId
+                order_id: newOrderId,
+                delivery_date: deliveryDate.toISOString()
               });
             } else {
               logToFile(processedWebhooksLog, {
@@ -839,8 +895,22 @@ async function processWebhookData(body: any): Promise<void> {
         const existingOrderId = await checkOrderIdExists(lead.id);
 
         if (!existingOrderId && !hasOrderId(lead)) {
-          // Генерируем новый ID с учетом Томского времени
-          const newOrderId = await generateOrderId();
+          // Извлекаем дату доставки из custom_fields (поле "Дата")
+          let deliveryDate: Date | undefined;
+          if (lead.custom_fields) {
+            const dateField = lead.custom_fields.find((f: any) => f.name === 'Дата');
+            if (dateField && dateField.values && dateField.values[0]) {
+              const dateStr = dateField.values[0].value || dateField.values[0];
+              deliveryDate = parseDeliveryDate(dateStr);
+            }
+          }
+          // Fallback на текущую дату Томска, если дата доставки не найдена
+          if (!deliveryDate) {
+            deliveryDate = getTomskDate();
+          }
+
+          // Генерируем новый ID на основе даты доставки (день недели)
+          const newOrderId = await generateOrderId(deliveryDate);
 
           // Извлекаем данные для базы
           let deliveryAddress = '';
@@ -876,7 +946,8 @@ async function processWebhookData(body: any): Promise<void> {
                 logToFile(processedWebhooksLog, {
                   action: 'assign_order_id_update',
                   lead_id: lead.id,
-                  order_id: newOrderId
+                  order_id: newOrderId,
+                  delivery_date: deliveryDate.toISOString()
                 });
               } else {
                 logToFile(processedWebhooksLog, {

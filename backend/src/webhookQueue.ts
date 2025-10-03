@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import * as fs from 'fs';
+import * as path from 'path';
 
 interface WebhookItem {
   id: string;
@@ -15,7 +15,7 @@ export class WebhookQueue {
   private maxRetries = 3;
   private maxQueueSize = 1000;
   private processingDelay = 100; // ms между обработками
-  private queueFile = path.join(__dirname, '../webhook_queue_backup.json');
+  private queueFile = path.join(process.cwd(), 'backend', 'webhook_queue_backup.json');
 
   constructor() {
     // Автосохранение очереди при завершении процесса

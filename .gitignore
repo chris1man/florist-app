@@ -1,29 +1,102 @@
-# Логи
-logs/*.log
-logs/**/*.log
-logs/**/*.backup
-
-# Node modules
+# ============================================
+# 📦 Node.js / NPM
+# ============================================
 node_modules/
 */node_modules/
+package-lock.json
+npm-debug.log*
+yarn-error.log*
+.npm
 
-# Build outputs
+# ============================================
+# 🔨 Build outputs
+# ============================================
+dist/
+build/
 backend/dist/
 frontend/dist/
+backend/public/
 
-# Environment variables
+# ============================================
+# 🔐 Environment variables (НО НЕ .example)
+# ============================================
 .env
 .env.local
 .env.production
+.env.development
+backend/.env
+!backend/.env.example
 
-# Database
+# ============================================
+# 📝 Data files (содержат рабочие данные)
+# ============================================
+backend/sostav.json
+backend/admin-photo.json
+backend/order_ids_backup.json
+
+# ============================================
+# 📊 Логи (автогенерируемые)
+# ============================================
+logs/
+*.log
+*.log.*
+logs/*.log
+logs/**/*.log
+logs/**/*.backup
+npm-debug.log*
+yarn-debug.log*
+lerna-debug.log*
+pm2-error.log
+pm2-out.log
+
+# ============================================
+# 📦 Резервные копии и временные данные
+# ============================================
+*_backup*/
+*_backup.json
+order_ids_reset_backup_*/
+*.tar.gz
+*.zip
+*.rar
+
+# ============================================
+# 🗄️ База данных
+# ============================================
 *.sqlite
+*.sqlite3
 *.db
 
-# PM2
-.pm2/
+# ============================================
+# 📁 Кэш и временные файлы
+# ============================================
+.cache/
+.eslintcache
+.qoder/
+temp/
+tmp/
+*.tmp
+*.temp
 
-# OS generated files
+# ============================================
+# PM2 / Процессы
+# ============================================
+.pm2/
+ecosystem-config.js.local
+
+# ============================================
+# 📱 IDE / Редакторы
+# ============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# ============================================
+# 🖥️ OS generated files
+# ============================================
 .DS_Store
 .DS_Store?
 ._*
@@ -31,23 +104,6 @@ frontend/dist/
 .Trashes
 ehthumbs.db
 Thumbs.db
-
-# Editor files
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-
-# Temporary files
-*.tmp
-*.temp
-*.log.*
-.qoder/rules/Lang.md
-backend/.env
-backend/.env
-
-.qoder/rules/lang.md
 .qoder/rules/ORIGINALVER.md
 .gitignore
 .qoder/rules/problems.md

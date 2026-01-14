@@ -1,9 +1,9 @@
 <template>
-  <div :key="$route.fullPath" class="min-h-screen bg-white dark:bg-[#262626] p-0 w-full transition-colors duration-500">
-	  <header
-		  class="w-full md:max-w-2xl mx-auto flex items-center justify-between px-2 md:px-4 py-1.5 md:py-2 bg-white dark:bg-[#2a2a2a] text-gray-800 dark:text-gray-200 shadow-sm rounded-full mt-2 mb-3 md:mt-3 md:mb-4 transition-all duration-300"
-		  style="font-size: 0.75rem;"
-	  >
+  <div :key="$route.fullPath" class="min-h-screen bg-white dark:bg-[#262626] pt-4 px-2 md:px-4 w-full transition-colors duration-500">
+   <header
+    class="w-full md:max-w-2xl mx-auto flex items-center justify-between px-4 md:px-6 py-2 md:py-3 bg-white dark:bg-[#2a2a2a] text-gray-800 dark:text-gray-200 shadow-sm rounded-full mb-3 md:mb-4 transition-all duration-300"
+    style="font-size: 0.75rem;"
+   >
 		  <div class="font-medium flex items-center gap-2 px-2 py-0.5 rounded-full">
 			  <!-- Индикатор статуса WebSocket -->
 			  <div class="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-gray-100/80 dark:bg-gray-800/80">

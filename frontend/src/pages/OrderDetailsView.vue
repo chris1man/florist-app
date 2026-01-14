@@ -3,7 +3,7 @@
     <div class="w-full flex items-center justify-between px-3 py-1.5 bg-white dark:bg-[#2a2a2a] text-gray-800 dark:text-gray-200 shadow-sm rounded-full mt-2 mb-3 md:mt-3 md:mb-4 transition-all duration-300 relative" style="font-size: 0.75rem;">
       <div class="font-medium px-2 py-0.5 rounded-full text-xs">Детали заказа</div>
       <!-- Кнопка назад с иконкой -->
-      <button @click="goBack" class="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200" title="Назад">
+      <button @click="releaseOrder" class="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200" title="Назад">
         <svg class="w-4 h-4 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>
@@ -19,10 +19,10 @@
           v-if="order?.name"
           :href="`https://makilk.amocrm.ru/leads/detail/${order.id}`"
           target="_blank"
-          class="text-[#933742] dark:text-[#D94366] font-medium hover:underline flex items-center gap-1"
+          class="text-[#933742] dark:text-[#D94366] text-lg md:text-xl font-bold hover:underline flex items-center gap-1 mb-2"
         >
           <span>{{ order.name }}</span>
-          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
         </a>
       </div>
 
@@ -568,9 +568,6 @@ async function uploadPhoto() {
   }
 }
 
-function goBack() {
-  router.push('/orders');
-}
 
 async function sendToAdmin() {
   try {

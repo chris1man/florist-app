@@ -17,7 +17,7 @@ registerRoute(
     networkTimeoutSeconds: 5,
     plugins: [
       new ExpirationPlugin({
-        maxEntries: 100,
+        maxEntries: 50,
         maxAgeSeconds: 3600
       })
     ]
@@ -46,7 +46,7 @@ registerRoute(
     cacheName: 'assets-cache',
     plugins: [
       new ExpirationPlugin({
-        maxEntries: 60,
+        maxEntries: 30,
         maxAgeSeconds: 86400 * 30
       })
     ]

@@ -454,17 +454,13 @@ async function takeOrder(id: string) {
   });
   if (res.ok) {
     sessionStorage.setItem('justTaken', '1');
-    setTimeout(() => {
-      router.push({ path: `/orders/${id}`, query: { fromAction: '1' } });
-    }, 150);
+    router.push({ path: `/orders/${id}`, query: { fromAction: '1' } });
   }
 }
 
 function openOrder(id: string) {
   sessionStorage.setItem('justTaken', '1');
-  setTimeout(() => {
-    router.push({ path: `/orders/${id}`, query: { fromAction: '1' } });
-  }, 150);
+  router.push({ path: `/orders/${id}`, query: { fromAction: '1' } });
 }
 
   function logout() {

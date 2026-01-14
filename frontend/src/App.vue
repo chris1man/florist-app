@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { provide, onMounted } from 'vue'
-// import PWAInstallPrompt from './components/PWAInstallPrompt.vue' // PWA компонент отключен
 
 // Provide refresh function for child components
 const refreshApp = () => {
@@ -10,14 +9,18 @@ const refreshApp = () => {
 provide('refreshApp', refreshApp)
 
 onMounted(() => {
-  // Компонент загружен
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(registrations => {
+      console.log(`📱 PWA Ready: ${registrations.length} Service Worker(s) active`)
+    })
+  }
 });
 </script>
 
 <template>
   <div id="app" class="status-bar-spacing">
     <router-view />
-    <!-- PWAInstallPrompt компонент отключен -->
+    <PWAUpdatePrompt />
   </div>
 </template>
 

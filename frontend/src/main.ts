@@ -1,4 +1,4 @@
-// App version updated: ${Date.now()} - Force cache busting
+// App version updated: 1733917999 - Force cache busting
 import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'

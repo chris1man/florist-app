@@ -62,19 +62,37 @@ const emit = defineEmits(['refresh'])
 
 <style scoped>
 .nav-item {
-  @apply flex flex-col items-center justify-center py-2 px-3 rounded-lg transition-all duration-200 min-w-0 flex-1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  min-width: 0;
+  flex: 1;
   min-height: 64px;
 }
 
 .nav-item:hover {
-  @apply bg-gray-100 dark:bg-gray-700;
+  background-color: #f3f4f6;
+}
+
+.dark .nav-item:hover {
+  background-color: #374151;
 }
 
 .nav-item.active {
-  @apply text-[#E63A62] bg-pink-50 dark:bg-pink-900 dark:text-pink-400;
+  color: var(--primary-pink);
+  background-color: rgba(217, 67, 102, 0.1);
+}
+
+.dark .nav-item.active {
+  background-color: rgba(147, 55, 66, 0.2);
+  color: var(--secondary-pink);
 }
 
 .nav-item.loading {
-  @apply opacity-75;
+  opacity: 0.75;
 }
 </style>

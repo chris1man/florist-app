@@ -10,7 +10,7 @@ module.exports = {
     env: {
       NODE_ENV: 'production',
       PORT: 3000,
-      DISABLE_SW: 'true' // Отключаем Service Worker
+      DISABLE_SW: 'false' // ✅ Включаем Service Worker
     },
     pre_restart_hook: {
       script: 'rebuild.sh',

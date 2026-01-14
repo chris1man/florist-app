@@ -38,7 +38,7 @@ db.serialize(() => {
     password TEXT,
     name TEXT,
     role TEXT DEFAULT 'florist',
-    amocrm_id TEXT,
+    amocrm_enum_id INTEGER,
     completed_orders TEXT DEFAULT '[]',
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP
@@ -54,20 +54,6 @@ db.serialize(() => {
     created_at TEXT DEFAULT CURRENT_TIMESTAMP
   )`);
 
-  // Добавляем тестовых флористов, если их нет
-  const florists = [
-    { login: 'florist1', password: 'pass1', name: 'Анна', role: 'florist' },
-    { login: 'florist2', password: 'pass2', name: 'Ирина', role: 'florist' },
-    { login: 'florist3', password: 'pass3', name: 'Мария', role: 'florist' },
-    { login: 'sonya', password: 'secret', name: 'Соня', role: 'florist' },
-    { login: 'admin', password: 'admin', name: 'Админ', role: 'admin' }
-  ];
-  florists.forEach(f => {
-    db.run(
-      'INSERT OR IGNORE INTO users (login, password, name, role, completed_orders) VALUES (?, ?, ?, ?, ?)',
-      [f.login, f.password, f.name, f.role, '[]']
-    );
-  });
 });
 
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecret';
@@ -755,10 +741,12 @@ async function processWebhookData(body: any): Promise<void> {
     ? body.leads
     : body;
 
+  const orderStatusId = process.env.AMO_ORDER_STATUS_ID || '44828242';
+
   // status webhook
   if (leadsContainer && Array.isArray(leadsContainer.status) && leadsContainer.status.length > 0) {
     const lead = normalizeOrderDates(leadsContainer.status[0]);
-    if (lead.status_id === '44828242') {
+    if (String(lead.status_id) === String(orderStatusId)) {
       let sostav = readSostav();
       const idx = sostav.findIndex((item: any) => item.id === lead.id);
 
@@ -868,7 +856,7 @@ async function processWebhookData(body: any): Promise<void> {
       logToFile(processedWebhooksLog, { action: 'add/update', lead });
       processed = true;
     }
-    if (lead.old_status_id === '44828242') {
+    if (String(lead.old_status_id) === String(orderStatusId)) {
       let sostav = readSostav();
       const orderToRemove = sostav.find((item: any) => item.id === lead.id);
 
@@ -887,7 +875,7 @@ async function processWebhookData(body: any): Promise<void> {
   // update webhook
   if (leadsContainer && Array.isArray(leadsContainer.update) && leadsContainer.update.length > 0) {
     const lead = normalizeOrderDates(leadsContainer.update[0]);
-    if (lead.status_id === '44828242') {
+    if (String(lead.status_id) === String(orderStatusId)) {
       let sostav = readSostav();
       const idx = sostav.findIndex((item: any) => item.id === lead.id);
       if (idx >= 0) {
@@ -1157,6 +1145,64 @@ app.post('/api/orders/:id/complete', auth, (req: Request, res: Response) => {
   res.json({ success: true, order: sostav[idx] });
 });
 
+// --- Эндпоинт для завершения заказа с фото (сразу из OrderDetailsView) ---
+app.post('/api/orders/:id/complete-with-photo', auth, async (req: Request, res: Response): Promise<void> => {
+  const orderId = req.params.id;
+  let sostav = readSostav();
+  const idx = sostav.findIndex((o: any) => String(o.id) === String(orderId));
+  
+  if (idx === -1) {
+    res.status(404).json({ error: 'Заказ не найден' });
+    return;
+  }
+
+  const order = sostav[idx];
+  const photoUrl = order.photos && order.photos.length > 0
+    ? order.photos[order.photos.length - 1].url
+    : null;
+
+  if (!photoUrl) {
+    res.status(400).json({ error: 'Фото не найдено' });
+    return;
+  }
+
+  try {
+    const statusId = parseInt(process.env.AMO_COMPLETED_STATUS_ID || '76172434'); // ID статуса "Выполнен"
+    
+    // Получаем amocrm_enum_id флориста
+    const floristEnumId = await new Promise<number | undefined>((resolve) => {
+      db.get('SELECT amocrm_enum_id FROM users WHERE id = ?', [req.user.id], (err, row: any) => {
+        resolve(row?.amocrm_enum_id);
+      });
+    });
+
+    const result = await updateAmoLead(orderId, statusId, photoUrl, floristEnumId);
+    
+    if (result.success) {
+      // Удаляем из локального списка
+      sostav = sostav.filter((item: any) => String(item.id) !== String(orderId));
+      writeSostav(sostav);
+      
+      logToFile(processedWebhooksLog, {
+        action: 'complete_with_photo_direct',
+        order_id: orderId,
+        user: req.user,
+        photoUrl,
+        floristEnumId
+      });
+      
+      broadcastOrdersUpdate();
+      res.json({ success: true });
+    } else {
+      console.error(`Ошибка обновления в amoCRM для заказа ${orderId}:`, result.error);
+      res.status(500).json({ error: 'Ошибка обновления в amoCRM', details: result.error });
+    }
+  } catch (err: any) {
+    console.error(`Внутренняя ошибка сервера при завершении заказа ${orderId}:`, err);
+    res.status(500).json({ error: 'Внутренняя ошибка сервера', details: err.message });
+  }
+});
+
 // --- Получить id активного заказа для текущего пользователя ---
 app.get('/api/my-active-order', auth, (req, res) => {
   const sostav = readSostav();
@@ -1271,15 +1317,30 @@ app.post('/api/orders/:id/photo', auth, upload.single('photo'), async (req: Requ
     // Если заказ завершен и фото загружено флористом - автоматически переводим в amoCRM
     if (sostav[idx].status === 'выполнен' && req.user.role === 'florist') {
       try {
-        const statusId = 76172434; // ID статуса "Выполнен" в amoCRM
-        const result = await updateAmoLead(orderId, statusId, uploadResult.Location);
+        const statusId = parseInt(process.env.AMO_COMPLETED_STATUS_ID || '76172434'); // ID статуса "Выполнен" в amoCRM
+        
+        // Получаем amocrm_enum_id флориста из БД
+        const floristEnumId = await new Promise<number | undefined>((resolve) => {
+          db.get('SELECT amocrm_enum_id FROM users WHERE id = ?', [req.user.id], (err, row: any) => {
+            resolve(row?.amocrm_enum_id);
+          });
+        });
+
+        const result = await updateAmoLead(orderId, statusId, uploadResult.Location, floristEnumId);
         if (result.success) {
-          console.log(`Заказ ${orderId} автоматически переведен в amoCRM с фото`);
-          logToFile(processedWebhooksLog, { 
-            action: 'auto_finalize_with_photo', 
-            order_id: orderId, 
+          // После успешного обновления в amoCRM, удаляем из локального списка,
+          // так как сделка ушла с этапа "Сборка"
+          let currentSostav = readSostav();
+          currentSostav = currentSostav.filter((item: any) => String(item.id) !== String(orderId));
+          writeSostav(currentSostav);
+
+          console.log(`Заказ ${orderId} автоматически переведен в amoCRM с фото и удален из списка`);
+          logToFile(processedWebhooksLog, {
+            action: 'auto_finalize_with_photo',
+            order_id: orderId,
             user: req.user,
-            photoUrl: uploadResult.Location 
+            photoUrl: uploadResult.Location,
+            floristEnumId
           });
         } else {
           console.error(`Ошибка автоматического перевода заказа ${orderId} в amoCRM:`, result.error);
@@ -1369,7 +1430,7 @@ app.delete('/api/orders/:id/photo', auth, async (req: Request, res: Response): P
 });
 
 // --- Обновление сделки в amoCRM ---
-async function updateAmoLead(leadId: string, statusId: number, photoUrl?: string) {
+async function updateAmoLead(leadId: string, statusId: number, photoUrl?: string, floristEnumId?: number) {
   const url = `${process.env.AMO_BASE_URL}/api/v4/leads/${leadId}`;
   const headers = {
     'Authorization': `Bearer ${process.env.AMO_ACCESS_TOKEN}`,
@@ -1378,15 +1439,26 @@ async function updateAmoLead(leadId: string, statusId: number, photoUrl?: string
   
   const payload: any = {
     status_id: statusId,
+    custom_fields_values: []
   };
 
   if (photoUrl) {
-    payload.custom_fields_values = [
-      {
-        field_id: 1055419, // ID поля для фото
-        values: [{ value: photoUrl }]
-      }
-    ];
+    payload.custom_fields_values.push({
+      field_id: 1055419, // ID поля для фото
+      values: [{ value: String(photoUrl) }]
+    });
+  }
+
+  if (floristEnumId) {
+    payload.custom_fields_values.push({
+      field_id: 1036063, // ID поля для флориста
+      values: [{ enum_id: Number(floristEnumId) }]
+    });
+  }
+
+  // Если нет кастомных полей, удаляем ключ из payload
+  if (payload.custom_fields_values.length === 0) {
+    delete payload.custom_fields_values;
   }
 
   try {
@@ -1422,7 +1494,7 @@ async function updateAmoLeadPhoto(leadId: string, photoUrl: string, changeStatus
 
   // Только если нужно изменить статус
   if (changeStatus) {
-    payload.status_id = 76172434; // ID статуса "Выполнен"
+    payload.status_id = parseInt(process.env.AMO_COMPLETED_STATUS_ID || '76172434'); // ID статуса "Выполнен"
   }
 
   try {
@@ -1498,8 +1570,16 @@ app.post('/api/orders/:id/send-to-admin', auth, async (req: Request, res: Respon
   
   // ПОТОМ переводим в amoCRM (после этого webhook может удалить из sostav.json)
   try {
-    const statusId = 76172434; // ID статуса "Выполнен" в amoCRM
-    const result = await updateAmoLead(orderId, statusId);
+    const statusId = parseInt(process.env.AMO_COMPLETED_STATUS_ID || '76172434'); // ID статуса "Выполнен" в amoCRM
+    
+    // Получаем amocrm_enum_id флориста из БД
+    const floristEnumId = await new Promise<number | undefined>((resolve) => {
+      db.get('SELECT amocrm_enum_id FROM users WHERE id = ?', [req.user.id], (err, row: any) => {
+        resolve(row?.amocrm_enum_id);
+      });
+    });
+
+    const result = await updateAmoLead(orderId, statusId, undefined, floristEnumId);
     if (result.success) {
       console.log(`Заказ ${orderId} переведен в amoCRM при отправке админу`);
       logToFile(processedWebhooksLog, { 
@@ -1528,10 +1608,17 @@ app.post('/api/orders/:id/finalize', auth, async (req: Request, res: Response): 
   const orderId = req.params.id;
   const { action, photoUrl } = req.body; // action: 'to_admin' | 'self_complete'
 
-  const statusId = 76172434; // ID статуса "Выполнен"
+  const statusId = parseInt(process.env.AMO_COMPLETED_STATUS_ID || '76172434'); // ID статуса "Выполнен"
 
   if (action === 'to_admin') {
-    const result = await updateAmoLead(orderId, statusId);
+    // Получаем amocrm_enum_id флориста из БД
+    const floristEnumId = await new Promise<number | undefined>((resolve) => {
+      db.get('SELECT amocrm_enum_id FROM users WHERE id = ?', [req.user.id], (err, row: any) => {
+        resolve(row?.amocrm_enum_id);
+      });
+    });
+
+    const result = await updateAmoLead(orderId, statusId, undefined, floristEnumId);
     if (result.success) {
       res.json({ success: true, message: 'Сделка перемещена в amoCRM' });
     } else {
@@ -1542,7 +1629,14 @@ app.post('/api/orders/:id/finalize', auth, async (req: Request, res: Response): 
       res.status(400).json({ error: 'Не передан URL фото' });
       return;
     }
-    const result = await updateAmoLead(orderId, statusId, photoUrl);
+    // Получаем amocrm_enum_id флориста из БД
+    const floristEnumId = await new Promise<number | undefined>((resolve) => {
+      db.get('SELECT amocrm_enum_id FROM users WHERE id = ?', [req.user.id], (err, row: any) => {
+        resolve(row?.amocrm_enum_id);
+      });
+    });
+
+    const result = await updateAmoLead(orderId, statusId, photoUrl, floristEnumId);
     if (result.success) {
       res.json({ success: true, message: 'Сделка перемещена и фото добавлено в amoCRM' });
     } else {

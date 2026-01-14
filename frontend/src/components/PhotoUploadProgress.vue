@@ -70,9 +70,9 @@ const statusText = computed(() => {
 .upload-spinner {
   width: 56px;
   height: 56px;
-  border: 5px solid rgba(217, 124, 122, 0.1);
-  border-top-color: var(--primary-pink, #8B4545);
-  border-right-color: var(--primary-pink, #8B4545);
+  border: 5px solid rgba(147, 55, 66, 0.1);
+  border-top-color: var(--primary-pink, #933742);
+  border-right-color: var(--primary-pink, #933742);
   border-radius: 50%;
   animation: spin 1.2s linear infinite;
 }
@@ -90,14 +90,14 @@ const statusText = computed(() => {
 .status-text {
   font-size: 1rem;
   font-weight: 500;
-  color: var(--primary-pink, #8B4545);
+  color: var(--primary-pink, #933742);
   margin: 0;
   line-height: 1.4;
 }
 
 .progress-percent {
   font-size: 0.875rem;
-  color: var(--accent-pink, #c96966);
+  color: var(--accent-pink, #7a2d3a);
   margin: 0.5rem 0 0 0;
   font-weight: 600;
 }
@@ -120,8 +120,8 @@ const statusText = computed(() => {
   height: 100%;
   background: linear-gradient(
     90deg,
-    var(--primary-pink, #8B4545),
-    var(--secondary-pink, #f0b6b4)
+    var(--primary-pink, #933742),
+    var(--secondary-pink, #D94366)
   );
   border-radius: 5px;
   transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);

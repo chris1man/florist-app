@@ -77,9 +77,9 @@ withDefaults(defineProps<Props>(), {
 .skeleton {
   background: linear-gradient(
     90deg,
-    var(--secondary-pink, #f0b6b4) 25%,
-    rgba(240, 182, 180, 0.2) 50%,
-    var(--secondary-pink, #f0b6b4) 75%
+    var(--secondary-pink, #D94366) 25%,
+    rgba(217, 67, 102, 0.2) 50%,
+    var(--secondary-pink, #D94366) 75%
   );
   background-size: 200% 100%;
   animation: skeleton-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;

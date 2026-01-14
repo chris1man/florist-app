@@ -80,8 +80,8 @@ if (props.autoClose && props.isVisible) {
 
 .alert-error {
   background: rgba(201, 105, 102, 0.1);
-  border-left-color: var(--accent-pink, #c96966);
-  color: var(--accent-pink, #c96966);
+  border-left-color: var(--accent-pink, #7a2d3a);
+  color: var(--accent-pink, #7a2d3a);
 }
 
 .alert-success {
@@ -91,14 +91,14 @@ if (props.autoClose && props.isVisible) {
 }
 
 .alert-warning {
-  background: rgba(217, 124, 122, 0.1);
-  border-left-color: var(--primary-pink, #8B4545);
-  color: var(--primary-pink, #8B4545);
+  background: rgba(147, 55, 66, 0.1);
+  border-left-color: var(--primary-pink, #933742);
+  color: var(--primary-pink, #933742);
 }
 
 .alert-info {
-  background: rgba(217, 124, 122, 0.05);
-  border-left-color: var(--secondary-pink, #f0b6b4);
+  background: rgba(217, 67, 102, 0.05);
+  border-left-color: var(--secondary-pink, #D94366);
   color: #666;
 }
 

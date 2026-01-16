@@ -11,6 +11,7 @@ import http from 'http';
 import multer from 'multer';
 import AWS from 'aws-sdk';
 import axios from 'axios';
+import sharp from 'sharp';
 import { WebhookQueue, webhookQueue } from './webhookQueue';
 
 // Загрузка переменных окружения
@@ -1159,7 +1160,7 @@ app.post('/api/orders/:id/complete-with-photo', auth, async (req: Request, res: 
   const order = sostav[idx];
   const photoUrl = order.photos && order.photos.length > 0
     ? order.photos[order.photos.length - 1].url
-    : null;
+    : (req.body?.photoUrl || req.body?.photo_url || null);
 
   if (!photoUrl) {
     res.status(400).json({ error: 'Фото не найдено' });
@@ -1230,7 +1231,33 @@ function isS3Configured(): boolean {
 }
 
 // Multer для загрузки файлов
-const upload = multer({ storage: multer.memoryStorage() });
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 20 * 1024 * 1024 // 20MB
+  },
+  fileFilter: (req, file, cb) => {
+    // Принимаем поддерживаемые форматы изображений, включая HEIC/HEIF
+    const supportedMimes = [
+      'image/jpeg',
+      'image/png',
+      'image/gif',
+      'image/webp',
+      'image/bmp',
+      'image/heic',
+      'image/heif'
+    ];
+    const supportedExts = /\.(jpg|jpeg|png|gif|webp|bmp|heic|heif)$/i;
+    const isSupportedMime = supportedMimes.includes(file.mimetype);
+    const isSupportedExt = supportedExts.test(file.originalname);
+    const isOctetStream = file.mimetype === 'application/octet-stream' || file.mimetype === '';
+    if (isSupportedMime || (isSupportedExt && isOctetStream)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Unsupported image format. Only JPEG, PNG, GIF, BMP, WebP, HEIC are supported.') as any, false);
+    }
+  }
+});
 
 // Эндпоинт для загрузки фото
 app.post('/api/orders/:id/photo', auth, upload.single('photo'), async (req: Request, res: Response): Promise<void> => {
@@ -1258,18 +1285,34 @@ app.post('/api/orders/:id/photo', auth, upload.single('photo'), async (req: Requ
     res.status(500).json({ error: 'Хранилище S3 не настроено. Проверьте переменные окружения AWS_* и AWS_S3_BUCKET.' });
     return;
   }
-  const fileName = `${orderId}/${Date.now()}-${req.file.originalname}`;
+
+  // 🔒 всегда безопасный ключ
+  const rawBaseName = path.parse(req.file.originalname).name || 'photo';
+  const safeBaseName = rawBaseName.replace(/[^a-zA-Z0-9_-]+/g, '') || 'photo';
+  const finalFileName = `${orderId}/${Date.now()}-${safeBaseName}.jpg`;
+
   try {
+    const isHeic = ['image/heic', 'image/heif'].includes(req.file.mimetype)
+      || /\.(heic|heif)$/i.test(req.file.originalname);
+
+    const bufferToUpload = await sharp(req.file.buffer, { failOnError: false })
+      .rotate()
+      .toColourspace('srgb')
+      .resize(2000, 2000, { fit: 'inside', withoutEnlargement: true })
+      .jpeg({ quality: isHeic ? 85 : 90 })
+      .toBuffer();
+
     const uploadResult = await s3.upload({
       Bucket: S3_BUCKET!,
-      Key: fileName,
-      Body: req.file.buffer,
-      ContentType: req.file.mimetype,
+      Key: finalFileName,
+      Body: bufferToUpload,
+      ContentType: 'image/jpeg',
       ACL: 'public-read'
     }).promise();
+    const photoUrl = uploadResult.Location;
     if (!sostav[idx].photos) sostav[idx].photos = [];
     sostav[idx].photos.push({
-      url: uploadResult.Location,
+      url: photoUrl,
       uploadedBy: req.user.name,
       userId: req.user.id,
       date: new Date().toISOString()
@@ -1288,7 +1331,7 @@ app.post('/api/orders/:id/photo', auth, upload.single('photo'), async (req: Requ
         writeSostav(sostav);
       }
       try {
-        const result = await updateAmoLeadPhoto(orderId, uploadResult.Location, false); // Всегда false!
+        const result = await updateAmoLeadPhoto(orderId, photoUrl, false); // Всегда false!
         
         if (result.success) {
           const action = wasPhotoRequest ? 'admin_photo_for_request' : 'admin_photo_direct';
@@ -1297,7 +1340,7 @@ app.post('/api/orders/:id/photo', auth, upload.single('photo'), async (req: Requ
             action, 
             order_id: orderId, 
             user: req.user,
-            photoUrl: uploadResult.Location,
+            photoUrl,
             wasPhotoRequest,
             statusChangeSkipped: true,
             removedFromAdminPhoto: wasPhotoRequest
@@ -1326,7 +1369,7 @@ app.post('/api/orders/:id/photo', auth, upload.single('photo'), async (req: Requ
           });
         });
 
-        const result = await updateAmoLead(orderId, statusId, uploadResult.Location, floristEnumId);
+        const result = await updateAmoLead(orderId, statusId, photoUrl, floristEnumId);
         if (result.success) {
           // После успешного обновления в amoCRM, удаляем из локального списка,
           // так как сделка ушла с этапа "Сборка"
@@ -1339,7 +1382,7 @@ app.post('/api/orders/:id/photo', auth, upload.single('photo'), async (req: Requ
             action: 'auto_finalize_with_photo',
             order_id: orderId,
             user: req.user,
-            photoUrl: uploadResult.Location,
+            photoUrl,
             floristEnumId
           });
         } else {
@@ -1363,10 +1406,20 @@ app.post('/api/orders/:id/photo', auth, upload.single('photo'), async (req: Requ
     }
     
     broadcastOrdersUpdate();
-    res.json({ success: true, photoUrl: uploadResult.Location, order: sostav[idx] });
+    res.json({ success: true, photoUrl, order: sostav[idx] });
   } catch (err) {
+    console.error('Upload error:', err);
     try {
-      logToFile(uploadErrorsLog, { context: 's3.upload', orderId, fileName, bucket: S3_BUCKET, error: (err as any)?.message || String(err), stack: (err as any)?.stack });
+      logToFile(uploadErrorsLog, {
+        context: 's3.upload',
+        orderId,
+        finalFileName,
+        bucket: S3_BUCKET,
+        error: (err as any)?.message || String(err),
+        stack: (err as any)?.stack,
+        code: (err as any)?.code,
+        statusCode: (err as any)?.statusCode
+      });
     } catch {}
     res.status(500).json({ error: 'Ошибка загрузки в S3', details: (err as any)?.message || String(err) });
   }
@@ -1445,7 +1498,7 @@ async function updateAmoLead(leadId: string, statusId: number, photoUrl?: string
   if (photoUrl) {
     payload.custom_fields_values.push({
       field_id: 1055419, // ID поля для фото
-      values: [{ value: String(photoUrl) }]
+      values: [{ value: encodeURI(String(photoUrl)) }]
     });
   }
 
@@ -1487,7 +1540,7 @@ async function updateAmoLeadPhoto(leadId: string, photoUrl: string, changeStatus
     custom_fields_values: [
       {
         field_id: 1055419, // ID поля для фото
-        values: [{ value: photoUrl }]
+        values: [{ value: encodeURI(photoUrl) }]
       }
     ]
   };

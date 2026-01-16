@@ -24602,3 +24602,839 @@ tar: all_webhooks.log: file changed as we read it
 11M	/root/florist-app/logs/test_big.log
 1.1G	/root/florist-app/logs/webhooks
 [2026-01-14 12:00:44] [0;32m=== Мониторинг завершен ===[0m
+[2026-01-14 18:00:01] [0;34m=== Мониторинг логов Florist App ===[0m
+[2026-01-14 18:00:01] Максимальный размер лога: 10MB
+[2026-01-14 18:00:01] Директория логов: /root/florist-app/logs
+[2026-01-14 18:00:01] [0;34mПоиск .log файлов в /root/florist-app/logs...[0m
+[2026-01-14 18:00:01] [0;34mНайдено 7 .log файлов[0m
+[2026-01-14 18:00:01] [0;34mФайл 0: /root/florist-app/logs/webhooks/processed_webhooks.log[0m
+[2026-01-14 18:00:01] [0;34mФайл 1: /root/florist-app/logs/webhooks/all_webhooks.log[0m
+[2026-01-14 18:00:01] [0;34mФайл 2: /root/florist-app/logs/pm2/out.log[0m
+[2026-01-14 18:00:01] [0;34mФайл 3: /root/florist-app/logs/pm2/err.log[0m
+[2026-01-14 18:00:01] [0;34mФайл 4: /root/florist-app/logs/pm2/combined.log[0m
+[2026-01-14 18:00:01] [0;34mФайл 5: /root/florist-app/logs/app/upload_errors.log[0m
+[2026-01-14 18:00:01] [0;34mФайл 6: /root/florist-app/logs/test_big.log[0m
+[2026-01-14 18:00:01] [0;34mПроверка файла: /root/florist-app/logs/webhooks/processed_webhooks.log[0m
+[2026-01-14 18:00:01] [0;34mОбработка: /root/florist-app/logs/webhooks/processed_webhooks.log[0m
+[2026-01-14 18:00:01] [0;34mРазмер файла: 105M[0m
+[2026-01-14 18:00:01] [1;33m⚠️  Лог processed_webhooks.log превышает лимит: 103MB > 10MB[0m
+[2026-01-14 18:00:04] [0;34mЗагрузка processed_webhooks_20260114_180001.tar.gz на Яндекс.Диск...[0m
+[2026-01-14 18:00:04] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-14 18:00:06] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-14 18:00:06] [0;34mПолучение ссылки для загрузки /logsAppsBackup/processed_webhooks_20260114_180001.tar.gz...[0m
+[2026-01-14 18:00:07] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader73sas.disk.yandex.net:443/upload-target/20260114T180007.143.utd.ciot5k1hvvi1teozfj1bvqph6-k73sas.9374134","templated":false,"operation_id":"b6d0a0c509289400a3278319d52bfb62f64ea15926303a2b30aa9ffc9e3f2f9a"}[0m
+[2026-01-14 18:00:07] [0;34mИзвлеченная ссылка: https://uploader73sas.disk.yandex.net:443/upload-target/20260114T180007.143.utd.ciot5k1hvvi1teozfj1bvqph6-k73sas.9374134[0m
+[2026-01-14 18:00:07] [0;31mОшибка загрузки processed_webhooks_20260114_180001.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-14 18:00:07] [0;31m❌ Ошибка загрузки processed_webhooks.log на Яндекс.Диск[0m
+[2026-01-14 18:00:07] [0;32m✅ /root/florist-app/logs/webhooks/processed_webhooks.log обработан успешно[0m
+[2026-01-14 18:00:07] [0;34mОбработано файлов: 1 из 7[0m
+[2026-01-14 18:00:07] [0;34mПроверка файла: /root/florist-app/logs/webhooks/all_webhooks.log[0m
+[2026-01-14 18:00:07] [0;34mОбработка: /root/florist-app/logs/webhooks/all_webhooks.log[0m
+[2026-01-14 18:00:07] [0;34mРазмер файла: 876M[0m
+[2026-01-14 18:00:07] [1;33m⚠️  Лог all_webhooks.log превышает лимит: 875MB > 10MB[0m
+[2026-01-14 18:00:23] [0;34mЗагрузка all_webhooks_20260114_180007.tar.gz на Яндекс.Диск...[0m
+[2026-01-14 18:00:23] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-14 18:00:24] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-14 18:00:24] [0;34mПолучение ссылки для загрузки /logsAppsBackup/all_webhooks_20260114_180007.tar.gz...[0m
+[2026-01-14 18:00:26] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader19klg.disk.yandex.net:443/upload-target/20260114T180025.947.utd.3umntlhd53zemab16bkdwg7yv-k19klg.9386319","templated":false,"operation_id":"ed86bec386d8a87be4521ee17bfde321a63b5966858fe14e0aa25a6731b52936"}[0m
+[2026-01-14 18:00:26] [0;34mИзвлеченная ссылка: https://uploader19klg.disk.yandex.net:443/upload-target/20260114T180025.947.utd.3umntlhd53zemab16bkdwg7yv-k19klg.9386319[0m
+[2026-01-14 18:00:26] [0;31mОшибка загрузки all_webhooks_20260114_180007.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-14 18:00:26] [0;31m❌ Ошибка загрузки all_webhooks.log на Яндекс.Диск[0m
+[2026-01-14 18:00:26] [0;32m✅ /root/florist-app/logs/webhooks/all_webhooks.log обработан успешно[0m
+[2026-01-14 18:00:26] [0;34mОбработано файлов: 2 из 7[0m
+[2026-01-14 18:00:26] [0;34mПроверка файла: /root/florist-app/logs/pm2/out.log[0m
+[2026-01-14 18:00:26] [0;34mОбработка: /root/florist-app/logs/pm2/out.log[0m
+[2026-01-14 18:00:26] [0;34mРазмер файла: 47M[0m
+[2026-01-14 18:00:26] [1;33m⚠️  Лог out.log превышает лимит: 46MB > 10MB[0m
+[2026-01-14 18:00:27] [0;34mЗагрузка out_20260114_180026.tar.gz на Яндекс.Диск...[0m
+[2026-01-14 18:00:27] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-14 18:00:28] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-14 18:00:28] [0;34mПолучение ссылки для загрузки /logsAppsBackup/out_20260114_180026.tar.gz...[0m
+[2026-01-14 18:00:29] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader94klg.disk.yandex.net:443/upload-target/20260114T180029.039.utd.cnpx8pd0kkfntpz0t7zmun7u3-k94klg.9304580","templated":false,"operation_id":"f48cdfafb6dd8ca3f48a973108ef4638e85848815356b3fc813189faaa4208b0"}[0m
+[2026-01-14 18:00:29] [0;34mИзвлеченная ссылка: https://uploader94klg.disk.yandex.net:443/upload-target/20260114T180029.039.utd.cnpx8pd0kkfntpz0t7zmun7u3-k94klg.9304580[0m
+[2026-01-14 18:00:29] [0;31mОшибка загрузки out_20260114_180026.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-14 18:00:29] [0;31m❌ Ошибка загрузки out.log на Яндекс.Диск[0m
+[2026-01-14 18:00:29] [0;32m✅ /root/florist-app/logs/pm2/out.log обработан успешно[0m
+[2026-01-14 18:00:29] [0;34mОбработано файлов: 3 из 7[0m
+[2026-01-14 18:00:29] [0;34mПроверка файла: /root/florist-app/logs/pm2/err.log[0m
+[2026-01-14 18:00:29] [0;34mОбработка: /root/florist-app/logs/pm2/err.log[0m
+[2026-01-14 18:00:29] [0;34mРазмер файла: 152K[0m
+[2026-01-14 18:00:29] [0;32m✅ err.log в норме: 0MB[0m
+[2026-01-14 18:00:29] [0;32m✅ /root/florist-app/logs/pm2/err.log обработан успешно[0m
+[2026-01-14 18:00:29] [0;34mОбработано файлов: 4 из 7[0m
+[2026-01-14 18:00:29] [0;34mПроверка файла: /root/florist-app/logs/pm2/combined.log[0m
+[2026-01-14 18:00:29] [0;34mОбработка: /root/florist-app/logs/pm2/combined.log[0m
+[2026-01-14 18:00:29] [0;34mРазмер файла: 47M[0m
+[2026-01-14 18:00:29] [1;33m⚠️  Лог combined.log превышает лимит: 46MB > 10MB[0m
+[2026-01-14 18:00:30] [0;34mЗагрузка combined_20260114_180029.tar.gz на Яндекс.Диск...[0m
+[2026-01-14 18:00:30] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-14 18:00:31] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-14 18:00:31] [0;34mПолучение ссылки для загрузки /logsAppsBackup/combined_20260114_180029.tar.gz...[0m
+[2026-01-14 18:00:32] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader421sas.disk.yandex.net:443/upload-target/20260114T180032.391.utd.co15x10ply4r1cz45aryrf3bc-k421sas.9376957","templated":false,"operation_id":"4514b1778692b2c1c90fff5897a2803990a640fed5dd1620af9dedacce045a37"}[0m
+[2026-01-14 18:00:32] [0;34mИзвлеченная ссылка: https://uploader421sas.disk.yandex.net:443/upload-target/20260114T180032.391.utd.co15x10ply4r1cz45aryrf3bc-k421sas.9376957[0m
+[2026-01-14 18:00:32] [0;31mОшибка загрузки combined_20260114_180029.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-14 18:00:32] [0;31m❌ Ошибка загрузки combined.log на Яндекс.Диск[0m
+[2026-01-14 18:00:32] [0;32m✅ /root/florist-app/logs/pm2/combined.log обработан успешно[0m
+[2026-01-14 18:00:32] [0;34mОбработано файлов: 5 из 7[0m
+[2026-01-14 18:00:32] [0;34mПроверка файла: /root/florist-app/logs/app/upload_errors.log[0m
+[2026-01-14 18:00:32] [0;34mОбработка: /root/florist-app/logs/app/upload_errors.log[0m
+[2026-01-14 18:00:32] [0;34mРазмер файла: 12K[0m
+[2026-01-14 18:00:32] [0;32m✅ upload_errors.log в норме: 0MB[0m
+[2026-01-14 18:00:32] [0;32m✅ /root/florist-app/logs/app/upload_errors.log обработан успешно[0m
+[2026-01-14 18:00:32] [0;34mОбработано файлов: 6 из 7[0m
+[2026-01-14 18:00:32] [0;34mПроверка файла: /root/florist-app/logs/test_big.log[0m
+[2026-01-14 18:00:32] [0;34mОбработка: /root/florist-app/logs/test_big.log[0m
+[2026-01-14 18:00:32] [0;34mРазмер файла: 11M[0m
+[2026-01-14 18:00:32] [1;33m⚠️  Лог test_big.log превышает лимит: 10MB > 10MB[0m
+[2026-01-14 18:00:32] [0;34mЗагрузка test_big_20260114_180032.tar.gz на Яндекс.Диск...[0m
+[2026-01-14 18:00:32] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-14 18:00:33] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-14 18:00:33] [0;34mПолучение ссылки для загрузки /logsAppsBackup/test_big_20260114_180032.tar.gz...[0m
+[2026-01-14 18:00:34] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader45klg.disk.yandex.net:443/upload-target/20260114T180034.580.utd.19k5mxn0n5eulqbac5ahdetgu-k45klg.9337268","templated":false,"operation_id":"61f5e531c5e83266ab9e6fb15fce227c85d3d80a1de7549060b424a7b0d3ea94"}[0m
+[2026-01-14 18:00:34] [0;34mИзвлеченная ссылка: https://uploader45klg.disk.yandex.net:443/upload-target/20260114T180034.580.utd.19k5mxn0n5eulqbac5ahdetgu-k45klg.9337268[0m
+[2026-01-14 18:00:34] [0;31mОшибка загрузки test_big_20260114_180032.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-14 18:00:34] [0;31m❌ Ошибка загрузки test_big.log на Яндекс.Диск[0m
+[2026-01-14 18:00:34] [0;32m✅ /root/florist-app/logs/test_big.log обработан успешно[0m
+[2026-01-14 18:00:34] [0;34mОбработано файлов: 7 из 7[0m
+[2026-01-14 18:00:34] [0;34m=== Статистика обработки ===[0m
+[2026-01-14 18:00:34] Обработано файлов: 7
+[2026-01-14 18:00:34] Архивировано: 0
+[2026-01-14 18:00:34] Ошибок: 0
+[2026-01-14 18:00:34] [0;34m=== Текущие размеры логов ===[0m
+16K	/root/florist-app/logs/app
+93M	/root/florist-app/logs/pm2
+11M	/root/florist-app/logs/test_big.log
+1.1G	/root/florist-app/logs/webhooks
+[2026-01-14 18:00:34] [0;32m=== Мониторинг завершен ===[0m
+[2026-01-15 00:00:01] [0;34m=== Мониторинг логов Florist App ===[0m
+[2026-01-15 00:00:01] Максимальный размер лога: 10MB
+[2026-01-15 00:00:01] Директория логов: /root/florist-app/logs
+[2026-01-15 00:00:01] [0;34mПоиск .log файлов в /root/florist-app/logs...[0m
+[2026-01-15 00:00:01] [0;34mНайдено 7 .log файлов[0m
+[2026-01-15 00:00:01] [0;34mФайл 0: /root/florist-app/logs/webhooks/processed_webhooks.log[0m
+[2026-01-15 00:00:01] [0;34mФайл 1: /root/florist-app/logs/webhooks/all_webhooks.log[0m
+[2026-01-15 00:00:01] [0;34mФайл 2: /root/florist-app/logs/pm2/out.log[0m
+[2026-01-15 00:00:01] [0;34mФайл 3: /root/florist-app/logs/pm2/err.log[0m
+[2026-01-15 00:00:01] [0;34mФайл 4: /root/florist-app/logs/pm2/combined.log[0m
+[2026-01-15 00:00:01] [0;34mФайл 5: /root/florist-app/logs/app/upload_errors.log[0m
+[2026-01-15 00:00:01] [0;34mФайл 6: /root/florist-app/logs/test_big.log[0m
+[2026-01-15 00:00:01] [0;34mПроверка файла: /root/florist-app/logs/webhooks/processed_webhooks.log[0m
+[2026-01-15 00:00:01] [0;34mОбработка: /root/florist-app/logs/webhooks/processed_webhooks.log[0m
+[2026-01-15 00:00:01] [0;34mРазмер файла: 105M[0m
+[2026-01-15 00:00:01] [1;33m⚠️  Лог processed_webhooks.log превышает лимит: 104MB > 10MB[0m
+[2026-01-15 00:00:04] [0;34mЗагрузка processed_webhooks_20260115_000001.tar.gz на Яндекс.Диск...[0m
+[2026-01-15 00:00:04] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-15 00:00:05] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-15 00:00:05] [0;34mПолучение ссылки для загрузки /logsAppsBackup/processed_webhooks_20260115_000001.tar.gz...[0m
+[2026-01-15 00:00:07] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader50vla.disk.yandex.net:443/upload-target/20260115T000006.780.utd.3yzryd5jzp5cexxa6dtwtflpr-k50vla.9166949","templated":false,"operation_id":"528f38446534a11612e303951d5a86a46c8b372985dca1498ba59bbbf286c2b0"}[0m
+[2026-01-15 00:00:07] [0;34mИзвлеченная ссылка: https://uploader50vla.disk.yandex.net:443/upload-target/20260115T000006.780.utd.3yzryd5jzp5cexxa6dtwtflpr-k50vla.9166949[0m
+[2026-01-15 00:00:07] [0;31mОшибка загрузки processed_webhooks_20260115_000001.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-15 00:00:07] [0;31m❌ Ошибка загрузки processed_webhooks.log на Яндекс.Диск[0m
+[2026-01-15 00:00:07] [0;32m✅ /root/florist-app/logs/webhooks/processed_webhooks.log обработан успешно[0m
+[2026-01-15 00:00:07] [0;34mОбработано файлов: 1 из 7[0m
+[2026-01-15 00:00:07] [0;34mПроверка файла: /root/florist-app/logs/webhooks/all_webhooks.log[0m
+[2026-01-15 00:00:07] [0;34mОбработка: /root/florist-app/logs/webhooks/all_webhooks.log[0m
+[2026-01-15 00:00:07] [0;34mРазмер файла: 877M[0m
+[2026-01-15 00:00:07] [1;33m⚠️  Лог all_webhooks.log превышает лимит: 876MB > 10MB[0m
+[2026-01-15 00:00:19] [0;34mЗагрузка all_webhooks_20260115_000007.tar.gz на Яндекс.Диск...[0m
+[2026-01-15 00:00:19] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-15 00:00:20] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-15 00:00:20] [0;34mПолучение ссылки для загрузки /logsAppsBackup/all_webhooks_20260115_000007.tar.gz...[0m
+[2026-01-15 00:00:21] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader745vla.disk.yandex.net:443/upload-target/20260115T000021.285.utd.99c05p4udgz4a0bvt793koccs-k745vla.9224367","templated":false,"operation_id":"4e1091da180e9c2a530a2c3e34472cb382cced0a0e3473dad33b37f3f62f1274"}[0m
+[2026-01-15 00:00:21] [0;34mИзвлеченная ссылка: https://uploader745vla.disk.yandex.net:443/upload-target/20260115T000021.285.utd.99c05p4udgz4a0bvt793koccs-k745vla.9224367[0m
+[2026-01-15 00:00:21] [0;31mОшибка загрузки all_webhooks_20260115_000007.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-15 00:00:21] [0;31m❌ Ошибка загрузки all_webhooks.log на Яндекс.Диск[0m
+[2026-01-15 00:00:21] [0;32m✅ /root/florist-app/logs/webhooks/all_webhooks.log обработан успешно[0m
+[2026-01-15 00:00:21] [0;34mОбработано файлов: 2 из 7[0m
+[2026-01-15 00:00:21] [0;34mПроверка файла: /root/florist-app/logs/pm2/out.log[0m
+[2026-01-15 00:00:21] [0;34mОбработка: /root/florist-app/logs/pm2/out.log[0m
+[2026-01-15 00:00:21] [0;34mРазмер файла: 47M[0m
+[2026-01-15 00:00:21] [1;33m⚠️  Лог out.log превышает лимит: 46MB > 10MB[0m
+[2026-01-15 00:00:22] [0;34mЗагрузка out_20260115_000021.tar.gz на Яндекс.Диск...[0m
+[2026-01-15 00:00:22] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-15 00:00:23] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-15 00:00:23] [0;34mПолучение ссылки для загрузки /logsAppsBackup/out_20260115_000021.tar.gz...[0m
+[2026-01-15 00:00:24] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader93vla.disk.yandex.net:443/upload-target/20260115T000024.018.utd.8sgbemets8kzudnkn6gzyxuud-k93vla.9172259","templated":false,"operation_id":"952c328ad2cad5398ac1a294174e2de85e0761b76429b13ef85d858e8da2fa49"}[0m
+[2026-01-15 00:00:24] [0;34mИзвлеченная ссылка: https://uploader93vla.disk.yandex.net:443/upload-target/20260115T000024.018.utd.8sgbemets8kzudnkn6gzyxuud-k93vla.9172259[0m
+[2026-01-15 00:00:24] [0;31mОшибка загрузки out_20260115_000021.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-15 00:00:24] [0;31m❌ Ошибка загрузки out.log на Яндекс.Диск[0m
+[2026-01-15 00:00:24] [0;32m✅ /root/florist-app/logs/pm2/out.log обработан успешно[0m
+[2026-01-15 00:00:24] [0;34mОбработано файлов: 3 из 7[0m
+[2026-01-15 00:00:24] [0;34mПроверка файла: /root/florist-app/logs/pm2/err.log[0m
+[2026-01-15 00:00:24] [0;34mОбработка: /root/florist-app/logs/pm2/err.log[0m
+[2026-01-15 00:00:24] [0;34mРазмер файла: 152K[0m
+[2026-01-15 00:00:24] [0;32m✅ err.log в норме: 0MB[0m
+[2026-01-15 00:00:24] [0;32m✅ /root/florist-app/logs/pm2/err.log обработан успешно[0m
+[2026-01-15 00:00:24] [0;34mОбработано файлов: 4 из 7[0m
+[2026-01-15 00:00:24] [0;34mПроверка файла: /root/florist-app/logs/pm2/combined.log[0m
+[2026-01-15 00:00:24] [0;34mОбработка: /root/florist-app/logs/pm2/combined.log[0m
+[2026-01-15 00:00:24] [0;34mРазмер файла: 47M[0m
+[2026-01-15 00:00:24] [1;33m⚠️  Лог combined.log превышает лимит: 46MB > 10MB[0m
+[2026-01-15 00:00:24] [0;34mЗагрузка combined_20260115_000024.tar.gz на Яндекс.Диск...[0m
+[2026-01-15 00:00:25] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-15 00:00:26] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-15 00:00:26] [0;34mПолучение ссылки для загрузки /logsAppsBackup/combined_20260115_000024.tar.gz...[0m
+[2026-01-15 00:00:27] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader17klg.disk.yandex.net:443/upload-target/20260115T000026.927.utd.cz1sprje5o8ho3d23hjjuh12j-k17klg.9471074","templated":false,"operation_id":"6101876896572ae8b35c646263d05caff9109a00cb09a296d531ddbf46a26092"}[0m
+[2026-01-15 00:00:27] [0;34mИзвлеченная ссылка: https://uploader17klg.disk.yandex.net:443/upload-target/20260115T000026.927.utd.cz1sprje5o8ho3d23hjjuh12j-k17klg.9471074[0m
+[2026-01-15 00:00:27] [0;31mОшибка загрузки combined_20260115_000024.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-15 00:00:27] [0;31m❌ Ошибка загрузки combined.log на Яндекс.Диск[0m
+[2026-01-15 00:00:27] [0;32m✅ /root/florist-app/logs/pm2/combined.log обработан успешно[0m
+[2026-01-15 00:00:27] [0;34mОбработано файлов: 5 из 7[0m
+[2026-01-15 00:00:27] [0;34mПроверка файла: /root/florist-app/logs/app/upload_errors.log[0m
+[2026-01-15 00:00:27] [0;34mОбработка: /root/florist-app/logs/app/upload_errors.log[0m
+[2026-01-15 00:00:27] [0;34mРазмер файла: 12K[0m
+[2026-01-15 00:00:27] [0;32m✅ upload_errors.log в норме: 0MB[0m
+[2026-01-15 00:00:27] [0;32m✅ /root/florist-app/logs/app/upload_errors.log обработан успешно[0m
+[2026-01-15 00:00:27] [0;34mОбработано файлов: 6 из 7[0m
+[2026-01-15 00:00:27] [0;34mПроверка файла: /root/florist-app/logs/test_big.log[0m
+[2026-01-15 00:00:27] [0;34mОбработка: /root/florist-app/logs/test_big.log[0m
+[2026-01-15 00:00:27] [0;34mРазмер файла: 11M[0m
+[2026-01-15 00:00:27] [1;33m⚠️  Лог test_big.log превышает лимит: 10MB > 10MB[0m
+[2026-01-15 00:00:27] [0;34mЗагрузка test_big_20260115_000027.tar.gz на Яндекс.Диск...[0m
+[2026-01-15 00:00:27] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-15 00:00:28] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-15 00:00:28] [0;34mПолучение ссылки для загрузки /logsAppsBackup/test_big_20260115_000027.tar.gz...[0m
+[2026-01-15 00:00:29] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader45klg.disk.yandex.net:443/upload-target/20260115T000029.006.utd.nj572jjyr3g1p9yol11m2ba8-k45klg.9415229","templated":false,"operation_id":"fc82d5a9526812250c01a2e19786cdc33afc368d63db50fcbf1ffd92726ee417"}[0m
+[2026-01-15 00:00:29] [0;34mИзвлеченная ссылка: https://uploader45klg.disk.yandex.net:443/upload-target/20260115T000029.006.utd.nj572jjyr3g1p9yol11m2ba8-k45klg.9415229[0m
+[2026-01-15 00:00:29] [0;31mОшибка загрузки test_big_20260115_000027.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-15 00:00:29] [0;31m❌ Ошибка загрузки test_big.log на Яндекс.Диск[0m
+[2026-01-15 00:00:29] [0;32m✅ /root/florist-app/logs/test_big.log обработан успешно[0m
+[2026-01-15 00:00:29] [0;34mОбработано файлов: 7 из 7[0m
+[2026-01-15 00:00:29] [0;34m=== Статистика обработки ===[0m
+[2026-01-15 00:00:29] Обработано файлов: 7
+[2026-01-15 00:00:29] Архивировано: 0
+[2026-01-15 00:00:29] Ошибок: 0
+[2026-01-15 00:00:29] [0;34m=== Текущие размеры логов ===[0m
+16K	/root/florist-app/logs/app
+94M	/root/florist-app/logs/pm2
+11M	/root/florist-app/logs/test_big.log
+1.1G	/root/florist-app/logs/webhooks
+[2026-01-15 00:00:29] [0;32m=== Мониторинг завершен ===[0m
+[2026-01-15 06:00:01] [0;34m=== Мониторинг логов Florist App ===[0m
+[2026-01-15 06:00:01] Максимальный размер лога: 10MB
+[2026-01-15 06:00:01] Директория логов: /root/florist-app/logs
+[2026-01-15 06:00:01] [0;34mПоиск .log файлов в /root/florist-app/logs...[0m
+[2026-01-15 06:00:01] [0;34mНайдено 7 .log файлов[0m
+[2026-01-15 06:00:01] [0;34mФайл 0: /root/florist-app/logs/webhooks/processed_webhooks.log[0m
+[2026-01-15 06:00:01] [0;34mФайл 1: /root/florist-app/logs/webhooks/all_webhooks.log[0m
+[2026-01-15 06:00:01] [0;34mФайл 2: /root/florist-app/logs/pm2/out.log[0m
+[2026-01-15 06:00:01] [0;34mФайл 3: /root/florist-app/logs/pm2/err.log[0m
+[2026-01-15 06:00:01] [0;34mФайл 4: /root/florist-app/logs/pm2/combined.log[0m
+[2026-01-15 06:00:01] [0;34mФайл 5: /root/florist-app/logs/app/upload_errors.log[0m
+[2026-01-15 06:00:01] [0;34mФайл 6: /root/florist-app/logs/test_big.log[0m
+[2026-01-15 06:00:01] [0;34mПроверка файла: /root/florist-app/logs/webhooks/processed_webhooks.log[0m
+[2026-01-15 06:00:01] [0;34mОбработка: /root/florist-app/logs/webhooks/processed_webhooks.log[0m
+[2026-01-15 06:00:01] [0;34mРазмер файла: 105M[0m
+[2026-01-15 06:00:01] [1;33m⚠️  Лог processed_webhooks.log превышает лимит: 104MB > 10MB[0m
+[2026-01-15 06:00:05] [0;34mЗагрузка processed_webhooks_20260115_060001.tar.gz на Яндекс.Диск...[0m
+[2026-01-15 06:00:05] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-15 06:00:06] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-15 06:00:06] [0;34mПолучение ссылки для загрузки /logsAppsBackup/processed_webhooks_20260115_060001.tar.gz...[0m
+[2026-01-15 06:00:07] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader91vla.disk.yandex.net:443/upload-target/20260115T060007.015.utd.5l50b2864vksvzaswn337eljw-k91vla.9155730","templated":false,"operation_id":"74b772804c33e570fb1b11f9d6e86e8e041fd7ab31d3828afa0a3389fef99ca5"}[0m
+[2026-01-15 06:00:07] [0;34mИзвлеченная ссылка: https://uploader91vla.disk.yandex.net:443/upload-target/20260115T060007.015.utd.5l50b2864vksvzaswn337eljw-k91vla.9155730[0m
+[2026-01-15 06:00:07] [0;31mОшибка загрузки processed_webhooks_20260115_060001.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-15 06:00:07] [0;31m❌ Ошибка загрузки processed_webhooks.log на Яндекс.Диск[0m
+[2026-01-15 06:00:07] [0;32m✅ /root/florist-app/logs/webhooks/processed_webhooks.log обработан успешно[0m
+[2026-01-15 06:00:07] [0;34mОбработано файлов: 1 из 7[0m
+[2026-01-15 06:00:07] [0;34mПроверка файла: /root/florist-app/logs/webhooks/all_webhooks.log[0m
+[2026-01-15 06:00:07] [0;34mОбработка: /root/florist-app/logs/webhooks/all_webhooks.log[0m
+[2026-01-15 06:00:07] [0;34mРазмер файла: 878M[0m
+[2026-01-15 06:00:07] [1;33m⚠️  Лог all_webhooks.log превышает лимит: 877MB > 10MB[0m
+[2026-01-15 06:00:22] [0;34mЗагрузка all_webhooks_20260115_060007.tar.gz на Яндекс.Диск...[0m
+[2026-01-15 06:00:22] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-15 06:00:23] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-15 06:00:23] [0;34mПолучение ссылки для загрузки /logsAppsBackup/all_webhooks_20260115_060007.tar.gz...[0m
+[2026-01-15 06:00:23] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader72vla.disk.yandex.net:443/upload-target/20260115T060023.712.utd.7rhtvfoz1gw4ct07bmyjfz4bt-k72vla.9247437","templated":false,"operation_id":"9803bbbcce4ff67f0a820bcf3c1b4b71a2e14b681fcd6dabd69588985bd6bc18"}[0m
+[2026-01-15 06:00:23] [0;34mИзвлеченная ссылка: https://uploader72vla.disk.yandex.net:443/upload-target/20260115T060023.712.utd.7rhtvfoz1gw4ct07bmyjfz4bt-k72vla.9247437[0m
+[2026-01-15 06:00:23] [0;31mОшибка загрузки all_webhooks_20260115_060007.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-15 06:00:23] [0;31m❌ Ошибка загрузки all_webhooks.log на Яндекс.Диск[0m
+[2026-01-15 06:00:23] [0;32m✅ /root/florist-app/logs/webhooks/all_webhooks.log обработан успешно[0m
+[2026-01-15 06:00:23] [0;34mОбработано файлов: 2 из 7[0m
+[2026-01-15 06:00:23] [0;34mПроверка файла: /root/florist-app/logs/pm2/out.log[0m
+[2026-01-15 06:00:23] [0;34mОбработка: /root/florist-app/logs/pm2/out.log[0m
+[2026-01-15 06:00:24] [0;34mРазмер файла: 47M[0m
+[2026-01-15 06:00:24] [1;33m⚠️  Лог out.log превышает лимит: 46MB > 10MB[0m
+[2026-01-15 06:00:24] [0;34mЗагрузка out_20260115_060024.tar.gz на Яндекс.Диск...[0m
+[2026-01-15 06:00:24] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-15 06:00:26] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-15 06:00:26] [0;34mПолучение ссылки для загрузки /logsAppsBackup/out_20260115_060024.tar.gz...[0m
+[2026-01-15 06:00:27] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader310klg.disk.yandex.net:443/upload-target/20260115T060027.055.utd.ifossq4dj7y0tvxc00xdl44d-k310klg.9601356","templated":false,"operation_id":"eb0aacb81fa1532d685bd34ad4f672bf3c4bb73acad3644627b547b4032149d8"}[0m
+[2026-01-15 06:00:27] [0;34mИзвлеченная ссылка: https://uploader310klg.disk.yandex.net:443/upload-target/20260115T060027.055.utd.ifossq4dj7y0tvxc00xdl44d-k310klg.9601356[0m
+[2026-01-15 06:00:27] [0;31mОшибка загрузки out_20260115_060024.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-15 06:00:27] [0;31m❌ Ошибка загрузки out.log на Яндекс.Диск[0m
+[2026-01-15 06:00:27] [0;32m✅ /root/florist-app/logs/pm2/out.log обработан успешно[0m
+[2026-01-15 06:00:27] [0;34mОбработано файлов: 3 из 7[0m
+[2026-01-15 06:00:27] [0;34mПроверка файла: /root/florist-app/logs/pm2/err.log[0m
+[2026-01-15 06:00:27] [0;34mОбработка: /root/florist-app/logs/pm2/err.log[0m
+[2026-01-15 06:00:27] [0;34mРазмер файла: 152K[0m
+[2026-01-15 06:00:27] [0;32m✅ err.log в норме: 0MB[0m
+[2026-01-15 06:00:27] [0;32m✅ /root/florist-app/logs/pm2/err.log обработан успешно[0m
+[2026-01-15 06:00:27] [0;34mОбработано файлов: 4 из 7[0m
+[2026-01-15 06:00:27] [0;34mПроверка файла: /root/florist-app/logs/pm2/combined.log[0m
+[2026-01-15 06:00:27] [0;34mОбработка: /root/florist-app/logs/pm2/combined.log[0m
+[2026-01-15 06:00:27] [0;34mРазмер файла: 47M[0m
+[2026-01-15 06:00:27] [1;33m⚠️  Лог combined.log превышает лимит: 46MB > 10MB[0m
+[2026-01-15 06:00:28] [0;34mЗагрузка combined_20260115_060027.tar.gz на Яндекс.Диск...[0m
+[2026-01-15 06:00:28] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-15 06:00:29] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-15 06:00:29] [0;34mПолучение ссылки для загрузки /logsAppsBackup/combined_20260115_060027.tar.gz...[0m
+[2026-01-15 06:00:30] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader14sas.disk.yandex.net:443/upload-target/20260115T060029.776.utd.1gbkx3xpgzxk519gat12ttsmu-k14sas.9515604","templated":false,"operation_id":"f5af9db393625c1d97d21a579ab01e326219df17aabafbf5f57b2b0ad5f97c05"}[0m
+[2026-01-15 06:00:30] [0;34mИзвлеченная ссылка: https://uploader14sas.disk.yandex.net:443/upload-target/20260115T060029.776.utd.1gbkx3xpgzxk519gat12ttsmu-k14sas.9515604[0m
+[2026-01-15 06:00:30] [0;31mОшибка загрузки combined_20260115_060027.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-15 06:00:30] [0;31m❌ Ошибка загрузки combined.log на Яндекс.Диск[0m
+[2026-01-15 06:00:30] [0;32m✅ /root/florist-app/logs/pm2/combined.log обработан успешно[0m
+[2026-01-15 06:00:30] [0;34mОбработано файлов: 5 из 7[0m
+[2026-01-15 06:00:30] [0;34mПроверка файла: /root/florist-app/logs/app/upload_errors.log[0m
+[2026-01-15 06:00:30] [0;34mОбработка: /root/florist-app/logs/app/upload_errors.log[0m
+[2026-01-15 06:00:30] [0;34mРазмер файла: 12K[0m
+[2026-01-15 06:00:30] [0;32m✅ upload_errors.log в норме: 0MB[0m
+[2026-01-15 06:00:30] [0;32m✅ /root/florist-app/logs/app/upload_errors.log обработан успешно[0m
+[2026-01-15 06:00:30] [0;34mОбработано файлов: 6 из 7[0m
+[2026-01-15 06:00:30] [0;34mПроверка файла: /root/florist-app/logs/test_big.log[0m
+[2026-01-15 06:00:30] [0;34mОбработка: /root/florist-app/logs/test_big.log[0m
+[2026-01-15 06:00:30] [0;34mРазмер файла: 11M[0m
+[2026-01-15 06:00:30] [1;33m⚠️  Лог test_big.log превышает лимит: 10MB > 10MB[0m
+[2026-01-15 06:00:30] [0;34mЗагрузка test_big_20260115_060030.tar.gz на Яндекс.Диск...[0m
+[2026-01-15 06:00:30] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-15 06:00:31] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-15 06:00:31] [0;34mПолучение ссылки для загрузки /logsAppsBackup/test_big_20260115_060030.tar.gz...[0m
+[2026-01-15 06:00:32] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader64klg.disk.yandex.net:443/upload-target/20260115T060031.755.utd.cgolfd2u3cylhonchcfcs9na2-k64klg.9461107","templated":false,"operation_id":"04c461dc1fbe6b998d93ce995d6fd9f3d0bcb712ad2180803f42bb3794b550bc"}[0m
+[2026-01-15 06:00:32] [0;34mИзвлеченная ссылка: https://uploader64klg.disk.yandex.net:443/upload-target/20260115T060031.755.utd.cgolfd2u3cylhonchcfcs9na2-k64klg.9461107[0m
+[2026-01-15 06:00:32] [0;31mОшибка загрузки test_big_20260115_060030.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-15 06:00:32] [0;31m❌ Ошибка загрузки test_big.log на Яндекс.Диск[0m
+[2026-01-15 06:00:32] [0;32m✅ /root/florist-app/logs/test_big.log обработан успешно[0m
+[2026-01-15 06:00:32] [0;34mОбработано файлов: 7 из 7[0m
+[2026-01-15 06:00:32] [0;34m=== Статистика обработки ===[0m
+[2026-01-15 06:00:32] Обработано файлов: 7
+[2026-01-15 06:00:32] Архивировано: 0
+[2026-01-15 06:00:32] Ошибок: 0
+[2026-01-15 06:00:32] [0;34m=== Текущие размеры логов ===[0m
+16K	/root/florist-app/logs/app
+94M	/root/florist-app/logs/pm2
+11M	/root/florist-app/logs/test_big.log
+1.1G	/root/florist-app/logs/webhooks
+[2026-01-15 06:00:32] [0;32m=== Мониторинг завершен ===[0m
+[2026-01-15 12:00:01] [0;34m=== Мониторинг логов Florist App ===[0m
+[2026-01-15 12:00:01] Максимальный размер лога: 10MB
+[2026-01-15 12:00:01] Директория логов: /root/florist-app/logs
+[2026-01-15 12:00:01] [0;34mПоиск .log файлов в /root/florist-app/logs...[0m
+[2026-01-15 12:00:01] [0;34mНайдено 7 .log файлов[0m
+[2026-01-15 12:00:01] [0;34mФайл 0: /root/florist-app/logs/webhooks/processed_webhooks.log[0m
+[2026-01-15 12:00:01] [0;34mФайл 1: /root/florist-app/logs/webhooks/all_webhooks.log[0m
+[2026-01-15 12:00:01] [0;34mФайл 2: /root/florist-app/logs/pm2/out.log[0m
+[2026-01-15 12:00:01] [0;34mФайл 3: /root/florist-app/logs/pm2/err.log[0m
+[2026-01-15 12:00:01] [0;34mФайл 4: /root/florist-app/logs/pm2/combined.log[0m
+[2026-01-15 12:00:01] [0;34mФайл 5: /root/florist-app/logs/app/upload_errors.log[0m
+[2026-01-15 12:00:01] [0;34mФайл 6: /root/florist-app/logs/test_big.log[0m
+[2026-01-15 12:00:01] [0;34mПроверка файла: /root/florist-app/logs/webhooks/processed_webhooks.log[0m
+[2026-01-15 12:00:01] [0;34mОбработка: /root/florist-app/logs/webhooks/processed_webhooks.log[0m
+[2026-01-15 12:00:01] [0;34mРазмер файла: 105M[0m
+[2026-01-15 12:00:01] [1;33m⚠️  Лог processed_webhooks.log превышает лимит: 104MB > 10MB[0m
+[2026-01-15 12:00:05] [0;34mЗагрузка processed_webhooks_20260115_120001.tar.gz на Яндекс.Диск...[0m
+[2026-01-15 12:00:05] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-15 12:00:06] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-15 12:00:06] [0;34mПолучение ссылки для загрузки /logsAppsBackup/processed_webhooks_20260115_120001.tar.gz...[0m
+[2026-01-15 12:00:07] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader95klg.disk.yandex.net:443/upload-target/20260115T120007.032.utd.51upooe73ykmkyy9jfdckeisz-k95klg.9502779","templated":false,"operation_id":"1cc49749e487f7aad43475cd6bf6b0accda9115784e7ebf3f464364d7d478d84"}[0m
+[2026-01-15 12:00:07] [0;34mИзвлеченная ссылка: https://uploader95klg.disk.yandex.net:443/upload-target/20260115T120007.032.utd.51upooe73ykmkyy9jfdckeisz-k95klg.9502779[0m
+[2026-01-15 12:00:07] [0;31mОшибка загрузки processed_webhooks_20260115_120001.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-15 12:00:07] [0;31m❌ Ошибка загрузки processed_webhooks.log на Яндекс.Диск[0m
+[2026-01-15 12:00:07] [0;32m✅ /root/florist-app/logs/webhooks/processed_webhooks.log обработан успешно[0m
+[2026-01-15 12:00:07] [0;34mОбработано файлов: 1 из 7[0m
+[2026-01-15 12:00:07] [0;34mПроверка файла: /root/florist-app/logs/webhooks/all_webhooks.log[0m
+[2026-01-15 12:00:07] [0;34mОбработка: /root/florist-app/logs/webhooks/all_webhooks.log[0m
+[2026-01-15 12:00:07] [0;34mРазмер файла: 881M[0m
+[2026-01-15 12:00:07] [1;33m⚠️  Лог all_webhooks.log превышает лимит: 879MB > 10MB[0m
+tar: all_webhooks.log: file changed as we read it
+[2026-01-15 12:00:24] [0;34mЗагрузка [2026-01-15 12:00:07] [0;34mСоздание архива для all_webhooks.log...[0m
+[2026-01-15 12:00:24] [0;31mОшибка создания архива для all_webhooks.log[0m на Яндекс.Диск...[0m
+[2026-01-15 12:00:24] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-15 12:00:25] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-15 12:00:25] [0;34mПолучение ссылки для загрузки /logsAppsBackup/[2026-01-15 12:00:07] [0;34mСоздание архива для all_webhooks.log...[0m
+[2026-01-15 12:00:24] [0;31mОшибка создания архива для all_webhooks.log[0m...[0m
+[2026-01-15 12:00:25] [0;34mОтвет получения ссылки: [0m
+[2026-01-15 12:00:25] [0;34mИзвлеченная ссылка: [0m
+[2026-01-15 12:00:25] [0;31mНе удалось получить ссылку для загрузки [2026-01-15 12:00:07] [0;34mСоздание архива для all_webhooks.log...[0m
+[2026-01-15 12:00:24] [0;31mОшибка создания архива для all_webhooks.log[0m[0m
+[2026-01-15 12:00:25] [0;31m❌ Ошибка загрузки all_webhooks.log на Яндекс.Диск[0m
+[2026-01-15 12:00:25] [0;32m✅ /root/florist-app/logs/webhooks/all_webhooks.log обработан успешно[0m
+[2026-01-15 12:00:25] [0;34mОбработано файлов: 2 из 7[0m
+[2026-01-15 12:00:25] [0;34mПроверка файла: /root/florist-app/logs/pm2/out.log[0m
+[2026-01-15 12:00:25] [0;34mОбработка: /root/florist-app/logs/pm2/out.log[0m
+[2026-01-15 12:00:25] [0;34mРазмер файла: 47M[0m
+[2026-01-15 12:00:25] [1;33m⚠️  Лог out.log превышает лимит: 46MB > 10MB[0m
+[2026-01-15 12:00:26] [0;34mЗагрузка out_20260115_120025.tar.gz на Яндекс.Диск...[0m
+[2026-01-15 12:00:26] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-15 12:00:29] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-15 12:00:29] [0;34mПолучение ссылки для загрузки /logsAppsBackup/out_20260115_120025.tar.gz...[0m
+[2026-01-15 12:00:30] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader15klg.disk.yandex.net:443/upload-target/20260115T120030.045.utd.cqruve4hgry2vxh23yth7d2uo-k15klg.9584650","templated":false,"operation_id":"3a41e7ad4aee00e9cfc3b8ee0556bf68d4664b77fbbc1d840dd8793cf8982a7d"}[0m
+[2026-01-15 12:00:30] [0;34mИзвлеченная ссылка: https://uploader15klg.disk.yandex.net:443/upload-target/20260115T120030.045.utd.cqruve4hgry2vxh23yth7d2uo-k15klg.9584650[0m
+[2026-01-15 12:00:30] [0;31mОшибка загрузки out_20260115_120025.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-15 12:00:30] [0;31m❌ Ошибка загрузки out.log на Яндекс.Диск[0m
+[2026-01-15 12:00:30] [0;32m✅ /root/florist-app/logs/pm2/out.log обработан успешно[0m
+[2026-01-15 12:00:30] [0;34mОбработано файлов: 3 из 7[0m
+[2026-01-15 12:00:30] [0;34mПроверка файла: /root/florist-app/logs/pm2/err.log[0m
+[2026-01-15 12:00:30] [0;34mОбработка: /root/florist-app/logs/pm2/err.log[0m
+[2026-01-15 12:00:30] [0;34mРазмер файла: 156K[0m
+[2026-01-15 12:00:30] [0;32m✅ err.log в норме: 0MB[0m
+[2026-01-15 12:00:30] [0;32m✅ /root/florist-app/logs/pm2/err.log обработан успешно[0m
+[2026-01-15 12:00:30] [0;34mОбработано файлов: 4 из 7[0m
+[2026-01-15 12:00:30] [0;34mПроверка файла: /root/florist-app/logs/pm2/combined.log[0m
+[2026-01-15 12:00:30] [0;34mОбработка: /root/florist-app/logs/pm2/combined.log[0m
+[2026-01-15 12:00:30] [0;34mРазмер файла: 48M[0m
+[2026-01-15 12:00:30] [1;33m⚠️  Лог combined.log превышает лимит: 47MB > 10MB[0m
+[2026-01-15 12:00:31] [0;34mЗагрузка combined_20260115_120030.tar.gz на Яндекс.Диск...[0m
+[2026-01-15 12:00:31] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-15 12:00:32] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-15 12:00:32] [0;34mПолучение ссылки для загрузки /logsAppsBackup/combined_20260115_120030.tar.gz...[0m
+[2026-01-15 12:00:33] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader78vla.disk.yandex.net:443/upload-target/20260115T120033.518.utd.1ly4hxbir9po0phf70xj3iiht-k78vla.9343696","templated":false,"operation_id":"f0a5c89153de3459dd20c87069262a2ff0d388774af802e9cfbd7b95cfebe506"}[0m
+[2026-01-15 12:00:33] [0;34mИзвлеченная ссылка: https://uploader78vla.disk.yandex.net:443/upload-target/20260115T120033.518.utd.1ly4hxbir9po0phf70xj3iiht-k78vla.9343696[0m
+[2026-01-15 12:00:33] [0;31mОшибка загрузки combined_20260115_120030.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-15 12:00:33] [0;31m❌ Ошибка загрузки combined.log на Яндекс.Диск[0m
+[2026-01-15 12:00:33] [0;32m✅ /root/florist-app/logs/pm2/combined.log обработан успешно[0m
+[2026-01-15 12:00:33] [0;34mОбработано файлов: 5 из 7[0m
+[2026-01-15 12:00:33] [0;34mПроверка файла: /root/florist-app/logs/app/upload_errors.log[0m
+[2026-01-15 12:00:33] [0;34mОбработка: /root/florist-app/logs/app/upload_errors.log[0m
+[2026-01-15 12:00:33] [0;34mРазмер файла: 12K[0m
+[2026-01-15 12:00:33] [0;32m✅ upload_errors.log в норме: 0MB[0m
+[2026-01-15 12:00:33] [0;32m✅ /root/florist-app/logs/app/upload_errors.log обработан успешно[0m
+[2026-01-15 12:00:33] [0;34mОбработано файлов: 6 из 7[0m
+[2026-01-15 12:00:33] [0;34mПроверка файла: /root/florist-app/logs/test_big.log[0m
+[2026-01-15 12:00:33] [0;34mОбработка: /root/florist-app/logs/test_big.log[0m
+[2026-01-15 12:00:33] [0;34mРазмер файла: 11M[0m
+[2026-01-15 12:00:33] [1;33m⚠️  Лог test_big.log превышает лимит: 10MB > 10MB[0m
+[2026-01-15 12:00:34] [0;34mЗагрузка test_big_20260115_120033.tar.gz на Яндекс.Диск...[0m
+[2026-01-15 12:00:34] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-15 12:00:34] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-15 12:00:34] [0;34mПолучение ссылки для загрузки /logsAppsBackup/test_big_20260115_120033.tar.gz...[0m
+[2026-01-15 12:00:36] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader40vla.disk.yandex.net:443/upload-target/20260115T120035.804.utd.4cpa9ec504illa2227w6zi4f8-k40vla.1994159","templated":false,"operation_id":"ec4e948f60a1b650eb9f4d6a5b58149b9d1eb8024a30edbefd3c73e13c555417"}[0m
+[2026-01-15 12:00:36] [0;34mИзвлеченная ссылка: https://uploader40vla.disk.yandex.net:443/upload-target/20260115T120035.804.utd.4cpa9ec504illa2227w6zi4f8-k40vla.1994159[0m
+[2026-01-15 12:00:36] [0;31mОшибка загрузки test_big_20260115_120033.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-15 12:00:36] [0;31m❌ Ошибка загрузки test_big.log на Яндекс.Диск[0m
+[2026-01-15 12:00:36] [0;32m✅ /root/florist-app/logs/test_big.log обработан успешно[0m
+[2026-01-15 12:00:36] [0;34mОбработано файлов: 7 из 7[0m
+[2026-01-15 12:00:36] [0;34m=== Статистика обработки ===[0m
+[2026-01-15 12:00:36] Обработано файлов: 7
+[2026-01-15 12:00:36] Архивировано: 0
+[2026-01-15 12:00:36] Ошибок: 0
+[2026-01-15 12:00:36] [0;34m=== Текущие размеры логов ===[0m
+16K	/root/florist-app/logs/app
+95M	/root/florist-app/logs/pm2
+11M	/root/florist-app/logs/test_big.log
+1.1G	/root/florist-app/logs/webhooks
+[2026-01-15 12:00:36] [0;32m=== Мониторинг завершен ===[0m
+[2026-01-15 18:00:01] [0;34m=== Мониторинг логов Florist App ===[0m
+[2026-01-15 18:00:01] Максимальный размер лога: 10MB
+[2026-01-15 18:00:01] Директория логов: /root/florist-app/logs
+[2026-01-15 18:00:01] [0;34mПоиск .log файлов в /root/florist-app/logs...[0m
+[2026-01-15 18:00:01] [0;34mНайдено 7 .log файлов[0m
+[2026-01-15 18:00:01] [0;34mФайл 0: /root/florist-app/logs/webhooks/processed_webhooks.log[0m
+[2026-01-15 18:00:01] [0;34mФайл 1: /root/florist-app/logs/webhooks/all_webhooks.log[0m
+[2026-01-15 18:00:01] [0;34mФайл 2: /root/florist-app/logs/pm2/out.log[0m
+[2026-01-15 18:00:01] [0;34mФайл 3: /root/florist-app/logs/pm2/err.log[0m
+[2026-01-15 18:00:01] [0;34mФайл 4: /root/florist-app/logs/pm2/combined.log[0m
+[2026-01-15 18:00:01] [0;34mФайл 5: /root/florist-app/logs/app/upload_errors.log[0m
+[2026-01-15 18:00:01] [0;34mФайл 6: /root/florist-app/logs/test_big.log[0m
+[2026-01-15 18:00:01] [0;34mПроверка файла: /root/florist-app/logs/webhooks/processed_webhooks.log[0m
+[2026-01-15 18:00:01] [0;34mОбработка: /root/florist-app/logs/webhooks/processed_webhooks.log[0m
+[2026-01-15 18:00:02] [0;34mРазмер файла: 105M[0m
+[2026-01-15 18:00:02] [1;33m⚠️  Лог processed_webhooks.log превышает лимит: 104MB > 10MB[0m
+[2026-01-15 18:00:05] [0;34mЗагрузка processed_webhooks_20260115_180002.tar.gz на Яндекс.Диск...[0m
+[2026-01-15 18:00:05] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-15 18:00:06] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-15 18:00:06] [0;34mПолучение ссылки для загрузки /logsAppsBackup/processed_webhooks_20260115_180002.tar.gz...[0m
+[2026-01-15 18:00:07] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader99vla.disk.yandex.net:443/upload-target/20260115T180007.470.utd.1qmo6mn694dmjbjv2eh215t3z-k99vla.5188","templated":false,"operation_id":"0cef659f3d5bbe5d0598816dc38bce96e7275e6d9a21a600437c8bd8adf57f88"}[0m
+[2026-01-15 18:00:07] [0;34mИзвлеченная ссылка: https://uploader99vla.disk.yandex.net:443/upload-target/20260115T180007.470.utd.1qmo6mn694dmjbjv2eh215t3z-k99vla.5188[0m
+[2026-01-15 18:00:07] [0;31mОшибка загрузки processed_webhooks_20260115_180002.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-15 18:00:07] [0;31m❌ Ошибка загрузки processed_webhooks.log на Яндекс.Диск[0m
+[2026-01-15 18:00:07] [0;32m✅ /root/florist-app/logs/webhooks/processed_webhooks.log обработан успешно[0m
+[2026-01-15 18:00:07] [0;34mОбработано файлов: 1 из 7[0m
+[2026-01-15 18:00:07] [0;34mПроверка файла: /root/florist-app/logs/webhooks/all_webhooks.log[0m
+[2026-01-15 18:00:07] [0;34mОбработка: /root/florist-app/logs/webhooks/all_webhooks.log[0m
+[2026-01-15 18:00:07] [0;34mРазмер файла: 883M[0m
+[2026-01-15 18:00:07] [1;33m⚠️  Лог all_webhooks.log превышает лимит: 882MB > 10MB[0m
+[2026-01-15 18:00:24] [0;34mЗагрузка all_webhooks_20260115_180007.tar.gz на Яндекс.Диск...[0m
+[2026-01-15 18:00:24] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-15 18:00:25] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-15 18:00:25] [0;34mПолучение ссылки для загрузки /logsAppsBackup/all_webhooks_20260115_180007.tar.gz...[0m
+[2026-01-15 18:00:26] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader25klg.disk.yandex.net:443/upload-target/20260115T180026.067.utd.ctcrv3ss6w4qpsavoif3jb9m5-k25klg.72203","templated":false,"operation_id":"944d3b9d235c900e4501527b2a369c7abc8430e958db5d8b8120f8f7d2ed4380"}[0m
+[2026-01-15 18:00:26] [0;34mИзвлеченная ссылка: https://uploader25klg.disk.yandex.net:443/upload-target/20260115T180026.067.utd.ctcrv3ss6w4qpsavoif3jb9m5-k25klg.72203[0m
+[2026-01-15 18:00:26] [0;31mОшибка загрузки all_webhooks_20260115_180007.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-15 18:00:26] [0;31m❌ Ошибка загрузки all_webhooks.log на Яндекс.Диск[0m
+[2026-01-15 18:00:26] [0;32m✅ /root/florist-app/logs/webhooks/all_webhooks.log обработан успешно[0m
+[2026-01-15 18:00:26] [0;34mОбработано файлов: 2 из 7[0m
+[2026-01-15 18:00:26] [0;34mПроверка файла: /root/florist-app/logs/pm2/out.log[0m
+[2026-01-15 18:00:26] [0;34mОбработка: /root/florist-app/logs/pm2/out.log[0m
+[2026-01-15 18:00:26] [0;34mРазмер файла: 48M[0m
+[2026-01-15 18:00:26] [1;33m⚠️  Лог out.log превышает лимит: 47MB > 10MB[0m
+[2026-01-15 18:00:27] [0;34mЗагрузка out_20260115_180026.tar.gz на Яндекс.Диск...[0m
+[2026-01-15 18:00:27] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-15 18:00:28] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-15 18:00:28] [0;34mПолучение ссылки для загрузки /logsAppsBackup/out_20260115_180026.tar.gz...[0m
+[2026-01-15 18:00:29] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader65klg.disk.yandex.net:443/upload-target/20260115T180029.203.utd.5xmhp64is8lovrgupfq6q79qf-k65klg.45587","templated":false,"operation_id":"24aabb800c91329c88472ad84b5f62c0a0bbfa776f9205a0afe1eaaaee7b8827"}[0m
+[2026-01-15 18:00:29] [0;34mИзвлеченная ссылка: https://uploader65klg.disk.yandex.net:443/upload-target/20260115T180029.203.utd.5xmhp64is8lovrgupfq6q79qf-k65klg.45587[0m
+[2026-01-15 18:00:29] [0;31mОшибка загрузки out_20260115_180026.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-15 18:00:29] [0;31m❌ Ошибка загрузки out.log на Яндекс.Диск[0m
+[2026-01-15 18:00:29] [0;32m✅ /root/florist-app/logs/pm2/out.log обработан успешно[0m
+[2026-01-15 18:00:29] [0;34mОбработано файлов: 3 из 7[0m
+[2026-01-15 18:00:29] [0;34mПроверка файла: /root/florist-app/logs/pm2/err.log[0m
+[2026-01-15 18:00:29] [0;34mОбработка: /root/florist-app/logs/pm2/err.log[0m
+[2026-01-15 18:00:29] [0;34mРазмер файла: 172K[0m
+[2026-01-15 18:00:29] [0;32m✅ err.log в норме: 0MB[0m
+[2026-01-15 18:00:29] [0;32m✅ /root/florist-app/logs/pm2/err.log обработан успешно[0m
+[2026-01-15 18:00:29] [0;34mОбработано файлов: 4 из 7[0m
+[2026-01-15 18:00:29] [0;34mПроверка файла: /root/florist-app/logs/pm2/combined.log[0m
+[2026-01-15 18:00:29] [0;34mОбработка: /root/florist-app/logs/pm2/combined.log[0m
+[2026-01-15 18:00:29] [0;34mРазмер файла: 49M[0m
+[2026-01-15 18:00:29] [1;33m⚠️  Лог combined.log превышает лимит: 48MB > 10MB[0m
+[2026-01-15 18:00:30] [0;34mЗагрузка combined_20260115_180029.tar.gz на Яндекс.Диск...[0m
+[2026-01-15 18:00:30] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-15 18:00:31] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-15 18:00:31] [0;34mПолучение ссылки для загрузки /logsAppsBackup/combined_20260115_180029.tar.gz...[0m
+[2026-01-15 18:00:32] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader400vla.disk.yandex.net:443/upload-target/20260115T180032.555.utd.a0c1g51d9ohrxp0vd94mmjcwg-k400vla.69239","templated":false,"operation_id":"842d85ef34486d8224437bd9ff87ba9378f545868edb2620a2322adcde25ba04"}[0m
+[2026-01-15 18:00:32] [0;34mИзвлеченная ссылка: https://uploader400vla.disk.yandex.net:443/upload-target/20260115T180032.555.utd.a0c1g51d9ohrxp0vd94mmjcwg-k400vla.69239[0m
+[2026-01-15 18:00:32] [0;31mОшибка загрузки combined_20260115_180029.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-15 18:00:32] [0;31m❌ Ошибка загрузки combined.log на Яндекс.Диск[0m
+[2026-01-15 18:00:32] [0;32m✅ /root/florist-app/logs/pm2/combined.log обработан успешно[0m
+[2026-01-15 18:00:32] [0;34mОбработано файлов: 5 из 7[0m
+[2026-01-15 18:00:32] [0;34mПроверка файла: /root/florist-app/logs/app/upload_errors.log[0m
+[2026-01-15 18:00:32] [0;34mОбработка: /root/florist-app/logs/app/upload_errors.log[0m
+[2026-01-15 18:00:32] [0;34mРазмер файла: 16K[0m
+[2026-01-15 18:00:32] [0;32m✅ upload_errors.log в норме: 0MB[0m
+[2026-01-15 18:00:32] [0;32m✅ /root/florist-app/logs/app/upload_errors.log обработан успешно[0m
+[2026-01-15 18:00:32] [0;34mОбработано файлов: 6 из 7[0m
+[2026-01-15 18:00:32] [0;34mПроверка файла: /root/florist-app/logs/test_big.log[0m
+[2026-01-15 18:00:32] [0;34mОбработка: /root/florist-app/logs/test_big.log[0m
+[2026-01-15 18:00:32] [0;34mРазмер файла: 11M[0m
+[2026-01-15 18:00:32] [1;33m⚠️  Лог test_big.log превышает лимит: 10MB > 10MB[0m
+[2026-01-15 18:00:32] [0;34mЗагрузка test_big_20260115_180032.tar.gz на Яндекс.Диск...[0m
+[2026-01-15 18:00:32] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-15 18:00:33] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-15 18:00:33] [0;34mПолучение ссылки для загрузки /logsAppsBackup/test_big_20260115_180032.tar.gz...[0m
+[2026-01-15 18:00:34] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader72vla.disk.yandex.net:443/upload-target/20260115T180034.748.utd.elz1r8tww810bjs1m6p9pent-k72vla.38187","templated":false,"operation_id":"3c0e9c002bf88126c7370cea663b8f5d76b6ff5dc12df4a1ced0989d038684c5"}[0m
+[2026-01-15 18:00:34] [0;34mИзвлеченная ссылка: https://uploader72vla.disk.yandex.net:443/upload-target/20260115T180034.748.utd.elz1r8tww810bjs1m6p9pent-k72vla.38187[0m
+[2026-01-15 18:00:34] [0;31mОшибка загрузки test_big_20260115_180032.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-15 18:00:34] [0;31m❌ Ошибка загрузки test_big.log на Яндекс.Диск[0m
+[2026-01-15 18:00:34] [0;32m✅ /root/florist-app/logs/test_big.log обработан успешно[0m
+[2026-01-15 18:00:34] [0;34mОбработано файлов: 7 из 7[0m
+[2026-01-15 18:00:34] [0;34m=== Статистика обработки ===[0m
+[2026-01-15 18:00:34] Обработано файлов: 7
+[2026-01-15 18:00:34] Архивировано: 0
+[2026-01-15 18:00:34] Ошибок: 0
+[2026-01-15 18:00:34] [0;34m=== Текущие размеры логов ===[0m
+20K	/root/florist-app/logs/app
+96M	/root/florist-app/logs/pm2
+11M	/root/florist-app/logs/test_big.log
+1.1G	/root/florist-app/logs/webhooks
+[2026-01-15 18:00:34] [0;32m=== Мониторинг завершен ===[0m
+[2026-01-16 00:00:01] [0;34m=== Мониторинг логов Florist App ===[0m
+[2026-01-16 00:00:01] Максимальный размер лога: 10MB
+[2026-01-16 00:00:01] Директория логов: /root/florist-app/logs
+[2026-01-16 00:00:01] [0;34mПоиск .log файлов в /root/florist-app/logs...[0m
+[2026-01-16 00:00:01] [0;34mНайдено 7 .log файлов[0m
+[2026-01-16 00:00:01] [0;34mФайл 0: /root/florist-app/logs/webhooks/processed_webhooks.log[0m
+[2026-01-16 00:00:01] [0;34mФайл 1: /root/florist-app/logs/webhooks/all_webhooks.log[0m
+[2026-01-16 00:00:01] [0;34mФайл 2: /root/florist-app/logs/pm2/out.log[0m
+[2026-01-16 00:00:01] [0;34mФайл 3: /root/florist-app/logs/pm2/err.log[0m
+[2026-01-16 00:00:01] [0;34mФайл 4: /root/florist-app/logs/pm2/combined.log[0m
+[2026-01-16 00:00:01] [0;34mФайл 5: /root/florist-app/logs/app/upload_errors.log[0m
+[2026-01-16 00:00:01] [0;34mФайл 6: /root/florist-app/logs/test_big.log[0m
+[2026-01-16 00:00:01] [0;34mПроверка файла: /root/florist-app/logs/webhooks/processed_webhooks.log[0m
+[2026-01-16 00:00:01] [0;34mОбработка: /root/florist-app/logs/webhooks/processed_webhooks.log[0m
+[2026-01-16 00:00:01] [0;34mРазмер файла: 106M[0m
+[2026-01-16 00:00:01] [1;33m⚠️  Лог processed_webhooks.log превышает лимит: 104MB > 10MB[0m
+[2026-01-16 00:00:04] [0;34mЗагрузка processed_webhooks_20260116_000001.tar.gz на Яндекс.Диск...[0m
+[2026-01-16 00:00:04] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-16 00:00:05] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-16 00:00:05] [0;34mПолучение ссылки для загрузки /logsAppsBackup/processed_webhooks_20260116_000001.tar.gz...[0m
+[2026-01-16 00:00:06] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader50sas.disk.yandex.net:443/upload-target/20260116T000006.118.utd.1bwzeez4xzwiteb7kec9d9cr1-k50sas.148510","templated":false,"operation_id":"9bab80c71ce28542cd498e16cd131c421ce829d377bcca7d81cc9fa5463fa166"}[0m
+[2026-01-16 00:00:06] [0;34mИзвлеченная ссылка: https://uploader50sas.disk.yandex.net:443/upload-target/20260116T000006.118.utd.1bwzeez4xzwiteb7kec9d9cr1-k50sas.148510[0m
+[2026-01-16 00:00:06] [0;31mОшибка загрузки processed_webhooks_20260116_000001.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-16 00:00:06] [0;31m❌ Ошибка загрузки processed_webhooks.log на Яндекс.Диск[0m
+[2026-01-16 00:00:06] [0;32m✅ /root/florist-app/logs/webhooks/processed_webhooks.log обработан успешно[0m
+[2026-01-16 00:00:06] [0;34mОбработано файлов: 1 из 7[0m
+[2026-01-16 00:00:06] [0;34mПроверка файла: /root/florist-app/logs/webhooks/all_webhooks.log[0m
+[2026-01-16 00:00:06] [0;34mОбработка: /root/florist-app/logs/webhooks/all_webhooks.log[0m
+[2026-01-16 00:00:06] [0;34mРазмер файла: 884M[0m
+[2026-01-16 00:00:06] [1;33m⚠️  Лог all_webhooks.log превышает лимит: 883MB > 10MB[0m
+[2026-01-16 00:00:19] [0;34mЗагрузка all_webhooks_20260116_000006.tar.gz на Яндекс.Диск...[0m
+[2026-01-16 00:00:19] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-16 00:00:20] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-16 00:00:20] [0;34mПолучение ссылки для загрузки /logsAppsBackup/all_webhooks_20260116_000006.tar.gz...[0m
+[2026-01-16 00:00:21] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader64klg.disk.yandex.net:443/upload-target/20260116T000021.251.utd.d72jotbspnh9otqxgaxxs1lsn-k64klg.115126","templated":false,"operation_id":"ddbac2cf5f0042126ac7bda4ed34559d9110e8ab99f71753309d785e0b1d3ba4"}[0m
+[2026-01-16 00:00:21] [0;34mИзвлеченная ссылка: https://uploader64klg.disk.yandex.net:443/upload-target/20260116T000021.251.utd.d72jotbspnh9otqxgaxxs1lsn-k64klg.115126[0m
+[2026-01-16 00:00:21] [0;31mОшибка загрузки all_webhooks_20260116_000006.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-16 00:00:21] [0;31m❌ Ошибка загрузки all_webhooks.log на Яндекс.Диск[0m
+[2026-01-16 00:00:21] [0;32m✅ /root/florist-app/logs/webhooks/all_webhooks.log обработан успешно[0m
+[2026-01-16 00:00:21] [0;34mОбработано файлов: 2 из 7[0m
+[2026-01-16 00:00:21] [0;34mПроверка файла: /root/florist-app/logs/pm2/out.log[0m
+[2026-01-16 00:00:21] [0;34mОбработка: /root/florist-app/logs/pm2/out.log[0m
+[2026-01-16 00:00:21] [0;34mРазмер файла: 48M[0m
+[2026-01-16 00:00:21] [1;33m⚠️  Лог out.log превышает лимит: 47MB > 10MB[0m
+[2026-01-16 00:00:22] [0;34mЗагрузка out_20260116_000021.tar.gz на Яндекс.Диск...[0m
+[2026-01-16 00:00:22] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-16 00:00:23] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-16 00:00:23] [0;34mПолучение ссылки для загрузки /logsAppsBackup/out_20260116_000021.tar.gz...[0m
+[2026-01-16 00:00:24] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader62sas.disk.yandex.net:443/upload-target/20260116T000024.262.utd.1tlrlq525hody1qakoqgmtqhc-k62sas.118258","templated":false,"operation_id":"e646ffe2c388fcef5337cd72124c95ff0353c1916a7109c82273c1bd9952991b"}[0m
+[2026-01-16 00:00:24] [0;34mИзвлеченная ссылка: https://uploader62sas.disk.yandex.net:443/upload-target/20260116T000024.262.utd.1tlrlq525hody1qakoqgmtqhc-k62sas.118258[0m
+[2026-01-16 00:00:24] [0;31mОшибка загрузки out_20260116_000021.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-16 00:00:24] [0;31m❌ Ошибка загрузки out.log на Яндекс.Диск[0m
+[2026-01-16 00:00:24] [0;32m✅ /root/florist-app/logs/pm2/out.log обработан успешно[0m
+[2026-01-16 00:00:24] [0;34mОбработано файлов: 3 из 7[0m
+[2026-01-16 00:00:24] [0;34mПроверка файла: /root/florist-app/logs/pm2/err.log[0m
+[2026-01-16 00:00:24] [0;34mОбработка: /root/florist-app/logs/pm2/err.log[0m
+[2026-01-16 00:00:24] [0;34mРазмер файла: 172K[0m
+[2026-01-16 00:00:24] [0;32m✅ err.log в норме: 0MB[0m
+[2026-01-16 00:00:24] [0;32m✅ /root/florist-app/logs/pm2/err.log обработан успешно[0m
+[2026-01-16 00:00:24] [0;34mОбработано файлов: 4 из 7[0m
+[2026-01-16 00:00:24] [0;34mПроверка файла: /root/florist-app/logs/pm2/combined.log[0m
+[2026-01-16 00:00:24] [0;34mОбработка: /root/florist-app/logs/pm2/combined.log[0m
+[2026-01-16 00:00:24] [0;34mРазмер файла: 49M[0m
+[2026-01-16 00:00:24] [1;33m⚠️  Лог combined.log превышает лимит: 48MB > 10MB[0m
+[2026-01-16 00:00:25] [0;34mЗагрузка combined_20260116_000024.tar.gz на Яндекс.Диск...[0m
+[2026-01-16 00:00:25] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-16 00:00:26] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-16 00:00:26] [0;34mПолучение ссылки для загрузки /logsAppsBackup/combined_20260116_000024.tar.gz...[0m
+[2026-01-16 00:00:27] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader28sas.disk.yandex.net:443/upload-target/20260116T000026.910.utd.5pf88l7m7p9beqf8wu0viktge-k28sas.144475","templated":false,"operation_id":"5c820d4657a3bf9752a43ed57876204c9c036776ad446b7b4dc799195ac4bbde"}[0m
+[2026-01-16 00:00:27] [0;34mИзвлеченная ссылка: https://uploader28sas.disk.yandex.net:443/upload-target/20260116T000026.910.utd.5pf88l7m7p9beqf8wu0viktge-k28sas.144475[0m
+[2026-01-16 00:00:27] [0;31mОшибка загрузки combined_20260116_000024.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-16 00:00:27] [0;31m❌ Ошибка загрузки combined.log на Яндекс.Диск[0m
+[2026-01-16 00:00:27] [0;32m✅ /root/florist-app/logs/pm2/combined.log обработан успешно[0m
+[2026-01-16 00:00:27] [0;34mОбработано файлов: 5 из 7[0m
+[2026-01-16 00:00:27] [0;34mПроверка файла: /root/florist-app/logs/app/upload_errors.log[0m
+[2026-01-16 00:00:27] [0;34mОбработка: /root/florist-app/logs/app/upload_errors.log[0m
+[2026-01-16 00:00:27] [0;34mРазмер файла: 16K[0m
+[2026-01-16 00:00:27] [0;32m✅ upload_errors.log в норме: 0MB[0m
+[2026-01-16 00:00:27] [0;32m✅ /root/florist-app/logs/app/upload_errors.log обработан успешно[0m
+[2026-01-16 00:00:27] [0;34mОбработано файлов: 6 из 7[0m
+[2026-01-16 00:00:27] [0;34mПроверка файла: /root/florist-app/logs/test_big.log[0m
+[2026-01-16 00:00:27] [0;34mОбработка: /root/florist-app/logs/test_big.log[0m
+[2026-01-16 00:00:27] [0;34mРазмер файла: 11M[0m
+[2026-01-16 00:00:27] [1;33m⚠️  Лог test_big.log превышает лимит: 10MB > 10MB[0m
+[2026-01-16 00:00:27] [0;34mЗагрузка test_big_20260116_000027.tar.gz на Яндекс.Диск...[0m
+[2026-01-16 00:00:27] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-16 00:00:29] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-16 00:00:29] [0;34mПолучение ссылки для загрузки /logsAppsBackup/test_big_20260116_000027.tar.gz...[0m
+[2026-01-16 00:00:30] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader63klg.disk.yandex.net:443/upload-target/20260116T000030.274.utd.6z5qocumrteod7q3noz777nvj-k63klg.122673","templated":false,"operation_id":"b20e84df9c0a7a79e20a8ee68ccd369eb45c34ef211d2c47106101b673c2ec30"}[0m
+[2026-01-16 00:00:30] [0;34mИзвлеченная ссылка: https://uploader63klg.disk.yandex.net:443/upload-target/20260116T000030.274.utd.6z5qocumrteod7q3noz777nvj-k63klg.122673[0m
+[2026-01-16 00:00:30] [0;31mОшибка загрузки test_big_20260116_000027.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-16 00:00:30] [0;31m❌ Ошибка загрузки test_big.log на Яндекс.Диск[0m
+[2026-01-16 00:00:30] [0;32m✅ /root/florist-app/logs/test_big.log обработан успешно[0m
+[2026-01-16 00:00:30] [0;34mОбработано файлов: 7 из 7[0m
+[2026-01-16 00:00:30] [0;34m=== Статистика обработки ===[0m
+[2026-01-16 00:00:30] Обработано файлов: 7
+[2026-01-16 00:00:30] Архивировано: 0
+[2026-01-16 00:00:30] Ошибок: 0
+[2026-01-16 00:00:30] [0;34m=== Текущие размеры логов ===[0m
+20K	/root/florist-app/logs/app
+96M	/root/florist-app/logs/pm2
+11M	/root/florist-app/logs/test_big.log
+1.1G	/root/florist-app/logs/webhooks
+[2026-01-16 00:00:30] [0;32m=== Мониторинг завершен ===[0m
+[2026-01-16 06:00:01] [0;34m=== Мониторинг логов Florist App ===[0m
+[2026-01-16 06:00:01] Максимальный размер лога: 10MB
+[2026-01-16 06:00:01] Директория логов: /root/florist-app/logs
+[2026-01-16 06:00:01] [0;34mПоиск .log файлов в /root/florist-app/logs...[0m
+[2026-01-16 06:00:01] [0;34mНайдено 7 .log файлов[0m
+[2026-01-16 06:00:01] [0;34mФайл 0: /root/florist-app/logs/webhooks/processed_webhooks.log[0m
+[2026-01-16 06:00:01] [0;34mФайл 1: /root/florist-app/logs/webhooks/all_webhooks.log[0m
+[2026-01-16 06:00:01] [0;34mФайл 2: /root/florist-app/logs/pm2/out.log[0m
+[2026-01-16 06:00:01] [0;34mФайл 3: /root/florist-app/logs/pm2/err.log[0m
+[2026-01-16 06:00:01] [0;34mФайл 4: /root/florist-app/logs/pm2/combined.log[0m
+[2026-01-16 06:00:01] [0;34mФайл 5: /root/florist-app/logs/app/upload_errors.log[0m
+[2026-01-16 06:00:01] [0;34mФайл 6: /root/florist-app/logs/test_big.log[0m
+[2026-01-16 06:00:01] [0;34mПроверка файла: /root/florist-app/logs/webhooks/processed_webhooks.log[0m
+[2026-01-16 06:00:01] [0;34mОбработка: /root/florist-app/logs/webhooks/processed_webhooks.log[0m
+[2026-01-16 06:00:01] [0;34mРазмер файла: 106M[0m
+[2026-01-16 06:00:01] [1;33m⚠️  Лог processed_webhooks.log превышает лимит: 105MB > 10MB[0m
+[2026-01-16 06:00:04] [0;34mЗагрузка processed_webhooks_20260116_060001.tar.gz на Яндекс.Диск...[0m
+[2026-01-16 06:00:04] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-16 06:00:05] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-16 06:00:05] [0;34mПолучение ссылки для загрузки /logsAppsBackup/processed_webhooks_20260116_060001.tar.gz...[0m
+[2026-01-16 06:00:06] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader32klg.disk.yandex.net:443/upload-target/20260116T060006.647.utd.7aaw5bcpgm90hoyp0gc4lm6zt-k32klg.181072","templated":false,"operation_id":"ac94db4690bac73160d9388472fb97ffd2648039979f089b9e3654e8939eb72f"}[0m
+[2026-01-16 06:00:06] [0;34mИзвлеченная ссылка: https://uploader32klg.disk.yandex.net:443/upload-target/20260116T060006.647.utd.7aaw5bcpgm90hoyp0gc4lm6zt-k32klg.181072[0m
+[2026-01-16 06:00:06] [0;31mОшибка загрузки processed_webhooks_20260116_060001.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-16 06:00:06] [0;31m❌ Ошибка загрузки processed_webhooks.log на Яндекс.Диск[0m
+[2026-01-16 06:00:06] [0;32m✅ /root/florist-app/logs/webhooks/processed_webhooks.log обработан успешно[0m
+[2026-01-16 06:00:06] [0;34mОбработано файлов: 1 из 7[0m
+[2026-01-16 06:00:06] [0;34mПроверка файла: /root/florist-app/logs/webhooks/all_webhooks.log[0m
+[2026-01-16 06:00:06] [0;34mОбработка: /root/florist-app/logs/webhooks/all_webhooks.log[0m
+[2026-01-16 06:00:06] [0;34mРазмер файла: 885M[0m
+[2026-01-16 06:00:06] [1;33m⚠️  Лог all_webhooks.log превышает лимит: 884MB > 10MB[0m
+[2026-01-16 06:00:20] [0;34mЗагрузка all_webhooks_20260116_060006.tar.gz на Яндекс.Диск...[0m
+[2026-01-16 06:00:20] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-16 06:00:21] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-16 06:00:21] [0;34mПолучение ссылки для загрузки /logsAppsBackup/all_webhooks_20260116_060006.tar.gz...[0m
+[2026-01-16 06:00:22] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader21sas.disk.yandex.net:443/upload-target/20260116T060021.957.utd.9i75tcz17a0j05zniybsgjtkz-k21sas.197978","templated":false,"operation_id":"cea5a9600a9938b107bcc3ee703e23d5b18644dda0c7f5c346b0f975ea88ac7c"}[0m
+[2026-01-16 06:00:22] [0;34mИзвлеченная ссылка: https://uploader21sas.disk.yandex.net:443/upload-target/20260116T060021.957.utd.9i75tcz17a0j05zniybsgjtkz-k21sas.197978[0m
+[2026-01-16 06:00:22] [0;31mОшибка загрузки all_webhooks_20260116_060006.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-16 06:00:22] [0;31m❌ Ошибка загрузки all_webhooks.log на Яндекс.Диск[0m
+[2026-01-16 06:00:22] [0;32m✅ /root/florist-app/logs/webhooks/all_webhooks.log обработан успешно[0m
+[2026-01-16 06:00:22] [0;34mОбработано файлов: 2 из 7[0m
+[2026-01-16 06:00:22] [0;34mПроверка файла: /root/florist-app/logs/pm2/out.log[0m
+[2026-01-16 06:00:22] [0;34mОбработка: /root/florist-app/logs/pm2/out.log[0m
+[2026-01-16 06:00:22] [0;34mРазмер файла: 48M[0m
+[2026-01-16 06:00:22] [1;33m⚠️  Лог out.log превышает лимит: 47MB > 10MB[0m
+[2026-01-16 06:00:23] [0;34mЗагрузка out_20260116_060022.tar.gz на Яндекс.Диск...[0m
+[2026-01-16 06:00:23] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-16 06:00:24] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-16 06:00:24] [0;34mПолучение ссылки для загрузки /logsAppsBackup/out_20260116_060022.tar.gz...[0m
+[2026-01-16 06:00:25] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader61vla.disk.yandex.net:443/upload-target/20260116T060024.958.utd.9nqwik9d05o5l02z4cou34pm7-k61vla.163449","templated":false,"operation_id":"6c192136b1611cfbcf98c59e92214154e006abeecfac894e5e3cd56ca86858b2"}[0m
+[2026-01-16 06:00:25] [0;34mИзвлеченная ссылка: https://uploader61vla.disk.yandex.net:443/upload-target/20260116T060024.958.utd.9nqwik9d05o5l02z4cou34pm7-k61vla.163449[0m
+[2026-01-16 06:00:25] [0;31mОшибка загрузки out_20260116_060022.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-16 06:00:25] [0;31m❌ Ошибка загрузки out.log на Яндекс.Диск[0m
+[2026-01-16 06:00:25] [0;32m✅ /root/florist-app/logs/pm2/out.log обработан успешно[0m
+[2026-01-16 06:00:25] [0;34mОбработано файлов: 3 из 7[0m
+[2026-01-16 06:00:25] [0;34mПроверка файла: /root/florist-app/logs/pm2/err.log[0m
+[2026-01-16 06:00:25] [0;34mОбработка: /root/florist-app/logs/pm2/err.log[0m
+[2026-01-16 06:00:25] [0;34mРазмер файла: 172K[0m
+[2026-01-16 06:00:25] [0;32m✅ err.log в норме: 0MB[0m
+[2026-01-16 06:00:25] [0;32m✅ /root/florist-app/logs/pm2/err.log обработан успешно[0m
+[2026-01-16 06:00:25] [0;34mОбработано файлов: 4 из 7[0m
+[2026-01-16 06:00:25] [0;34mПроверка файла: /root/florist-app/logs/pm2/combined.log[0m
+[2026-01-16 06:00:25] [0;34mОбработка: /root/florist-app/logs/pm2/combined.log[0m
+[2026-01-16 06:00:25] [0;34mРазмер файла: 49M[0m
+[2026-01-16 06:00:25] [1;33m⚠️  Лог combined.log превышает лимит: 48MB > 10MB[0m
+[2026-01-16 06:00:25] [0;34mЗагрузка combined_20260116_060025.tar.gz на Яндекс.Диск...[0m
+[2026-01-16 06:00:25] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-16 06:00:27] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-16 06:00:27] [0;34mПолучение ссылки для загрузки /logsAppsBackup/combined_20260116_060025.tar.gz...[0m
+[2026-01-16 06:00:28] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader82sas.disk.yandex.net:443/upload-target/20260116T060027.819.utd.ci77rbyq3qv0rtxr5qxhv3d6y-k82sas.150893","templated":false,"operation_id":"9993c505541c06849b06000d1b0b4ac52076436c7d7a0e481d9704697920c98b"}[0m
+[2026-01-16 06:00:28] [0;34mИзвлеченная ссылка: https://uploader82sas.disk.yandex.net:443/upload-target/20260116T060027.819.utd.ci77rbyq3qv0rtxr5qxhv3d6y-k82sas.150893[0m
+[2026-01-16 06:00:28] [0;31mОшибка загрузки combined_20260116_060025.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-16 06:00:28] [0;31m❌ Ошибка загрузки combined.log на Яндекс.Диск[0m
+[2026-01-16 06:00:28] [0;32m✅ /root/florist-app/logs/pm2/combined.log обработан успешно[0m
+[2026-01-16 06:00:28] [0;34mОбработано файлов: 5 из 7[0m
+[2026-01-16 06:00:28] [0;34mПроверка файла: /root/florist-app/logs/app/upload_errors.log[0m
+[2026-01-16 06:00:28] [0;34mОбработка: /root/florist-app/logs/app/upload_errors.log[0m
+[2026-01-16 06:00:28] [0;34mРазмер файла: 16K[0m
+[2026-01-16 06:00:28] [0;32m✅ upload_errors.log в норме: 0MB[0m
+[2026-01-16 06:00:28] [0;32m✅ /root/florist-app/logs/app/upload_errors.log обработан успешно[0m
+[2026-01-16 06:00:28] [0;34mОбработано файлов: 6 из 7[0m
+[2026-01-16 06:00:28] [0;34mПроверка файла: /root/florist-app/logs/test_big.log[0m
+[2026-01-16 06:00:28] [0;34mОбработка: /root/florist-app/logs/test_big.log[0m
+[2026-01-16 06:00:28] [0;34mРазмер файла: 11M[0m
+[2026-01-16 06:00:28] [1;33m⚠️  Лог test_big.log превышает лимит: 10MB > 10MB[0m
+[2026-01-16 06:00:28] [0;34mЗагрузка test_big_20260116_060028.tar.gz на Яндекс.Диск...[0m
+[2026-01-16 06:00:28] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-16 06:00:29] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-16 06:00:29] [0;34mПолучение ссылки для загрузки /logsAppsBackup/test_big_20260116_060028.tar.gz...[0m
+[2026-01-16 06:00:30] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader36vla.disk.yandex.net:443/upload-target/20260116T060030.106.utd.8j6dipy7a13mknx67khtxt1g2-k36vla.179769","templated":false,"operation_id":"2e5d22b2a83acf7630ac49cf766429d9404603e95c5a55e8092135d2e8801945"}[0m
+[2026-01-16 06:00:30] [0;34mИзвлеченная ссылка: https://uploader36vla.disk.yandex.net:443/upload-target/20260116T060030.106.utd.8j6dipy7a13mknx67khtxt1g2-k36vla.179769[0m
+[2026-01-16 06:00:30] [0;31mОшибка загрузки test_big_20260116_060028.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-16 06:00:30] [0;31m❌ Ошибка загрузки test_big.log на Яндекс.Диск[0m
+[2026-01-16 06:00:30] [0;32m✅ /root/florist-app/logs/test_big.log обработан успешно[0m
+[2026-01-16 06:00:30] [0;34mОбработано файлов: 7 из 7[0m
+[2026-01-16 06:00:30] [0;34m=== Статистика обработки ===[0m
+[2026-01-16 06:00:30] Обработано файлов: 7
+[2026-01-16 06:00:30] Архивировано: 0
+[2026-01-16 06:00:30] Ошибок: 0
+[2026-01-16 06:00:30] [0;34m=== Текущие размеры логов ===[0m
+20K	/root/florist-app/logs/app
+97M	/root/florist-app/logs/pm2
+11M	/root/florist-app/logs/test_big.log
+1.1G	/root/florist-app/logs/webhooks
+[2026-01-16 06:00:30] [0;32m=== Мониторинг завершен ===[0m
+[2026-01-16 12:00:01] [0;34m=== Мониторинг логов Florist App ===[0m
+[2026-01-16 12:00:01] Максимальный размер лога: 10MB
+[2026-01-16 12:00:01] Директория логов: /root/florist-app/logs
+[2026-01-16 12:00:01] [0;34mПоиск .log файлов в /root/florist-app/logs...[0m
+[2026-01-16 12:00:01] [0;34mНайдено 7 .log файлов[0m
+[2026-01-16 12:00:01] [0;34mФайл 0: /root/florist-app/logs/webhooks/processed_webhooks.log[0m
+[2026-01-16 12:00:01] [0;34mФайл 1: /root/florist-app/logs/webhooks/all_webhooks.log[0m
+[2026-01-16 12:00:01] [0;34mФайл 2: /root/florist-app/logs/pm2/out.log[0m
+[2026-01-16 12:00:01] [0;34mФайл 3: /root/florist-app/logs/pm2/err.log[0m
+[2026-01-16 12:00:01] [0;34mФайл 4: /root/florist-app/logs/pm2/combined.log[0m
+[2026-01-16 12:00:01] [0;34mФайл 5: /root/florist-app/logs/app/upload_errors.log[0m
+[2026-01-16 12:00:01] [0;34mФайл 6: /root/florist-app/logs/test_big.log[0m
+[2026-01-16 12:00:01] [0;34mПроверка файла: /root/florist-app/logs/webhooks/processed_webhooks.log[0m
+[2026-01-16 12:00:01] [0;34mОбработка: /root/florist-app/logs/webhooks/processed_webhooks.log[0m
+[2026-01-16 12:00:01] [0;34mРазмер файла: 106M[0m
+[2026-01-16 12:00:01] [1;33m⚠️  Лог processed_webhooks.log превышает лимит: 105MB > 10MB[0m
+[2026-01-16 12:00:05] [0;34mЗагрузка processed_webhooks_20260116_120001.tar.gz на Яндекс.Диск...[0m
+[2026-01-16 12:00:05] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-16 12:00:06] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-16 12:00:06] [0;34mПолучение ссылки для загрузки /logsAppsBackup/processed_webhooks_20260116_120001.tar.gz...[0m
+[2026-01-16 12:00:07] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader40sas.disk.yandex.net:443/upload-target/20260116T120007.383.utd.220p4u0qscjos2na76tfs1mxg-k40sas.243541","templated":false,"operation_id":"95753a1a2e2b1915978f49ae9c0afeebb12c093df599adb717129138760a849b"}[0m
+[2026-01-16 12:00:07] [0;34mИзвлеченная ссылка: https://uploader40sas.disk.yandex.net:443/upload-target/20260116T120007.383.utd.220p4u0qscjos2na76tfs1mxg-k40sas.243541[0m
+[2026-01-16 12:00:07] [0;31mОшибка загрузки processed_webhooks_20260116_120001.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-16 12:00:07] [0;31m❌ Ошибка загрузки processed_webhooks.log на Яндекс.Диск[0m
+[2026-01-16 12:00:07] [0;32m✅ /root/florist-app/logs/webhooks/processed_webhooks.log обработан успешно[0m
+[2026-01-16 12:00:07] [0;34mОбработано файлов: 1 из 7[0m
+[2026-01-16 12:00:07] [0;34mПроверка файла: /root/florist-app/logs/webhooks/all_webhooks.log[0m
+[2026-01-16 12:00:07] [0;34mОбработка: /root/florist-app/logs/webhooks/all_webhooks.log[0m
+[2026-01-16 12:00:07] [0;34mРазмер файла: 888M[0m
+[2026-01-16 12:00:07] [1;33m⚠️  Лог all_webhooks.log превышает лимит: 887MB > 10MB[0m
+[2026-01-16 12:00:25] [0;34mЗагрузка all_webhooks_20260116_120007.tar.gz на Яндекс.Диск...[0m
+[2026-01-16 12:00:25] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-16 12:00:26] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-16 12:00:26] [0;34mПолучение ссылки для загрузки /logsAppsBackup/all_webhooks_20260116_120007.tar.gz...[0m
+[2026-01-16 12:00:27] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader167klg.disk.yandex.net:443/upload-target/20260116T120027.777.utd.1549t5i31tbt04sz391p3ycdn-k167klg.244967","templated":false,"operation_id":"a2f2424227ccc1d8f4f9538d5ae107c206316352478c8dc9af2051ebe019a672"}[0m
+[2026-01-16 12:00:27] [0;34mИзвлеченная ссылка: https://uploader167klg.disk.yandex.net:443/upload-target/20260116T120027.777.utd.1549t5i31tbt04sz391p3ycdn-k167klg.244967[0m
+[2026-01-16 12:00:27] [0;31mОшибка загрузки all_webhooks_20260116_120007.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-16 12:00:27] [0;31m❌ Ошибка загрузки all_webhooks.log на Яндекс.Диск[0m
+[2026-01-16 12:00:27] [0;32m✅ /root/florist-app/logs/webhooks/all_webhooks.log обработан успешно[0m
+[2026-01-16 12:00:27] [0;34mОбработано файлов: 2 из 7[0m
+[2026-01-16 12:00:27] [0;34mПроверка файла: /root/florist-app/logs/pm2/out.log[0m
+[2026-01-16 12:00:27] [0;34mОбработка: /root/florist-app/logs/pm2/out.log[0m
+[2026-01-16 12:00:27] [0;34mРазмер файла: 49M[0m
+[2026-01-16 12:00:28] [1;33m⚠️  Лог out.log превышает лимит: 48MB > 10MB[0m
+[2026-01-16 12:00:29] [0;34mЗагрузка out_20260116_120028.tar.gz на Яндекс.Диск...[0m
+[2026-01-16 12:00:29] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-16 12:00:29] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-16 12:00:29] [0;34mПолучение ссылки для загрузки /logsAppsBackup/out_20260116_120028.tar.gz...[0m
+[2026-01-16 12:00:31] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader40klg.disk.yandex.net:443/upload-target/20260116T120030.898.utd.7ph8y8sp7m7g08agrwuy1nm2i-k40klg.254078","templated":false,"operation_id":"fb06fa6912f5f75a8999e2f1dac7f8e710467d69762a3de252f26d9f4609060c"}[0m
+[2026-01-16 12:00:31] [0;34mИзвлеченная ссылка: https://uploader40klg.disk.yandex.net:443/upload-target/20260116T120030.898.utd.7ph8y8sp7m7g08agrwuy1nm2i-k40klg.254078[0m
+[2026-01-16 12:00:31] [0;31mОшибка загрузки out_20260116_120028.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-16 12:00:31] [0;31m❌ Ошибка загрузки out.log на Яндекс.Диск[0m
+[2026-01-16 12:00:31] [0;32m✅ /root/florist-app/logs/pm2/out.log обработан успешно[0m
+[2026-01-16 12:00:31] [0;34mОбработано файлов: 3 из 7[0m
+[2026-01-16 12:00:31] [0;34mПроверка файла: /root/florist-app/logs/pm2/err.log[0m
+[2026-01-16 12:00:31] [0;34mОбработка: /root/florist-app/logs/pm2/err.log[0m
+[2026-01-16 12:00:31] [0;34mРазмер файла: 172K[0m
+[2026-01-16 12:00:31] [0;32m✅ err.log в норме: 0MB[0m
+[2026-01-16 12:00:31] [0;32m✅ /root/florist-app/logs/pm2/err.log обработан успешно[0m
+[2026-01-16 12:00:31] [0;34mОбработано файлов: 4 из 7[0m
+[2026-01-16 12:00:31] [0;34mПроверка файла: /root/florist-app/logs/pm2/combined.log[0m
+[2026-01-16 12:00:31] [0;34mОбработка: /root/florist-app/logs/pm2/combined.log[0m
+[2026-01-16 12:00:31] [0;34mРазмер файла: 50M[0m
+[2026-01-16 12:00:31] [1;33m⚠️  Лог combined.log превышает лимит: 49MB > 10MB[0m
+[2026-01-16 12:00:32] [0;34mЗагрузка combined_20260116_120031.tar.gz на Яндекс.Диск...[0m
+[2026-01-16 12:00:32] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-16 12:00:33] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-16 12:00:33] [0;34mПолучение ссылки для загрузки /logsAppsBackup/combined_20260116_120031.tar.gz...[0m
+[2026-01-16 12:00:34] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader44klg.disk.yandex.net:443/upload-target/20260116T120034.112.utd.3f0jce2mmzin15j7lrxy9e1ks-k44klg.241629","templated":false,"operation_id":"9cc7e46058e3bfca658c3a55336bcfd4c851eceaa02c919625482b073e78b6d7"}[0m
+[2026-01-16 12:00:34] [0;34mИзвлеченная ссылка: https://uploader44klg.disk.yandex.net:443/upload-target/20260116T120034.112.utd.3f0jce2mmzin15j7lrxy9e1ks-k44klg.241629[0m
+[2026-01-16 12:00:34] [0;31mОшибка загрузки combined_20260116_120031.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-16 12:00:34] [0;31m❌ Ошибка загрузки combined.log на Яндекс.Диск[0m
+[2026-01-16 12:00:34] [0;32m✅ /root/florist-app/logs/pm2/combined.log обработан успешно[0m
+[2026-01-16 12:00:34] [0;34mОбработано файлов: 5 из 7[0m
+[2026-01-16 12:00:34] [0;34mПроверка файла: /root/florist-app/logs/app/upload_errors.log[0m
+[2026-01-16 12:00:34] [0;34mОбработка: /root/florist-app/logs/app/upload_errors.log[0m
+[2026-01-16 12:00:34] [0;34mРазмер файла: 16K[0m
+[2026-01-16 12:00:34] [0;32m✅ upload_errors.log в норме: 0MB[0m
+[2026-01-16 12:00:34] [0;32m✅ /root/florist-app/logs/app/upload_errors.log обработан успешно[0m
+[2026-01-16 12:00:34] [0;34mОбработано файлов: 6 из 7[0m
+[2026-01-16 12:00:34] [0;34mПроверка файла: /root/florist-app/logs/test_big.log[0m
+[2026-01-16 12:00:34] [0;34mОбработка: /root/florist-app/logs/test_big.log[0m
+[2026-01-16 12:00:34] [0;34mРазмер файла: 11M[0m
+[2026-01-16 12:00:34] [1;33m⚠️  Лог test_big.log превышает лимит: 10MB > 10MB[0m
+[2026-01-16 12:00:34] [0;34mЗагрузка test_big_20260116_120034.tar.gz на Яндекс.Диск...[0m
+[2026-01-16 12:00:34] [0;34mСоздание папки /logsAppsBackup на Яндекс.Диске...[0m
+[2026-01-16 12:00:35] [0;34mОтвет создания папки: {"error":"DiskPathPointsToExistentDirectoryError","description":"Specified path \"/logsAppsBackup\" points to existent directory.","message":"По указанному пути \"/logsAppsBackup\" уже существует папка с таким именем."}[0m
+[2026-01-16 12:00:35] [0;34mПолучение ссылки для загрузки /logsAppsBackup/test_big_20260116_120034.tar.gz...[0m
+[2026-01-16 12:00:36] [0;34mОтвет получения ссылки: {"method":"PUT","href":"https://uploader74sas.disk.yandex.net:443/upload-target/20260116T120036.632.utd.bjupfxbbgzv54c22nqxvjq18m-k74sas.209335","templated":false,"operation_id":"817c9799245368b405907b47a4f7e2ebd871df0b6e6e09c2cfcbe2d3118f7731"}[0m
+[2026-01-16 12:00:36] [0;34mИзвлеченная ссылка: https://uploader74sas.disk.yandex.net:443/upload-target/20260116T120036.632.utd.bjupfxbbgzv54c22nqxvjq18m-k74sas.209335[0m
+[2026-01-16 12:00:36] [0;31mОшибка загрузки test_big_20260116_120034.tar.gz на Яндекс.Диск (код: 3)[0m
+[2026-01-16 12:00:36] [0;31m❌ Ошибка загрузки test_big.log на Яндекс.Диск[0m
+[2026-01-16 12:00:36] [0;32m✅ /root/florist-app/logs/test_big.log обработан успешно[0m
+[2026-01-16 12:00:36] [0;34mОбработано файлов: 7 из 7[0m
+[2026-01-16 12:00:36] [0;34m=== Статистика обработки ===[0m
+[2026-01-16 12:00:36] Обработано файлов: 7
+[2026-01-16 12:00:36] Архивировано: 0
+[2026-01-16 12:00:36] Ошибок: 0
+[2026-01-16 12:00:36] [0;34m=== Текущие размеры логов ===[0m
+20K	/root/florist-app/logs/app
+98M	/root/florist-app/logs/pm2
+11M	/root/florist-app/logs/test_big.log
+1.1G	/root/florist-app/logs/webhooks
+[2026-01-16 12:00:36] [0;32m=== Мониторинг завершен ===[0m

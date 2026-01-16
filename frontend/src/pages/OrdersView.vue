@@ -225,6 +225,12 @@
       <!-- Оверлей загрузки фото -->
       <div v-if="uploading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div class="bg-white dark:bg-gray-800 rounded-lg p-6 flex flex-col items-center gap-4">
+          <img
+            v-if="previewUrl"
+            :src="previewUrl"
+            alt="Предпросмотр"
+            class="max-w-[240px] max-h-[240px] rounded-lg shadow"
+          />
           <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#933742]"></div>
           <div class="text-lg font-semibold">Загружаем фото...</div>
         </div>
@@ -261,6 +267,7 @@
 </template>
 
 <script setup lang="ts">
+import heic2any from 'heic2any';
 // Добавляем вотчер для смены табов
 import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
@@ -280,6 +287,7 @@ const showPhotoChoice = ref(false);
 const showCamera = ref(false);
 const cameraStream = ref<MediaStream | null>(null);
 const cameraVideo = ref<HTMLVideoElement | null>(null);
+const previewUrl = ref<string | null>(null);
 
 let ws: WebSocket | null = null;
 const wsConnected = ref(false);
@@ -357,7 +365,7 @@ function choosePhotoMethod(method: 'camera' | 'gallery') {
 function openGallery() {
   const input = document.createElement('input');
   input.type = 'file';
-  input.accept = 'image/*';
+  input.accept = 'image/jpeg,image/png,image/webp,image/heic,image/heif,image/*';
   input.onchange = (e) => {
     const file = (e.target as HTMLInputElement).files?.[0];
     if (file) {
@@ -371,7 +379,9 @@ function openGallery() {
 async function openCamera() {
   try {
     showCamera.value = true;
-    cameraStream.value = await navigator.mediaDevices.getUserMedia({ video: true });
+    cameraStream.value = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment' }
+    });
     if (cameraVideo.value) {
       cameraVideo.value.srcObject = cameraStream.value;
     }
@@ -419,33 +429,110 @@ async function uploadPhoto() {
   uploading.value = true;
   
   try {
+    const fileToUpload = await prepareUploadFile(selectedFile.value);
+    if (previewUrl.value) URL.revokeObjectURL(previewUrl.value);
+    previewUrl.value = URL.createObjectURL(fileToUpload);
     const formData = new FormData();
-    formData.append('photo', selectedFile.value);
-    const token = localStorage.getItem('token');
+    formData.append('photo', fileToUpload);
     
-    const res = await fetch(`/api/orders/${uploadingOrderId.value}/photo`, {
+    const res = await authFetch(`/api/orders/${uploadingOrderId.value}/photo`, {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
       body: formData
     });
     
+    const contentType = res.headers.get('content-type') || '';
     if (res.ok) {
       toast.success('Фото успешно загружено и отправлено в amoCRM');
       // Обновляем списки заказов
       await fetchOrders();
-    } else {
+    } else if (contentType.includes('application/json')) {
       const data = await res.json();
-      toast.error(data.error || 'Ошибка при загрузке фото');
+      toast.error(data.error || `Ошибка при загрузке фото: ${res.status}`);
+    } else {
+      await res.text();
+      toast.error(`Ошибка при загрузке фото: ${res.status}`);
     }
-  } catch (error) {
-    toast.error('Ошибка при загрузке фото');
+  } catch (error: any) {
+    console.error('Upload error:', error);
+    toast.error(`Ошибка при загрузке фото: ${error.message || 'неизвестная ошибка'}`);
   } finally {
     uploading.value = false;
     selectedFile.value = null;
     uploadingOrderId.value = null;
+    if (previewUrl.value) {
+      URL.revokeObjectURL(previewUrl.value);
+      previewUrl.value = null;
+    }
   }
+}
+
+const MAX_UPLOAD_SIZE = 4 * 1024 * 1024;
+const MAX_DIMENSION = 2000;
+const JPEG_QUALITY = 0.85;
+
+async function compressImageFile(file: File): Promise<File> {
+  if (!file.type.startsWith('image/')) return file;
+  if (file.size <= MAX_UPLOAD_SIZE) return file;
+
+  const image = new Image();
+  const objectUrl = URL.createObjectURL(file);
+
+  try {
+    await new Promise<void>((resolve, reject) => {
+      image.onload = () => resolve();
+      image.onerror = () => reject(new Error('image_load_failed'));
+      image.src = objectUrl;
+    });
+
+    const ratio = Math.min(MAX_DIMENSION / image.width, MAX_DIMENSION / image.height, 1);
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(image.width * ratio);
+    canvas.height = Math.round(image.height * ratio);
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return file;
+
+    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+    const blob = await new Promise<Blob | null>((resolve) => {
+      canvas.toBlob(resolve, 'image/jpeg', JPEG_QUALITY);
+    });
+
+    if (!blob) return file;
+
+    const newName = file.name.replace(/\.[^.]+$/, '.jpg');
+    return new File([blob], newName, { type: 'image/jpeg' });
+  } catch {
+    return file;
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+}
+
+async function convertHeicToJpeg(file: File): Promise<File> {
+  const isHeic = file.type === 'image/heic'
+    || file.type === 'image/heif'
+    || /\.(heic|heif)$/i.test(file.name);
+  if (!isHeic) return file;
+
+  try {
+    const converted = await heic2any({
+      blob: file,
+      toType: 'image/jpeg',
+      quality: 0.85
+    });
+
+    const blob = Array.isArray(converted) ? converted[0] : converted;
+    const newName = file.name.replace(/\.[^.]+$/, '.jpg');
+    return new File([blob], newName, { type: 'image/jpeg' });
+  } catch {
+    return file;
+  }
+}
+
+async function prepareUploadFile(file: File): Promise<File> {
+  const heicConverted = await convertHeicToJpeg(file);
+  return compressImageFile(heicConverted);
 }
 
 async function takeOrder(id: string) {
@@ -552,6 +639,10 @@ onUnmounted(() => {
   if (cameraStream.value) {
     cameraStream.value.getTracks().forEach(track => track.stop());
     cameraStream.value = null;
+  }
+  if (previewUrl.value) {
+    URL.revokeObjectURL(previewUrl.value);
+    previewUrl.value = null;
   }
 });
 </script>

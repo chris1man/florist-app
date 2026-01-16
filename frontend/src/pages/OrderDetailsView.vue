@@ -149,6 +149,7 @@
         <div v-if="order?.photo_url" class="flex flex-col items-center">
           <div class="relative group">
             <img
+              :key="order.photo_url"
               :src="order.photo_url"
               :alt="'Фото заказа ' + getOrderId()"
               class="max-w-full h-auto rounded-xl shadow-md transition-transform duration-300"
@@ -188,6 +189,12 @@
         </div>
         
         <div v-if="uploading" class="flex flex-col items-center justify-center p-8">
+          <img
+            v-if="previewUrl"
+            :src="previewUrl"
+            alt="Предпросмотр"
+            class="max-w-[240px] max-h-[240px] rounded-lg shadow mb-3"
+          />
           <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-[#933742] mb-3"></div>
           <span class="text-gray-500 font-medium">Загрузка фотографии...</span>
         </div>
@@ -212,7 +219,7 @@
             class="w-16 h-16 rounded-full bg-white border-4 border-red-500"
           ></button>
           <button
-            @click="closeCamera"
+            @click="handleCloseCamera"
             class="px-4 py-2 rounded-lg bg-gray-200 text-gray-800 font-semibold"
           >
             Отмена
@@ -242,6 +249,7 @@
 </template>
 
 <script setup lang="ts">
+import heic2any from 'heic2any';
 import { ref, onMounted, onUnmounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
@@ -265,6 +273,7 @@ const cameraVideo = ref<HTMLVideoElement | null>(null);
 const selectedFile = ref<File | null>(null);
 const rotation = ref(0);
 const forceUpdate = ref(0);
+const previewUrl = ref<string | null>(null);
 
 const user = ref<{ id: number; name: string; role?: string } | null>(null);
 
@@ -322,6 +331,12 @@ function normalizeOrder(raw: any) {
   if (!normalized.photos) normalized.photos = [];
   if (Array.isArray(normalized.photos) && normalized.photos.length > 0) {
     const last = normalized.photos[normalized.photos.length - 1];
+    if (last && typeof last === 'object' && 'url' in last) {
+      normalized.photo_url = last.url;
+    }
+  } else if (raw.photos && Array.isArray(raw.photos) && raw.photos.length > 0) {
+    // Fallback если в raw есть photos но в normalized почему-то нет
+    const last = raw.photos[raw.photos.length - 1];
     if (last && typeof last === 'object' && 'url' in last) {
       normalized.photo_url = last.url;
     }
@@ -403,7 +418,9 @@ async function completeOrder() {
       : `/api/orders/${route.params.id}/complete`;
 
     const res = await authFetch(endpoint, {
-      method: 'POST'
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: order.value?.photo_url ? JSON.stringify({ photoUrl: order.value.photo_url }) : undefined
     });
 
     if (res.ok) {
@@ -472,7 +489,8 @@ function choosePhotoMethod(method: 'camera' | 'gallery') {
 function openGallery() {
   const input = document.createElement('input');
   input.type = 'file';
-  input.accept = 'image/*';
+  // Явно перечисляем форматы, включая HEIC для iOS и другие
+  input.accept = 'image/jpeg,image/png,image/webp,image/heic,image/heif,image/gif,image/bmp,image/*';
   input.onchange = (e) => {
     const file = (e.target as HTMLInputElement).files?.[0];
     if (file) {
@@ -486,7 +504,9 @@ function openGallery() {
 async function openCamera() {
   try {
     showCamera.value = true;
-    cameraStream.value = await navigator.mediaDevices.getUserMedia({ video: true });
+    cameraStream.value = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment' }
+    });
     if (cameraVideo.value) {
       cameraVideo.value.srcObject = cameraStream.value;
     }
@@ -497,13 +517,19 @@ async function openCamera() {
   }
 }
 
-function closeCamera() {
+function closeCamera(resetFile: boolean = true) {
   if (cameraStream.value) {
     cameraStream.value.getTracks().forEach(track => track.stop());
     cameraStream.value = null;
   }
   showCamera.value = false;
-  selectedFile.value = null;
+  if (resetFile) {
+    selectedFile.value = null;
+  }
+}
+
+function handleCloseCamera() {
+  closeCamera();
 }
 
 function capturePhoto() {
@@ -522,7 +548,7 @@ function capturePhoto() {
     if (blob) {
       const file = new File([blob], 'camera-photo.jpg', { type: 'image/jpeg' });
       selectedFile.value = file;
-      closeCamera();
+      closeCamera(false);
       uploadPhoto();
     }
   }, 'image/jpeg');
@@ -534,37 +560,134 @@ function rotateImage(degrees: number) {
   if (rotation.value < 0) rotation.value += 360;
 }
 
+const MAX_UPLOAD_SIZE = 4 * 1024 * 1024;
+const MAX_DIMENSION = 2000;
+const JPEG_QUALITY = 0.85;
+
+async function compressImageFile(file: File): Promise<File> {
+  if (!file.type.startsWith('image/')) return file;
+  if (file.size <= MAX_UPLOAD_SIZE) return file;
+
+  const image = new Image();
+  const objectUrl = URL.createObjectURL(file);
+
+  try {
+    await new Promise<void>((resolve, reject) => {
+      image.onload = () => resolve();
+      image.onerror = () => reject(new Error('image_load_failed'));
+      image.src = objectUrl;
+    });
+
+    const ratio = Math.min(MAX_DIMENSION / image.width, MAX_DIMENSION / image.height, 1);
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(image.width * ratio);
+    canvas.height = Math.round(image.height * ratio);
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return file;
+
+    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+    const blob = await new Promise<Blob | null>((resolve) => {
+      canvas.toBlob(resolve, 'image/jpeg', JPEG_QUALITY);
+    });
+
+    if (!blob) return file;
+
+    const newName = file.name.replace(/\.[^.]+$/, '.jpg');
+    return new File([blob], newName, { type: 'image/jpeg' });
+  } catch {
+    return file;
+  } finally {
+    URL.revokeObjectURL(objectUrl);
+  }
+}
+
+async function convertHeicToJpeg(file: File): Promise<File> {
+  const isHeic = file.type === 'image/heic'
+    || file.type === 'image/heif'
+    || /\.(heic|heif)$/i.test(file.name);
+  if (!isHeic) return file;
+
+  try {
+    const converted = await heic2any({
+      blob: file,
+      toType: 'image/jpeg',
+      quality: 0.85
+    });
+
+    const blob = Array.isArray(converted) ? converted[0] : converted;
+    const newName = file.name.replace(/\.[^.]+$/, '.jpg');
+    return new File([blob], newName, { type: 'image/jpeg' });
+  } catch {
+    return file;
+  }
+}
+
+async function prepareUploadFile(file: File): Promise<File> {
+  const heicConverted = await convertHeicToJpeg(file);
+  return compressImageFile(heicConverted);
+}
+
 async function uploadPhoto() {
   if (!selectedFile.value) return;
-  
+
   uploading.value = true;
-  
+
   try {
+    const fileToUpload = await prepareUploadFile(selectedFile.value);
+    if (previewUrl.value) URL.revokeObjectURL(previewUrl.value);
+    previewUrl.value = URL.createObjectURL(fileToUpload);
+    console.log('Uploading file:', {
+      name: fileToUpload.name,
+      type: fileToUpload.type,
+      size: fileToUpload.size
+    });
+
     const formData = new FormData();
-    formData.append('photo', selectedFile.value);
-    const token = localStorage.getItem('token');
-    
-    const res = await fetch(`/api/orders/${route.params.id}/photo`, {
+    formData.append('photo', fileToUpload);
+
+    const res = await authFetch(`/api/orders/${route.params.id}/photo`, {
       method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`
-      },
       body: formData
     });
-    
+
+    console.log('Upload response status:', res.status);
+
+    const contentType = res.headers.get('content-type') || '';
     if (res.ok) {
+      const data = contentType.includes('application/json') ? await res.json() : await res.text();
+      console.log('Upload success data:', data);
       toast.success('Фото успешно загружено и отправлено в amoCRM');
-      await fetchOrder();
+      if (typeof data === 'object' && data && 'order' in data) {
+        order.value = normalizeOrder((data as any).order);
+      } else {
+        await fetchOrder();
+      }
+      imageLoaded.value = false;
+      imageError.value = false;
       selectedFile.value = null;
       rotation.value = 0;
     } else {
-      const data = await res.json();
-      toast.error(data.error || 'Ошибка при загрузке фото');
+      if (contentType.includes('application/json')) {
+        const data = await res.json();
+        console.log('Upload error data:', data);
+        toast.error(data.error || `Ошибка при загрузке фото: ${res.status}`);
+      } else {
+        const text = await res.text();
+        console.log('Upload error text:', text);
+        toast.error(`Ошибка при загрузке фото: ${res.status}`);
+      }
     }
-  } catch (error) {
-    toast.error('Ошибка при загрузке фото');
+  } catch (error: any) {
+    console.error('Upload error:', error);
+    toast.error(`Ошибка при загрузке фото: ${error.message || 'неизвестная ошибка'}`);
   } finally {
     uploading.value = false;
+    if (previewUrl.value) {
+      URL.revokeObjectURL(previewUrl.value);
+      previewUrl.value = null;
+    }
   }
 }
 
@@ -603,12 +726,24 @@ onUnmounted(() => {
     cameraStream.value.getTracks().forEach(track => track.stop());
     cameraStream.value = null;
   }
+  if (previewUrl.value) {
+    URL.revokeObjectURL(previewUrl.value);
+    previewUrl.value = null;
+  }
 });
 
 // Автообновление при изменении маршрута
 watch(() => route.params.id, async () => {
   await fetchOrder();
 });
+
+watch(
+  () => order.value?.photo_url,
+  () => {
+    imageLoaded.value = false;
+    imageError.value = false;
+  }
+);
 </script>
 
 <style scoped>
